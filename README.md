@@ -1,45 +1,56 @@
 # learning-to-code
 
-Learning to program, in Python, from zero.
+Learning to code from scratch. No experience needed.
 
-## How to use this
+## What to do
 
-Work through the lessons in order. Each one is a file you **run**, then **edit**,
-then run again. Reading code teaches you much less than breaking it does.
+Six short lessons. Do them in order. Each one is a file you **run**, then
+**change**, then run again.
+
+To run the first lesson, type this and press enter:
 
 ```
-python3 lessons/01_hello.py
+python3 lessons/01_printing.py
 ```
 
-| Lesson | What it covers |
+| Lesson | What it's about |
 | --- | --- |
-| `lessons/01_hello.py` | Printing, comments, numbers vs. text |
-| `lessons/02_variables.py` | Variables, types, f-strings, `input()` |
-| `lessons/03_decisions.py` | `if` / `elif` / `else`, comparisons, indentation |
-| `lessons/04_loops.py` | Lists, `for`, `while`, `range()` |
+| `lessons/01_printing.py` | Making the computer say something |
+| `lessons/02_numbers.py` | Numbers and maths |
+| `lessons/03_boxes.py` | Putting things in boxes with names |
+| `lessons/04_asking.py` | Asking someone a question |
+| `lessons/05_choices.py` | Doing one thing or another |
+| `lessons/06_lists_and_loops.py` | Doing something over and over |
 
-Every lesson ends with a **Try it yourself** section. Do those — that's the part
-that actually teaches you.
+Each lesson ends with a **NOW YOU TRY** bit at the bottom. Do it. That part is
+where the learning actually happens - reading the lesson on its own does very
+little.
 
-## Then do the exercises
+## Then have a go yourself
 
-Open `exercises/exercises.py` and fill in each function. Check your work:
+The `practice` folder has six small tasks. Open `practice/01.py`, write your
+answer in it, then check it:
 
 ```
 python3 check.py
 ```
 
-It tells you which exercises pass, which you haven't started, and — when an
-answer is wrong — exactly what your code returned versus what was expected.
+It tells you which ones are done, and when something's wrong it shows you what
+your file printed next to what it should have printed.
 
-## When something breaks
+## When it breaks
 
-It will, constantly. That's normal and it is not a sign you're bad at this.
-Read the **last line** of the error message first: it names the problem.
+It will break. Constantly. That happens to everyone who writes code, forever -
+it is not a sign you're bad at this.
 
-| Error | Usually means |
+When it breaks the computer prints a wall of text. **Read the last line only.**
+That's the bit that says what's actually wrong. Here's what it usually means:
+
+| It says | It usually means |
 | --- | --- |
-| `SyntaxError` | A typo — a missing `:`, quote, or bracket |
-| `IndentationError` | Spacing is off; use 4 spaces inside `if`/`for` blocks |
-| `NameError` | A misspelled variable, or one used before it was created |
-| `TypeError` | Mixing text and numbers — you probably need `int()` or `str()` |
+| `SyntaxError` | A typo. A missing `:` or a missing bracket or quote mark |
+| `IndentationError` | The spacing is wrong. Use 4 spaces for lines inside an `if` or a `for` |
+| `NameError` | A box name is spelt wrong, or you used a box before making it |
+| `TypeError` | You mixed words and numbers. You probably need `int( )` |
+
+Stuck on one for more than a few minutes? Paste the last line to Claude and ask.
