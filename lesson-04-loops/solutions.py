@@ -1,4 +1,4 @@
-"""Lesson 3 solutions — with commentary.
+"""Lesson 4 solutions — with commentary.
 
 Read these *after* you've genuinely attempted `exercises.py`.
 

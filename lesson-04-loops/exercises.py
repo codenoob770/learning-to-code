@@ -1,4 +1,4 @@
-"""Lesson 3 exercises — loops.
+"""Lesson 4 exercises — loops.
 
 Fill in each function where it says YOUR CODE HERE, then run:
 

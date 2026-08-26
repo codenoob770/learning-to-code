@@ -8,8 +8,9 @@ Python, from scratch, one lesson at a time.
 |---|---|---|
 | 1 | Variables and `print()` | *(not committed)* |
 | 2 | Conditionals — `if` / `elif` / `else` | *(not committed)* |
-| 3 | **Loops — `for`, `while`, accumulators** | [`lesson-03-loops/`](lesson-03-loops/) |
-| 4 | Functions | *coming next* |
+| 3 | **f-strings — putting variables inside text** | [`lesson-03-f-strings/`](lesson-03-f-strings/) |
+| 4 | Loops — `for`, `while`, accumulators | [`lesson-04-loops/`](lesson-04-loops/) |
+| 5 | Functions | *coming next* |
 
 ## How a lesson works
 

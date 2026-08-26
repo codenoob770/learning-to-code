@@ -1,4 +1,4 @@
-"""Lesson 3 — runnable examples.
+"""Lesson 4 — runnable examples.
 
 Run me:  python3 examples.py
 

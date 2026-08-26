@@ -1,8 +1,9 @@
-# Lesson 3 — Loops
+# Lesson 4 — Loops
 
-**Where we are:** Lesson 1 gave you variables and `print()`. Lesson 2 gave you
-`if` / `elif` / `else`, so your programs could make decisions. Lesson 3 gives
-you *repetition* — the thing that makes computers actually worth using.
+**Where we are:** Lessons 1–3 gave you variables, `print()`, `if` / `elif` / `else`,
+and f-strings. Lesson 4 gives you *repetition*.
+
+Repetition is the thing that makes computers actually worth using.
 
 ## Why loops matter
 
