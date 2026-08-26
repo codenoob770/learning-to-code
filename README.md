@@ -2,6 +2,8 @@
 
 Learning to code from scratch. No experience needed.
 
+**On a phone? Read [PHONE.md](PHONE.md) first** - the setup is different.
+
 ## What to do
 
 Six short lessons. Do them in order. Each one is a file you **run**, then
