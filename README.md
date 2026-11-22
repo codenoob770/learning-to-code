@@ -12,9 +12,22 @@ every line can be opened, read and changed.
 | `style.css`   | The **look**: colors, fonts, spacing and layout                      |
 | `script.js`   | The **behavior**: the theme button, the Run button, the playground   |
 | `favicon.svg` | The little icon in the browser tab                                   |
+| `bug-bash/`   | **Bug Bash**, a little game (see below)                              |
 
 Every file is full of comments that explain what each part does. Reading them
 from top to bottom is a good way to learn how the site works.
+
+## Bug Bash: the game
+
+Open `bug-bash/index.html` to play. Bugs crawl down a code editor, and you
+squash them before they reach production. Golden bugs are worth extra points.
+Don't squash the features! Every 20 seconds a new "version" comes out and
+the bugs get faster.
+
+The game is drawn on a `<canvas>` by `bug-bash/game.js`. The easiest thing to
+change is the `RULES` list near the top of that file: give yourself more tests,
+make golden bugs worth more, or make new versions come out faster. Save,
+refresh, and see how the game feels.
 
 ## How to look at the site on your computer
 
