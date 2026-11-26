@@ -20,6 +20,7 @@
       missions.js -> daily missions and the monthly challenge
       boss.js     -> the weekly boss battle
       tabs.js     -> the tabs along the top (Today, Quests, Arcade...)
+      training.js -> the Training tab (lessons in training-lessons.js)
       quiz.js     -> the Brain + Body Quiz (questions in quiz-questions.js)
       arcade.js   -> card deck workout, Kick Caller and spin the wheel
       kitchen.js  -> Smoothie Lab, Recipe Book and Snack Swap
@@ -47,32 +48,34 @@
   <!-- The "?v=8" is a version number. Browsers keep old copies of files for a
        while; changing the number makes them download the newest version.
        Add 1 to it (on every line below) whenever you change those files. -->
-  <link rel="stylesheet" href="style.css?v=14">
+  <link rel="stylesheet" href="style.css?v=15">
   <!-- These load in order. app.js goes last, because it starts the page
        and uses things from all the others. -->
-  <script src="plan.js?v=14" defer></script>
-  <script src="demos.js?v=14" defer></script>
-  <script src="trophies.js?v=14" defer></script>
-  <script src="coach.js?v=14" defer></script>
-  <script src="practice.js?v=14" defer></script>
-  <script src="habits.js?v=14" defer></script>
-  <script src="charts.js?v=14" defer></script>
-  <script src="grocery.js?v=14" defer></script>
-  <script src="ai-coach.js?v=14" defer></script>
-  <script src="quest.js?v=14" defer></script>
-  <script src="missions.js?v=14" defer></script>
-  <script src="boss.js?v=14" defer></script>
-  <script src="quiz-questions.js?v=14" defer></script>
-  <script src="quiz.js?v=14" defer></script>
-  <script src="arcade.js?v=14" defer></script>
-  <script src="kitchen.js?v=14" defer></script>
-  <script src="sports.js?v=14" defer></script>
-  <script src="stats.js?v=14" defer></script>
-  <script src="family.js?v=14" defer></script>
-  <script src="pet.js?v=14" defer></script>
-  <script src="shop.js?v=14" defer></script>
-  <script src="tabs.js?v=14" defer></script>
-  <script src="app.js?v=14" defer></script>
+  <script src="plan.js?v=15" defer></script>
+  <script src="demos.js?v=15" defer></script>
+  <script src="trophies.js?v=15" defer></script>
+  <script src="coach.js?v=15" defer></script>
+  <script src="practice.js?v=15" defer></script>
+  <script src="habits.js?v=15" defer></script>
+  <script src="charts.js?v=15" defer></script>
+  <script src="grocery.js?v=15" defer></script>
+  <script src="ai-coach.js?v=15" defer></script>
+  <script src="quest.js?v=15" defer></script>
+  <script src="missions.js?v=15" defer></script>
+  <script src="boss.js?v=15" defer></script>
+  <script src="quiz-questions.js?v=15" defer></script>
+  <script src="quiz.js?v=15" defer></script>
+  <script src="arcade.js?v=15" defer></script>
+  <script src="kitchen.js?v=15" defer></script>
+  <script src="sports.js?v=15" defer></script>
+  <script src="stats.js?v=15" defer></script>
+  <script src="family.js?v=15" defer></script>
+  <script src="pet.js?v=15" defer></script>
+  <script src="shop.js?v=15" defer></script>
+  <script src="training-lessons.js?v=15" defer></script>
+  <script src="training.js?v=15" defer></script>
+  <script src="tabs.js?v=15" defer></script>
+  <script src="app.js?v=15" defer></script>
 </head>
 <body>
 
@@ -139,6 +142,7 @@
         <button class="tab" type="button" data-tab="arcade"><span aria-hidden="true">🎮</span> Arcade</button>
         <button class="tab" type="button" data-tab="quiz"><span aria-hidden="true">🧠</span> Quiz</button>
         <button class="tab" type="button" data-tab="sports"><span aria-hidden="true">🥋</span> Sports</button>
+        <button class="tab" type="button" data-tab="training"><span aria-hidden="true">🎓</span> Training</button>
         <button class="tab" type="button" data-tab="kitchen"><span aria-hidden="true">🍓</span> Kitchen</button>
         <button class="tab" type="button" data-tab="stats"><span aria-hidden="true">📊</span> Stats</button>
         <button class="tab" type="button" data-tab="pet"><span aria-hidden="true">🐾</span> Pet &amp; Shop</button>
@@ -574,6 +578,23 @@
         <h2 class="panel__title" id="practice-title">Practice days</h2>
         <div class="practice-grid" id="practice-grid"></div>
         <p class="practice-summary" id="practice-summary"></p>
+      </section>
+    </div>
+
+    <!-- ==================== TAB: TRAINING ==================== -->
+    <div class="tab-page" data-page="training" hidden>
+      <!-- ============ TRAINING CENTER (training.js, lessons in training-lessons.js) ============ -->
+      <section class="panel" id="training" aria-labelledby="training-title">
+        <div class="panel__head">
+          <p class="eyebrow">// training center</p>
+          <div class="picker" id="training-sports" role="group" aria-label="Sport"></div>
+        </div>
+        <h2 class="panel__title" id="training-title">🎓 Training</h2>
+        <p class="panel__lead">Pick a skill to learn how it's done. Tap <strong>Teach me</strong> and the coach walks you through it out loud, then runs a practice drill!</p>
+        <p class="tip-of-day" id="tip-of-day"></p>
+        <p class="training-safety">Practice in an open space, warm up first, and ask your instructor or coach to check your form.</p>
+        <div class="lesson-cards" id="lesson-cards"></div>
+        <div class="lesson" id="lesson"></div>
       </section>
     </div>
 

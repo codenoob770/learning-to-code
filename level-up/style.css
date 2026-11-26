@@ -5158,6 +5158,214 @@ label.mission__text {
   white-space: nowrap;
 }
 
+/* 9k. TRAINING TAB --------------------------------------------------------- */
+
+/* The voice coach teaching a lesson: the instructions are the big text */
+.coach.is-lesson .coach__how {
+  max-width: 40rem;
+  color: var(--fg);
+  font-size: clamp(1.2rem, 1rem + 1vw, 1.65rem);
+  line-height: 1.4;
+}
+
+.coach__time:empty,
+.coach__label:empty {
+  display: none;
+}
+
+.pick__count {
+  margin-left: 0.3rem;
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.tip-of-day {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--marker-border);
+  border-radius: var(--radius-small);
+  background: var(--marker-soft);
+}
+
+.tip-of-day__label {
+  color: var(--marker);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.training-safety {
+  color: var(--dim);
+  font-size: 0.875rem;
+}
+
+.lesson-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lesson-cards__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+/* "Beginner", "Intermediate", "Advanced" */
+.lesson-level {
+  align-self: flex-start;
+  width: fit-content;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.lesson-level--beginner { background: var(--teal-soft); color: var(--teal); }
+.lesson-level--intermediate { background: var(--marker-soft); color: var(--marker); }
+.lesson-level--advanced { background: var(--bug-soft); color: var(--bug); }
+
+.lesson-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+  color: var(--fg);
+  text-align: left;
+  cursor: pointer;
+}
+
+.lesson-card:hover {
+  border-color: var(--accent);
+}
+
+.lesson-card[aria-pressed="true"] {
+  border: 2px solid var(--marker);
+  background: var(--marker-soft);
+}
+
+.lesson-card__title {
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.lesson-card__state {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+}
+
+.lesson-card.is-learned .lesson-card__state {
+  color: var(--teal);
+}
+
+/* One lesson, opened up */
+.lesson {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 7rem;
+}
+
+.lesson__title {
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.lesson__body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1rem 1.5rem;
+}
+
+.lesson__demo {
+  flex: none;
+  padding: 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+  cursor: zoom-in;
+}
+
+.lesson__demo .demo {
+  width: 11rem;
+  height: 8rem;
+}
+
+.lesson__steps {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 15rem;
+  margin: 0;
+  padding-left: 1.3rem;
+  font-size: 1.0625rem;
+}
+
+.lesson__steps li::marker {
+  color: var(--marker);
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+
+.lesson__boxes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.6rem;
+}
+
+.lesson-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.8rem 0.95rem;
+  border-left: 4px solid var(--line-strong);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+  font-size: 0.9375rem;
+}
+
+.lesson-box ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.lesson-box__title {
+  font-weight: 700;
+}
+
+.lesson-box--watch { border-left-color: var(--bug); }
+.lesson-box--drill { border-left-color: var(--accent); }
+.lesson-box--tip { border-left-color: var(--marker); }
+
+.lesson-box__amount {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.lesson__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 /* 10. SMALL SCREENS AND REDUCED MOTION --------------------------- */
 
 @media (max-width: 640px) {

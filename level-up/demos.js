@@ -363,6 +363,40 @@ const DEMOS = {
     speed: 2,
   },
 
+  // --- Training tab: kicks and soccer skills ---
+  frontKick: { frames: [STANCE, CHAMBER, FRONT_KICK, CHAMBER], hold: 220 },
+  roundhouseKick: { frames: [STANCE, CHAMBER, ROUNDHOUSE, CHAMBER], hold: 220 },
+  sideKick: {
+    frames: [
+      STANCE,
+      change(CHAMBER, { k1: [68, 40], f1: [58, 46] }),
+      // Lean back a little and push the heel straight out to the side
+      change(CHAMBER, { h: [50, 20], n: [54, 27], p: [58, 46], e1: [60, 32], w1: [64, 25], e2: [56, 33], w2: [60, 28], k1: [75, 43], f1: [93, 41] }),
+      change(CHAMBER, { k1: [68, 40], f1: [58, 46] }),
+    ],
+    hold: 260,
+  },
+  pass: {
+    props: ["ball"],
+    frames: [
+      change(STAND, { e1: [66, 32], w1: [72, 36], e2: [54, 32], w2: [48, 36], k1: [54, 58], f1: [46, 66] }),
+      change(STAND, { e1: [56, 32], w1: [50, 36], e2: [64, 32], w2: [70, 36], k1: [70, 58], f1: [82, 64] }),
+    ],
+    hold: 200,
+  },
+  stepOver: {
+    props: ["ball"],
+    frames: [
+      STAND,
+      change(STAND, { k1: [70, 52], f1: [80, 58] }),
+      change(STAND, { k1: [72, 60], f1: [84, 74] }),
+      STAND,
+      change(STAND, { k2: [69, 52], f2: [79, 58] }),
+      change(STAND, { k2: [71, 60], f2: [83, 74] }),
+    ],
+    hold: 60,
+  },
+
   // --- Soccer juggling (Juggling Quest) ---
   juggle: {
     props: ["ballHigh"],

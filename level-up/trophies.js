@@ -50,6 +50,8 @@ const XP_RULES = {
   custom: 60,       // each workout you built and finished with the coach
   energy: 5,        // each energy check-in (stats.js)
   familyWin: 100,   // each week you win the family challenge (family.js)
+  lessonLearned: 20, // each Training lesson you learn (training.js)
+  drill: 10,        // practicing a lesson with the voice coach
   quizRight: 10,    // each right answer in the quiz (quiz.js)
   quizPerfect: 25,  // extra for a perfect 10/10 round
   penaltyDone: 5,   // each quiz penalty you do (you still did the work!)
@@ -70,6 +72,7 @@ const LOG_XP = {
   swimTime: () => XP_RULES.swimTime,
   soccer: (e) => XP_RULES.soccerGame + e.g * XP_RULES.goal,
   custom: () => XP_RULES.custom,
+  drill: () => XP_RULES.drill,
 };
 
 // Some things only earn XP a few times a day, so nobody can farm
@@ -87,6 +90,7 @@ const LOG_DAILY_LIMIT = {
   swimTime: 3,
   soccer: 2,
   custom: 2,
+  drill: 3,
 };
 
 function logXP() {
@@ -216,6 +220,10 @@ function workOutTrophyStats() {
   const familyWon = familyWins();
   xp += checkIns * XP_RULES.energy + familyWon * XP_RULES.familyWin;
 
+  // Training lessons you've learned (training.js)
+  xp += trainingLearned.size * XP_RULES.lessonLearned;
+  const sportLessonsAll = (id) => TRAINING.find((s) => s.id === id).lessons.every((l) => trainingLearned.has(l.id));
+
   // Sports (sports.js)
   xp += beltData.history.length * XP_RULES.beltUp;
   const swimLessons = logOf("swimLesson").length;
@@ -241,7 +249,8 @@ function workOutTrophyStats() {
     missionsDone, missionSweeps, monthlies, bossesBeaten, quizRight,
     fullDeck, bestKicks, spins, smoothies, recipesMade, snackPerfect,
     belts: beltData.history.length, swimLessons, strokeMastered, goals, hatTrick, builtWorkouts, checkIns, familyWon,
-    bought: shopData.owned.length, spent: shopData.spent || 0, petStage: petStage(), quizPerfect, penaltyReps, expertCount: expertDays.size };
+    bought: shopData.owned.length, spent: shopData.spent || 0, petStage: petStage(),
+    lessons: trainingLearned.size, tkdAll: sportLessonsAll("tkd"), soccerAll: sportLessonsAll("soccer"), quizPerfect, penaltyReps, expertCount: expertDays.size };
 }
 
 
@@ -324,6 +333,9 @@ const BADGES = [
   { id: "petPal", icon: "🐾", name: "Pet Pal", how: "Grow your pet into a Teen", earned: (s) => s.petStage >= 3 },
   { id: "shopper", icon: "🛍️", name: "Shopper", how: "Buy something in the shop", earned: (s) => s.bought >= 1 },
   { id: "bigSpender", icon: "🪙", name: "Big Spender", how: "Spend 1,000 coins", earned: (s) => s.spent >= 1000 },
+  { id: "student", icon: "🎓", name: "Good Student", how: "Learn 5 Training lessons", earned: (s) => s.lessons >= 5 },
+  { id: "tkdScholar", icon: "🥋", name: "Taekwondo Scholar", how: "Learn every taekwondo lesson", earned: (s) => s.tkdAll },
+  { id: "soccerScholar", icon: "🧠", name: "Soccer Genius", how: "Learn every soccer lesson", earned: (s) => s.soccerAll },
 ];
 
 
@@ -395,6 +407,8 @@ document.querySelector("#xp-rules").innerHTML = [
   ["Log a soccer game", `+${XP_RULES.soccerGame}, +${XP_RULES.goal} per goal`],
   ["Finish a workout you built", `+${XP_RULES.custom}`],
   ["Energy check-in", `+${XP_RULES.energy}`],
+  ["Learn a Training lesson", `+${XP_RULES.lessonLearned}`],
+  ["Practice a lesson with the coach (3 a day)", `+${XP_RULES.drill}`],
   ["Win the family challenge", `+${XP_RULES.familyWin}`],
   ["Right quiz answer (5 rounds a day)", `+${XP_RULES.quizRight}`],
   ["Perfect quiz round", `+${XP_RULES.quizPerfect} more`],

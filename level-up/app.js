@@ -92,6 +92,7 @@ const PROGRESS_KEYS = [
   "levelUp.log", "levelUp.missions", "levelUp.energy", "levelUp.belt",
   "levelUp.swim", "levelUp.workouts", "levelUp.recipes",
   "levelUp.shop", "levelUp.pet", "levelUp.family", "levelUp.spins",
+  "levelUp.training",
 ];
 
 const memory = {};
@@ -166,6 +167,7 @@ let shopData;      // coins spent, things you bought and what you're wearing (sh
 let petData;       // your pet's name (pet.js)
 let familyData;    // the family scoreboard (family.js)
 let spinData;      // the daily spin-the-wheel, by day (arcade.js)
+let trainingLearned; // Training lessons you've learned (training.js)
 
 // Reads all your progress into the variables above. It runs when the page
 // opens, and again whenever another device changes something.
@@ -198,6 +200,7 @@ function loadProgress() {
   petData = loadJSON("levelUp.pet", { name: "" });
   familyData = loadJSON("levelUp.family", { players: [] });
   spinData = loadJSON("levelUp.spins", {});
+  trainingLearned = new Set(loadJSON("levelUp.training", []));
 }
 
 loadProgress();
@@ -563,11 +566,15 @@ function render() {
   renderBoss();     // in boss.js
   renderMonthly();  // in missions.js
   renderArcade();   // in arcade.js
-  renderKitchen();  // in kitchen.js
   renderSports();   // in sports.js
-  renderStatsTab(); // in stats.js
+  renderEnergyCheckIn(); // in stats.js (it's on the Today tab)
   renderFamily();   // in family.js
   renderPetAndShop(); // in shop.js and pet.js
+  // These tabs are only drawn while they're showing, to keep the page fast.
+  // tabs.js draws them when you open them.
+  if (currentTab === "kitchen") renderKitchen();   // in kitchen.js
+  if (currentTab === "training") renderTraining(); // in training.js
+  if (currentTab === "stats") renderStatsTab();    // in stats.js
 }
 
 function renderDay(plan) {

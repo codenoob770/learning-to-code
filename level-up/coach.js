@@ -77,7 +77,7 @@ function openCoach(date, custom = null) {
     date,
     plan,
     custom: Boolean(custom),
-    steps: coachSteps(plan),
+    steps: plan.steps || coachSteps(plan), // a Training lesson brings its own steps
     index: 0,
     startedAt: Date.now(),
     endsAt: 0,
@@ -92,6 +92,7 @@ function openCoach(date, custom = null) {
   startAudio();
   keepScreenOn();
   coachBox.hidden = false;
+  coachBox.classList.toggle("is-lesson", Boolean(plan.steps)); // Training lessons show big instructions
   document.body.classList.add("coach-open");
   say(`Let's go! ${plan.title}. ${coach.steps.length} steps.`, () => showStep());
 }
@@ -117,8 +118,9 @@ function finishCoach() {
   const xpBefore = trophyStats().xp;
 
   if (coach.custom) {
-    // A workout you built: it goes in the activity log (XP, and hits on the boss)
-    logActivity("custom", { name: coach.plan.title, reps: coach.plan.reps });
+    // A workout you built (or a Training lesson): it goes in the activity
+    // log for XP and hits on the boss
+    logActivity(coach.plan.logType || "custom", { name: coach.plan.title, reps: coach.plan.reps, ...(coach.plan.logExtra || {}) });
     render();
   } else if (canMark && !doneDays.has(key)) {
     // Finishing counts as marking the workout done
@@ -135,10 +137,10 @@ function finishCoach() {
   document.querySelector("#coach-section").textContent = "All done!";
   document.querySelector("#coach-count").textContent = `${coach.steps.length} of ${coach.steps.length}`;
   document.querySelector("#coach-fill").style.width = "100%";
-  document.querySelector("#coach-name").textContent = "Workout complete!";
+  document.querySelector("#coach-name").textContent = coach.plan.finishTitle || "Workout complete!";
   let how = `${minutes} min of hard work. It's marked as done.`;
   if (!canMark) how = `${minutes} min of hard work. (It's a future day, so it isn't marked done.)`;
-  if (coach.custom) how = `${minutes} min of hard work, in a workout YOU designed!`;
+  if (coach.custom) how = coach.plan.finishText || `${minutes} min of hard work, in a workout YOU designed!`;
   document.querySelector("#coach-how").textContent = how;
   document.querySelector("#coach-label").textContent = xpGained > 0 ? `+${xpGained} XP` : "";
   coachTime.textContent = "🎉";
@@ -150,7 +152,7 @@ function finishCoach() {
   document.querySelector("#coach-back").disabled = true;
   document.querySelector("#coach-skip").disabled = true;
   sounds.finish();
-  say("Workout complete! Awesome job!");
+  say(`${coach.plan.finishTitle || "Workout complete!"} Awesome job!`);
   checkAchievements(true);
 }
 
@@ -188,10 +190,10 @@ function showStep() {
   if (step.seconds === null) {
     // A rep move: do it at your own pace, then tap Done
     coachBox.classList.remove("is-ready");
-    coachTime.textContent = step.label.split(" ")[0]; // the number, like "12"
-    document.querySelector("#coach-label").textContent = step.label.replace(/^\d+\s*/, "");
+    coachTime.textContent = step.big ?? step.label.split(" ")[0]; // the number, like "12"
+    document.querySelector("#coach-label").textContent = step.small ?? step.label.replace(/^\d+\s*/, "");
     coachMain.textContent = "Done ✓";
-    say(`${step.name}. ${step.label}. Tap done when you finish.`);
+    say(step.say || `${step.name}. ${step.label}. Tap done when you finish.`); // lessons have their own words
     return;
   }
 

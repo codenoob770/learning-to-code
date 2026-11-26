@@ -439,7 +439,6 @@ for (const [boxId, closeId] of [["#review-box", "#review-close"], ["#card-box", 
 }
 
 function renderStatsTab() {
-  renderEnergyCheckIn();
   renderEnergyStats();
   renderHeatmap();
   renderRecords();

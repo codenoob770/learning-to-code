@@ -789,7 +789,7 @@ const JUGGLING_QUEST = {
       why: "This takes lots of practice. Every day counts!",
       tasks: [
         { id: "jug-50", text: "50 juggles in a row", demo: "juggle" },
-        { id: "jug-head", text: "3 headers in a row (head juggles)" },
+        { id: "jug-head", text: "10 juggles in a row using only your weaker foot" },
         { id: "jug-100", text: "100 juggles in a row 🎉", demo: "juggle" },
       ],
     },

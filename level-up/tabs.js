@@ -12,7 +12,7 @@
    functions inside its own functions, never right away.
    ============================================================= */
 
-const TAB_NAMES = ["today", "quests", "arcade", "quiz", "sports", "kitchen", "stats", "pet", "family"];
+const TAB_NAMES = ["today", "quests", "arcade", "quiz", "sports", "training", "kitchen", "stats", "pet", "family"];
 let currentTab = "today";
 
 function showTab(name, scrollUp = true) {
@@ -50,6 +50,9 @@ function showTab(name, scrollUp = true) {
     renderCharts();
     renderStatsTab();
   }
+  // These tabs are only drawn while they're showing (see render() in app.js)
+  if (name === "kitchen") renderKitchen();
+  if (name === "training") renderTraining();
   document.dispatchEvent(new CustomEvent("tabshown", { detail: name }));
 }
 

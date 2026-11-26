@@ -27,6 +27,7 @@ const MISSIONS = [
   { id: "deck", icon: "🃏", text: "Play the card deck workout", auto: (key) => logOf("deck").some((e) => e.d === key), go: "arcade" },
   { id: "kicks", icon: "🥋", text: "Play a round of Kick Caller", auto: (key) => logOf("kicks").some((e) => e.d === key), go: "arcade" },
   { id: "spin", icon: "🎡", text: "Spin the wheel and do the challenge", auto: (key) => Boolean((spinData[key] || {}).done), go: "arcade" },
+  { id: "training", icon: "🎓", text: "Practice a skill with the coach in Training", auto: (key) => logOf("drill").some((e) => e.d === key), go: "training" },
 
   // You check these off yourself
   { id: "jacks20", icon: "⭐", text: "Do 20 jumping jacks during a break from homework or TV" },
