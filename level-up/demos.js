@@ -363,6 +363,16 @@ const DEMOS = {
     speed: 2,
   },
 
+  // --- Soccer juggling (Juggling Quest) ---
+  juggle: {
+    props: ["ballHigh"],
+    frames: [
+      change(STAND, { e1: [66, 32], w1: [72, 38], e2: [54, 32], w2: [48, 38] }),
+      change(STAND, { e1: [66, 32], w1: [72, 38], e2: [54, 32], w2: [48, 38], k1: [68, 52], f1: [72, 62] }),
+    ],
+    hold: 120,
+  },
+
   // --- Backflip Quest skills ---
   setJump: {
     frames: [
@@ -534,6 +544,8 @@ function drawProps(svg, props = []) {
       group.append(svgElement("path", { d: "M44 74 V70 H76 V74" }));
     } else if (prop === "ball") {
       group.append(svgElement("circle", { cx: 74, cy: 68, r: 6 }));
+    } else if (prop === "ballHigh") {
+      group.append(svgElement("circle", { cx: 73, cy: 54, r: 5 })); // a ball in the air, for juggling
     } else if (prop === "line") {
       group.append(svgElement("path", { d: "M60 70 V76", class: "demo__tape" }));
     }

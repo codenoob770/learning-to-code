@@ -16,9 +16,13 @@
       charts.js   -> the progress charts
       grocery.js  -> the week's grocery list
       ai-coach.js -> asking Claude questions (on the Claude version)
-      quest.js    -> the Backflip Quest side quest
+      quest.js    -> the Quest Board (the quests are in plan.js)
+      missions.js -> daily missions and the monthly challenge
+      boss.js     -> the weekly boss battle
       tabs.js     -> the tabs along the top (Today, Quests, Arcade...)
       quiz.js     -> the Brain + Body Quiz (questions in quiz-questions.js)
+      arcade.js   -> card deck workout, Kick Caller and spin the wheel
+      kitchen.js  -> Smoothie Lab, Recipe Book and Snack Swap
       app.js      -> what the buttons do, and building each day's plan
 
     Most of the page is empty here on purpose: app.js fills in the
@@ -51,8 +55,12 @@
   <script src="grocery.js?v=12" defer></script>
   <script src="ai-coach.js?v=12" defer></script>
   <script src="quest.js?v=12" defer></script>
+  <script src="missions.js?v=12" defer></script>
+  <script src="boss.js?v=12" defer></script>
   <script src="quiz-questions.js?v=12" defer></script>
   <script src="quiz.js?v=12" defer></script>
+  <script src="arcade.js?v=12" defer></script>
+  <script src="kitchen.js?v=12" defer></script>
   <script src="tabs.js?v=12" defer></script>
   <script src="app.js?v=12" defer></script>
 </head>
@@ -118,10 +126,10 @@
       <div class="tabs__inner">
         <button class="tab" type="button" data-tab="today" aria-current="page"><span aria-hidden="true">🏠</span> Today</button>
         <button class="tab" type="button" data-tab="quests"><span aria-hidden="true">🗺️</span> Quests</button>
-        <button class="tab" type="button" data-tab="arcade" hidden><span aria-hidden="true">🎮</span> Arcade</button>
+        <button class="tab" type="button" data-tab="arcade"><span aria-hidden="true">🎮</span> Arcade</button>
         <button class="tab" type="button" data-tab="quiz"><span aria-hidden="true">🧠</span> Quiz</button>
         <button class="tab" type="button" data-tab="sports"><span aria-hidden="true">🥋</span> Sports</button>
-        <button class="tab" type="button" data-tab="kitchen" hidden><span aria-hidden="true">🍓</span> Kitchen</button>
+        <button class="tab" type="button" data-tab="kitchen"><span aria-hidden="true">🍓</span> Kitchen</button>
         <button class="tab" type="button" data-tab="stats"><span aria-hidden="true">📊</span> Stats</button>
         <button class="tab" type="button" data-tab="pet" hidden><span aria-hidden="true">🐾</span> Pet &amp; Shop</button>
         <button class="tab" type="button" data-tab="family" hidden><span aria-hidden="true">👪</span> Family</button>
@@ -216,7 +224,39 @@
         </div>
       </div>
 
-      <!-- TODAY: missions and boss (batch 2) -->
+      <div class="duo">
+        <!-- ============ DAILY MISSIONS (missions.js) ============ -->
+        <section class="panel missions" aria-labelledby="missions-title">
+          <div class="panel__head">
+            <p class="eyebrow">// daily missions</p>
+            <span class="quest-tag" id="missions-count">0 of 3 done</span>
+          </div>
+          <h2 class="panel__title" id="missions-title">🎯 Today's missions</h2>
+          <ul class="missions__list" id="missions-list"></ul>
+          <p class="missions__note">+15 XP each, and a bonus for all 3. New missions every day!</p>
+        </section>
+
+        <!-- ============ WEEKLY BOSS (boss.js) ============ -->
+        <section class="panel boss" id="boss" aria-labelledby="boss-title">
+          <div class="panel__head">
+            <p class="eyebrow">// weekly boss</p>
+            <span class="quest-tag">+150 XP to win</span>
+          </div>
+          <div class="boss__fight">
+            <span class="boss__emoji" id="boss-emoji" aria-hidden="true">🛋️</span>
+            <div>
+              <h2 class="panel__title" id="boss-title">Boss</h2>
+              <p class="boss__line" id="boss-line"></p>
+            </div>
+          </div>
+          <div class="boss__hp" id="boss-hp" role="meter" aria-label="Boss health" aria-valuemin="0" aria-valuenow="0" aria-valuemax="100">
+            <div class="boss__hp-fill" id="boss-hp-fill"></div>
+          </div>
+          <p class="boss__text" id="boss-text"></p>
+          <p class="boss__how">Every rep hits the boss: workouts, quiz penalties and arcade games, plus 10 hits for each daily mission.</p>
+          <p class="boss__shelf" id="boss-shelf"></p>
+        </section>
+      </div>
 
       <!-- ============ AI COACH (ai-coach.js) ============ -->
       <section class="panel ai" aria-labelledby="ai-title">
@@ -243,29 +283,89 @@
 
     <!-- ==================== TAB: QUESTS ==================== -->
     <div class="tab-page" data-page="quests" hidden>
-      <!-- ============ SIDE QUEST: BACKFLIP (quest.js) ============ -->
+      <!-- ============ MONTHLY CHALLENGE (missions.js) ============ -->
+      <section class="panel monthly" id="monthly" aria-labelledby="monthly-title">
+        <div class="panel__head">
+          <p class="eyebrow" id="monthly-month">// monthly challenge</p>
+          <span class="quest-tag">+300 XP</span>
+        </div>
+        <h2 class="panel__title" id="monthly-title">Monthly challenge</h2>
+        <p class="panel__lead" id="monthly-goal"></p>
+        <div class="xpbar" aria-hidden="true"><div class="xpbar__fill" id="monthly-fill"></div></div>
+        <p class="quest-progress__text" id="monthly-text"></p>
+      </section>
+
+      <!-- ============ QUEST BOARD (quest.js, quests in plan.js) ============ -->
       <section class="panel quest" aria-labelledby="quest-title">
         <div class="panel__head">
-          <p class="eyebrow">// side quest</p>
-          <span class="quest-tag">+25 XP per task</span>
+          <p class="eyebrow">// quest board</p>
         </div>
-        <h2 class="panel__title" id="quest-title">🤸 Backflip Quest</h2>
-        <p class="panel__lead">Learn every skill a backflip needs, one stage at a time. Check off a task when you can do it, and finish a stage to unlock the next.</p>
-        <p class="quest-safety">
-          <strong>⚠️ Safety first:</strong> never try a backflip alone, on a hard floor, or on a bed or
-          trampoline without a coach. Stages 1 to 3 are safe to practice at home. The real flip happens
-          only in stage 4, with a coach spotting you on mats.
-        </p>
-        <div class="quest-progress">
-          <p class="quest-progress__text" id="quest-progress-text"></p>
-          <div class="xpbar" aria-hidden="true"><div class="xpbar__fill" id="quest-fill"></div></div>
+        <h2 class="panel__title" id="quest-title">🗺️ Quest Board</h2>
+        <p class="panel__lead">Pick a quest. Check off a task when you can do it, and finish every task in a stage to unlock the next one.</p>
+        <div class="quest-cards" id="quest-cards" role="group" aria-label="Quests"></div>
+        <div class="quest-detail" id="quest-detail">
+          <div class="panel__head">
+            <h3 class="quest-detail__title" id="quest-detail-title"></h3>
+            <span class="quest-tag" id="quest-xp">+25 XP per task</span>
+          </div>
+          <p class="panel__lead" id="quest-blurb"></p>
+          <p class="quest-safety" id="quest-safety"></p>
+          <div class="quest-progress">
+            <p class="quest-progress__text" id="quest-progress-text"></p>
+            <div class="xpbar" aria-hidden="true"><div class="xpbar__fill" id="quest-fill"></div></div>
+          </div>
+          <div class="quest-stages" id="quest-stages"></div>
         </div>
-        <div class="quest-stages" id="quest-stages"></div>
       </section>
     </div>
 
     <!-- ==================== TAB: ARCADE ==================== -->
     <div class="tab-page" data-page="arcade" hidden>
+      <div class="duo duo--even">
+        <!-- ============ CARD DECK WORKOUT (arcade.js) ============ -->
+        <section class="panel" aria-labelledby="deck-title">
+          <div class="panel__head">
+            <p class="eyebrow">// arcade</p>
+            <span class="quest-tag">+40 to +160 XP</span>
+          </div>
+          <h2 class="panel__title" id="deck-title">🃏 Card Deck Workout</h2>
+          <div class="arcade-area" id="deck-area"></div>
+        </section>
+
+        <!-- ============ KICK CALLER (arcade.js) ============ -->
+        <section class="panel" aria-labelledby="kicks-title">
+          <div class="panel__head">
+            <p class="eyebrow">// arcade</p>
+            <span class="quest-tag">+1 XP per move</span>
+          </div>
+          <h2 class="panel__title" id="kicks-title">🥋 Kick Caller</h2>
+          <div class="arcade-area" id="kicks-area"></div>
+        </section>
+      </div>
+
+      <div class="duo duo--even">
+        <!-- ============ SPIN THE WHEEL (arcade.js) ============ -->
+        <section class="panel spin" aria-labelledby="spin-title">
+          <div class="panel__head">
+            <p class="eyebrow">// daily spin</p>
+            <span class="quest-tag">+25 XP</span>
+          </div>
+          <h2 class="panel__title" id="spin-title">🎡 Spin the Wheel</h2>
+          <div class="spin-area" id="spin-area"></div>
+        </section>
+
+        <!-- ============ BUG BASH (power-ups from trophies.js) ============ -->
+        <section class="panel" aria-labelledby="bugbash-title">
+          <p class="eyebrow">// my game</p>
+          <h2 class="panel__title" id="bugbash-title">🐛 Bug Bash</h2>
+          <p class="panel__lead">Squash bugs before they reach production! Your workouts this week give you power-ups.</p>
+          <div class="powerups">
+            <p class="powerups__title">Your power-ups</p>
+            <p class="powerups__text" id="powerups-text"></p>
+            <a class="button" id="powerups-link" href="../bug-bash/">Play Bug Bash</a>
+          </div>
+        </section>
+      </div>
     </div>
 
     <!-- ==================== TAB: QUIZ ==================== -->
@@ -295,6 +395,42 @@
 
     <!-- ==================== TAB: KITCHEN ==================== -->
     <div class="tab-page" data-page="kitchen" hidden>
+      <!-- ============ SMOOTHIE LAB (kitchen.js) ============ -->
+      <section class="panel" aria-labelledby="lab-title">
+        <div class="panel__head">
+          <p class="eyebrow">// kitchen</p>
+          <span class="quest-tag">+10 XP per new smoothie</span>
+        </div>
+        <h2 class="panel__title" id="lab-title">🧪 Smoothie Lab</h2>
+        <p class="panel__lead">Mix your own smoothie. It invents a name and a recipe for your creation!</p>
+        <div class="lab">
+          <div class="lab__picks" id="lab-picks"></div>
+          <div class="lab__result" id="lab-result" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <div class="duo">
+        <!-- ============ SNACK SWAP (kitchen.js) ============ -->
+        <section class="panel" aria-labelledby="snack-title">
+          <div class="panel__head">
+            <p class="eyebrow">// kitchen game</p>
+            <span class="quest-tag">+3 XP per right pick</span>
+          </div>
+          <h2 class="panel__title" id="snack-title">🥕 Snack Swap</h2>
+          <div class="arcade-area" id="snack-area"></div>
+        </section>
+
+        <!-- ============ RECIPE BOOK (kitchen.js) ============ -->
+        <section class="panel book" id="book" aria-labelledby="book-title">
+          <p class="eyebrow">// recipe book</p>
+          <h2 class="panel__title" id="book-title">📖 Recipe Book</h2>
+          <label class="visually-hidden" for="book-search">Search recipes</label>
+          <input class="search" id="book-search" type="search" placeholder="Search, like &quot;banana&quot;..." autocomplete="off">
+          <div class="picker picker--wrap" id="book-filters" role="group" aria-label="Show"></div>
+          <p class="book-count" id="book-count"></p>
+          <div class="book-list" id="book-list"></div>
+        </section>
+      </div>
     </div>
 
     <!-- ==================== TAB: STATS ==================== -->
@@ -316,11 +452,6 @@
             <summary>How to earn XP</summary>
             <ul id="xp-rules"></ul>
           </details>
-          <div class="powerups">
-            <p class="powerups__title">🐛 Bug Bash power-ups</p>
-            <p class="powerups__text" id="powerups-text"></p>
-            <a class="button button--quiet" id="powerups-link" href="../bug-bash/">Play Bug Bash</a>
-          </div>
         </div>
         <div class="trophies__badges">
           <p class="trophies__count" id="badge-count">0 of 12 badges</p>

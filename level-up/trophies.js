@@ -30,6 +30,16 @@ const XP_RULES = {
   sleepLogged: 10,  // logging how long you slept
   goodSleep: 10,    // extra for 9 hours or more
   questTask: 25,    // each quest task (quest.js)
+  codeTask: 50,     // each Code Quest task (they're more work!)
+  mission: 15,      // each daily mission (missions.js)
+  missionSweep: 25, // extra for doing all 3 missions in a day
+  monthly: 300,     // each monthly challenge you complete
+  bossWin: 150,     // each weekly boss you beat (boss.js)
+  kickRound: 20,    // each Kick Caller round, plus 1 per move (arcade.js)
+  spin: 25,         // the daily spin-the-wheel challenge
+  smoothie: 10,     // each smoothie you invent (kitchen.js)
+  made: 15,         // each recipe you make ("I made this!")
+  snackRight: 3,    // each right answer in Snack Swap
   quizRight: 10,    // each right answer in the quiz (quiz.js)
   quizPerfect: 25,  // extra for a perfect 10/10 round
   penaltyDone: 5,   // each quiz penalty you do (you still did the work!)
@@ -39,12 +49,24 @@ const XP_RULES = {
 // Each one is a little function: give it a log entry, get back the XP.
 const LOG_XP = {
   quiz: (e) => e.r * XP_RULES.quizRight + (e.r === e.n && e.n >= 10 ? XP_RULES.quizPerfect : 0) + (e.p || 0) * XP_RULES.penaltyDone,
+  deck: (e) => DECK_SIZES[e.size].xp, // 40, 80 or 160 (arcade.js)
+  kicks: (e) => XP_RULES.kickRound + e.n,
+  spin: () => XP_RULES.spin,
+  smoothie: () => XP_RULES.smoothie,
+  made: () => XP_RULES.made,
+  snack: (e) => e.r * XP_RULES.snackRight,
 };
 
 // Some things only earn XP a few times a day, so nobody can farm
 // XP (and shop coins) by tapping the same thing all day long
 const LOG_DAILY_LIMIT = {
   quiz: 5,
+  deck: 3,
+  kicks: 3,
+  spin: 1,
+  smoothie: 3,
+  made: 3,
+  snack: 3,
 };
 
 function logXP() {
@@ -119,12 +141,32 @@ function trophyStats() {
     }
   }
 
-  // Backflip Quest (quest.js): XP for each task, and how many stages are done
-  // in order (stage 3 only counts once stages 1 and 2 are done too)
-  const questTaskIds = SIDE_QUEST.stages.flatMap((stage) => stage.tasks.map((task) => task.id));
-  xp += questTaskIds.filter((id) => questTasks.has(id)).length * XP_RULES.questTask;
-  const firstOpenStage = SIDE_QUEST.stages.findIndex((stage) => !stage.tasks.every((task) => questTasks.has(task.id)));
-  const questStages = firstOpenStage === -1 ? SIDE_QUEST.stages.length : firstOpenStage;
+  // Quests (quest.js): XP for each task, and how many stages of each quest
+  // are done in order (stage 3 only counts once stages 1 and 2 are done too)
+  const questStagesDone = {};
+  let questsComplete = 0;
+  for (const quest of QUESTS) {
+    const ids = quest.stages.flatMap((stage) => stage.tasks.map((task) => task.id));
+    xp += ids.filter((id) => questTasks.has(id)).length * (quest.code ? XP_RULES.codeTask : XP_RULES.questTask);
+    const firstOpen = quest.stages.findIndex((stage) => !stage.tasks.every((task) => questTasks.has(task.id)));
+    questStagesDone[quest.id] = firstOpen === -1 ? quest.stages.length : firstOpen;
+    if (firstOpen === -1) questsComplete += 1;
+  }
+  const questStages = questStagesDone.backflip;
+
+  // Daily missions (missions.js), with a bonus for all 3 in a day
+  let missionsDone = 0;
+  let missionSweeps = 0;
+  for (const ids of Object.values(missionChecks)) {
+    missionsDone += ids.length;
+    if (ids.length >= 3) missionSweeps += 1;
+  }
+  xp += missionsDone * XP_RULES.mission + missionSweeps * XP_RULES.missionSweep;
+
+  // Monthly challenges (missions.js) and weekly bosses (boss.js)
+  const monthlies = monthliesWon();
+  const bossesBeaten = bossHistory().filter((week) => week.beaten).length;
+  xp += monthlies * XP_RULES.monthly + bossesBeaten * XP_RULES.bossWin;
 
   // Everything in the activity log: quizzes, arcade games and more
   xp += logXP();
@@ -132,6 +174,12 @@ function trophyStats() {
   const quizRight = quizRounds.reduce((sum, e) => sum + e.r, 0);
   const quizPerfect = quizRounds.some((e) => e.r === e.n && e.n >= 10);
   const penaltyReps = quizRounds.reduce((sum, e) => sum + (e.reps || 0), 0);
+  const fullDeck = logOf("deck").some((e) => e.size === "full");
+  const bestKicks = Math.max(0, ...logOf("kicks").map((e) => e.n));
+  const spins = logOf("spin").length;
+  const smoothies = recipeBook.smoothies.length;
+  const recipesMade = logOf("made").length;
+  const snackPerfect = logOf("snack").some((e) => e.r === e.n);
 
   const ratings = Object.keys(drinkRatings).length;
   const pushups = bests.pushups ? bests.pushups.count : 0;
@@ -142,8 +190,9 @@ function trophyStats() {
   xp += (pushups + curlups) * XP_RULES.trainerRep;
   if (testDone) xp += XP_RULES.testScores;
 
-  return { xp, workouts, bestStreak, comeback, perfectWeek, ratings, pushups, curlups, testDone, waterDays, sleepDays, questStages,
-    quizRight, quizPerfect, penaltyReps, expertCount: expertDays.size };
+  return { xp, workouts, bestStreak, comeback, perfectWeek, ratings, pushups, curlups, testDone, waterDays, sleepDays, questStages, questStagesDone, questsComplete,
+    missionsDone, missionSweeps, monthlies, bossesBeaten, quizRight,
+    fullDeck, bestKicks, spins, smoothies, recipesMade, snackPerfect, quizPerfect, penaltyReps, expertCount: expertDays.size };
 }
 
 
@@ -196,7 +245,24 @@ const BADGES = [
   { id: "backflip", icon: "🤸", name: "Backflip Legend", how: "Finish the whole Backflip Quest", earned: (s) => s.questStages >= SIDE_QUEST.stages.length },
   { id: "quizWhiz", icon: "🧠", name: "Quiz Whiz", how: "Get a perfect 10/10 quiz round", earned: (s) => s.quizPerfect },
   { id: "brainiac", icon: "🎓", name: "Brainiac", how: "100 right quiz answers", earned: (s) => s.quizRight >= 100 },
-  { id: "noExcuses", icon: "💯", name: "No Excuses", how: "Do 100 reps of quiz penalties", earned: (s) => s.penaltyReps >= 100 },
+  { id: "noExcuses", icon: "😤", name: "No Excuses", how: "Do 100 reps of quiz penalties", earned: (s) => s.penaltyReps >= 100 },
+  { id: "bendy", icon: "🧘", name: "Bendy", how: "Finish the Splits Quest", earned: (s) => s.questStagesDone.splits >= SPLITS_QUEST.stages.length },
+  { id: "upsideDown", icon: "🙃", name: "Upside Down", how: "Finish the Handstand Quest", earned: (s) => s.questStagesDone.handstand >= HANDSTAND_QUEST.stages.length },
+  { id: "century", icon: "💯", name: "Century Club", how: "Finish the 100 Push-ups Quest", earned: (s) => s.questStagesDone.pushups >= PUSHUP_QUEST.stages.length },
+  { id: "keepyUppy", icon: "⚽", name: "Keepy-Uppy King", how: "Finish the Juggling Quest", earned: (s) => s.questStagesDone.juggling >= JUGGLING_QUEST.stages.length },
+  { id: "helloWorld", icon: "👋", name: "Hello, World!", how: "Finish stage 1 of Code Quest", earned: (s) => s.questStagesDone.code >= 1 },
+  { id: "coder", icon: "💻", name: "Real Coder", how: "Finish the whole Code Quest", earned: (s) => s.questStagesDone.code >= CODE_QUEST.stages.length },
+  { id: "questMaster", icon: "🗺️", name: "Quest Master", how: "Finish 3 whole quests", earned: (s) => s.questsComplete >= 3 },
+  { id: "missions", icon: "🎯", name: "Mission Master", how: "All 3 daily missions on 7 days", earned: (s) => s.missionSweeps >= 7 },
+  { id: "monthly", icon: "📆", name: "Monthly Champ", how: "Complete a monthly challenge", earned: (s) => s.monthlies >= 1 },
+  { id: "bossSlayer", icon: "⚔️", name: "Boss Slayer", how: "Beat a weekly boss", earned: (s) => s.bossesBeaten >= 1 },
+  { id: "bossHunter", icon: "🐉", name: "Boss Hunter", how: "Beat 5 weekly bosses", earned: (s) => s.bossesBeaten >= 5 },
+  { id: "cardShark", icon: "🃏", name: "Card Shark", how: "Finish a full 52-card deck", earned: (s) => s.fullDeck },
+  { id: "kickMachine", icon: "🥋", name: "Kick Machine", how: "40 moves in one Kick Caller round", earned: (s) => s.bestKicks >= 40 },
+  { id: "luckySpin", icon: "🎡", name: "Lucky Spinner", how: "Finish 7 spin-the-wheel challenges", earned: (s) => s.spins >= 7 },
+  { id: "scientist", icon: "🧪", name: "Smoothie Scientist", how: "Invent 5 smoothies", earned: (s) => s.smoothies >= 5 },
+  { id: "chef", icon: "🧑‍🍳", name: "Junior Chef", how: "Make 5 recipes", earned: (s) => s.recipesMade >= 5 },
+  { id: "snackPro", icon: "🥕", name: "Snack Pro", how: "Get 10/10 in Snack Swap", earned: (s) => s.snackPerfect },
 ];
 
 
@@ -242,6 +308,17 @@ document.querySelector("#xp-rules").innerHTML = [
   ["Log your sleep", `+${XP_RULES.sleepLogged}`],
   ["Sleep 9 hours or more", `+${XP_RULES.goodSleep} more`],
   ["Quest task", `+${XP_RULES.questTask}`],
+  ["Code Quest task", `+${XP_RULES.codeTask}`],
+  ["Daily mission", `+${XP_RULES.mission}`],
+  ["All 3 missions in a day", `+${XP_RULES.missionSweep} more`],
+  ["Beat the weekly boss", `+${XP_RULES.bossWin}`],
+  ["Complete the monthly challenge", `+${XP_RULES.monthly}`],
+  ["Card deck workout (3 a day)", "+40 to +160"],
+  ["Kick Caller round (3 a day)", `+${XP_RULES.kickRound}, +1 per move`],
+  ["Spin-the-wheel challenge", `+${XP_RULES.spin}`],
+  ["Invent a smoothie (3 a day)", `+${XP_RULES.smoothie}`],
+  ["Make a recipe (3 a day)", `+${XP_RULES.made}`],
+  ["Snack Swap right answer", `+${XP_RULES.snackRight}`],
   ["Right quiz answer (5 rounds a day)", `+${XP_RULES.quizRight}`],
   ["Perfect quiz round", `+${XP_RULES.quizPerfect} more`],
   ["Do a quiz penalty", `+${XP_RULES.penaltyDone}`],

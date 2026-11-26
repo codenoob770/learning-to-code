@@ -13,6 +13,7 @@
    5. Expert mode
    6. Recipes: drinks, breakfasts, lunches, dinners and snacks
    7. Side quest: the backflip
+   8. More quests (splits, handstand, push-ups, juggling and code)
    ============================================================= */
 
 
@@ -597,3 +598,366 @@ const SIDE_QUEST = {
     },
   ],
 };
+
+
+/* 8. MORE QUESTS ----------------------------------------------------
+   Same idea as the Backflip Quest: stages that unlock one at a time.
+   Every task id must be different from all the others (that's how
+   your check marks are saved), so each quest's ids start the same.
+
+   Code Quest tasks also have "steps" (how to do it) and sometimes
+   "code" (a piece of code to copy).                                 */
+
+const SPLITS_QUEST = {
+  id: "splits",
+  name: "Splits Quest",
+  icon: "🧘",
+  blurb: "Get flexible for higher, faster taekwondo kicks.",
+  safety: "Only stretch when you're warm (after a workout is perfect). Go slow, never bounce, and stop if it hurts: a stretch should feel like a pull, not pain. Everyone's hips are different, so take your time!",
+  stages: [
+    {
+      title: "Loosen up",
+      why: "Flexibility comes from stretching a little bit, a lot of days in a row.",
+      tasks: [
+        { id: "split-butterfly", text: "Butterfly stretch for 30 seconds", demo: "butterfly" },
+        { id: "split-hamstring", text: "Hamstring stretch, 30 seconds each leg", demo: "hamstringStretch" },
+        { id: "split-lunge", text: "Low lunge stretch (front knee bent, back knee down), 30 seconds each side", demo: "lunge" },
+        { id: "split-swings", text: "Leg swings, 10 each leg", demo: "legSwings" },
+      ],
+    },
+    {
+      title: "Go deeper",
+      why: "Now hold stretches a little longer, and do them most days.",
+      tasks: [
+        { id: "split-half", text: "Half splits (kneel, front leg straight, lean forward), 30 seconds each leg", demo: "hamstringStretch" },
+        { id: "split-side", text: "Side lunge stretch, 20 seconds each side", demo: "sideLunge" },
+        { id: "split-pancake", text: "Pancake: sit with your legs wide and lean forward, 30 seconds", demo: "butterfly" },
+        { id: "split-week", text: "Stretch on 5 different days in one week" },
+      ],
+    },
+    {
+      title: "Almost there",
+      why: "Use books or yoga blocks under your hands so you can go lower safely.",
+      tasks: [
+        { id: "split-blocks", text: "Front splits with your hands on books or blocks, 30 seconds each leg" },
+        { id: "split-middle", text: "Middle splits halfway down, 30 seconds" },
+        { id: "split-kicks", text: "10 slow kicks as high as your shoulder, each leg", demo: "slowKicks" },
+      ],
+    },
+    {
+      title: "Splits!",
+      why: "Slow and steady wins. It can take months, and that's normal!",
+      tasks: [
+        { id: "split-front1", text: "Front splits all the way down, on your best leg" },
+        { id: "split-front2", text: "Front splits on your other leg too" },
+        { id: "split-head", text: "Kick higher than your head, with control, 5 times each leg", demo: "slowKicks" },
+      ],
+    },
+  ],
+};
+
+const HANDSTAND_QUEST = {
+  id: "handstand",
+  name: "Handstand Quest",
+  icon: "🙃",
+  blurb: "Build strong shoulders and learn to balance upside down.",
+  safety: "Practice on grass or a soft mat, away from furniture, with an adult nearby. Never kick up hard. If you start to tip over, turn sideways and step down (a \"cartwheel bail\").",
+  stages: [
+    {
+      title: "Strong shoulders",
+      why: "Your arms hold your whole body in a handstand, so they need to be strong.",
+      tasks: [
+        { id: "hand-plank", text: "Hold a high plank (straight arms) for 30 seconds", demo: "plank" },
+        { id: "hand-pike", text: "8 pike push-ups (hips up high, head toward the floor)", demo: "inchworm" },
+        { id: "hand-inchworm", text: "5 inchworms", demo: "inchworm" },
+        { id: "hand-bear", text: "Bear crawl forward and back for 20 seconds" },
+      ],
+    },
+    {
+      title: "Upside down at the wall",
+      why: "The wall holds you up while your body learns what upside down feels like.",
+      tasks: [
+        { id: "hand-bail", text: "Practice the cartwheel bail: from a lunge, hands down, turn sideways and step out", demo: "lunge" },
+        { id: "hand-wallwalk", text: "Wall walk: feet on the wall, walk up halfway and hold 10 seconds" },
+        { id: "hand-wallhold", text: "Chest-to-wall handstand hold, 20 seconds" },
+      ],
+    },
+    {
+      title: "Kick up",
+      why: "Kick up gently, with straight arms and your eyes on your hands.",
+      tasks: [
+        { id: "hand-kick", text: "Kick up to a handstand with your back to the wall, hold 15 seconds" },
+        { id: "hand-kick30", text: "Hold it against the wall for 30 seconds" },
+        { id: "hand-tap", text: "Kick up, tap the wall with your heels and come down softly, 10 times" },
+      ],
+    },
+    {
+      title: "Free handstand",
+      why: "No wall! Squeeze everything tight and push the floor away.",
+      tasks: [
+        { id: "hand-free3", text: "Balance for 3 seconds without the wall" },
+        { id: "hand-free10", text: "Balance for 10 seconds" },
+        { id: "hand-walk", text: "Walk 3 steps on your hands 🎉" },
+      ],
+    },
+  ],
+};
+
+const PUSHUP_QUEST = {
+  id: "pushups",
+  name: "100 Push-ups Quest",
+  icon: "💪",
+  blurb: "From your first real push-up all the way to 100 in a day.",
+  safety: "Good form beats more reps: body straight like a plank, elbows at an angle (not straight out to the sides). Rest a day between hard push-up days.",
+  stages: [
+    {
+      title: "Perfect form",
+      why: "Every great push-up starts with a straight body and slow, controlled reps.",
+      tasks: [
+        { id: "push-incline", text: "10 incline push-ups with a perfectly straight body", demo: "inclinePushup" },
+        { id: "push-slow", text: "5 slow push-ups on your knees (3 seconds down)", demo: "pushup" },
+        { id: "push-hold", text: "Hold the top of a push-up for 30 seconds", demo: "plank" },
+        { id: "push-5", text: "5 real push-ups in a row", demo: "pushup" },
+      ],
+    },
+    {
+      title: "Building up",
+      why: "Sets with short rests let you do more reps than you could all at once.",
+      tasks: [
+        { id: "push-10", text: "10 push-ups in a row", demo: "pushup" },
+        { id: "push-sets", text: "3 sets of 8 push-ups, resting 1 minute between", demo: "pushup" },
+        { id: "push-15", text: "15 push-ups in a row", demo: "pushup" },
+      ],
+    },
+    {
+      title: "Strong",
+      why: "You're getting seriously strong. The beat trainer is great practice for this!",
+      tasks: [
+        { id: "push-20", text: "20 push-ups in a row", demo: "pushup" },
+        { id: "push-50day", text: "50 push-ups in one day (as many sets as you need)", demo: "pushup" },
+        { id: "push-25", text: "25 push-ups in a row", demo: "pushup" },
+      ],
+    },
+    {
+      title: "Century club",
+      why: "100 push-ups in a day. Most grown-ups can't do that!",
+      tasks: [
+        { id: "push-30", text: "30 push-ups in a row", demo: "pushup" },
+        { id: "push-100day", text: "100 push-ups in one day (as many sets as you need)", demo: "pushup" },
+        { id: "push-40", text: "40 push-ups in a row 🎉", demo: "pushup" },
+      ],
+    },
+  ],
+};
+
+const JUGGLING_QUEST = {
+  id: "juggling",
+  name: "Juggling Quest",
+  icon: "⚽",
+  blurb: "Keep the ball up! Great touch makes you better at every part of soccer.",
+  safety: "Juggle outside or somewhere with lots of space, away from windows and anything breakable!",
+  stages: [
+    {
+      title: "First touches",
+      why: "Kick with your laces, ankle locked, and keep the ball low.",
+      tasks: [
+        { id: "jug-drop", text: "Drop the ball, kick it up once and catch it, 10 times (right foot)", demo: "juggle" },
+        { id: "jug-left", text: "Same thing with your left foot, 10 times", demo: "juggle" },
+        { id: "jug-5bounce", text: "5 touches in a row (one bounce allowed between touches)", demo: "juggle" },
+      ],
+    },
+    {
+      title: "Keep it up",
+      why: "Now no bounces. Small, soft touches are the secret.",
+      tasks: [
+        { id: "jug-10", text: "10 juggles in a row", demo: "juggle" },
+        { id: "jug-thigh", text: "10 thigh juggles in a row" },
+        { id: "jug-both", text: "10 juggles in a row, switching feet each time", demo: "juggle" },
+      ],
+    },
+    {
+      title: "Show off",
+      why: "Mix up your touches like a freestyler.",
+      tasks: [
+        { id: "jug-25", text: "25 juggles in a row", demo: "juggle" },
+        { id: "jug-mix", text: "Foot, thigh, foot, thigh: 10 touches in a row" },
+        { id: "jug-stall", text: "Catch the ball on top of your foot (a \"foot stall\") for 2 seconds" },
+      ],
+    },
+    {
+      title: "Freestyle master",
+      why: "This takes lots of practice. Every day counts!",
+      tasks: [
+        { id: "jug-50", text: "50 juggles in a row", demo: "juggle" },
+        { id: "jug-head", text: "3 headers in a row (head juggles)" },
+        { id: "jug-100", text: "100 juggles in a row 🎉", demo: "juggle" },
+      ],
+    },
+  ],
+};
+
+const CODE_QUEST = {
+  id: "code",
+  name: "Code Quest",
+  icon: "💻",
+  code: true, // tasks are worth more XP, and they have "How to" steps
+  blurb: "Change your own website with real code. Every task makes the site more YOURS.",
+  safety: "If something breaks, don't panic! Press Ctrl+Z (undo) in VS Code, or ask Claude for help. Breaking things and fixing them is how every coder learns.",
+  stages: [
+    {
+      title: "Your first changes",
+      why: "Open your learning-to-code folder in VS Code, and start Live Server so you can see your changes.",
+      tasks: [
+        {
+          id: "code-color",
+          text: "Change your website's main color",
+          steps: [
+            "In VS Code, open style.css (the one in the main folder, not in level-up).",
+            "Near the top, find the line that starts with --accent.",
+            "Change the color code to a new one, like #d6336c (pink) or #0f8a6a (green).",
+            "Save (Ctrl+S) and look at your page. Every link and button changed!",
+          ],
+          code: "--accent: #d6336c;",
+        },
+        {
+          id: "code-log",
+          text: "Add an entry to the learning log on your website",
+          steps: [
+            "Open index.html (in the main folder).",
+            "Find the LEARNING LOG section.",
+            "Copy one whole <li class=\"log__entry\"> ... </li> block and paste it at the top of the list.",
+            "Change the date and write what you learned. Save and check your page.",
+          ],
+        },
+        {
+          id: "code-push",
+          text: "Put your change online with GitHub Desktop",
+          steps: [
+            "Open GitHub Desktop. It shows the files you changed.",
+            "At the top, check that the branch is claude/modest-thompson-kgizz2 (that's the one your website uses).",
+            "Bottom left: type a short summary, like \"Changed my colors\", and click Commit.",
+            "Click Push origin. In a few minutes, your real website shows the change!",
+          ],
+        },
+      ],
+    },
+    {
+      title: "Make Level Up yours",
+      why: "Level Up is built from lists of information. Add to a list, and the page grows!",
+      tasks: [
+        {
+          id: "code-drink",
+          text: "Add your own drink recipe",
+          steps: [
+            "Open level-up/plan.js and find: const DRINKS = [",
+            "Copy one whole recipe, from its { to its },",
+            "Paste it right after, then change the name, ingredients, steps and why.",
+            "Save. Your drink now shows up in the drink of the day mix!",
+          ],
+        },
+        {
+          id: "code-question",
+          text: "Add your own quiz question",
+          steps: [
+            "Open level-up/quiz-questions.js and pick a subject.",
+            "Copy one question line (from { to },) and paste it below.",
+            "Change the question, answers, why and fix. The RIGHT answer goes first!",
+            "Save, then play that subject until your question shows up.",
+          ],
+          code: '{ q: "What is my favorite sport?", a: ["Soccer", "Golf", "Chess", "Bowling"], why: "Obviously!", fix: "10 squats" },',
+        },
+        {
+          id: "code-badge",
+          text: "Make your own badge",
+          steps: [
+            "Open level-up/trophies.js and find: const BADGES = [",
+            "Copy one badge line and paste it at the end of the list.",
+            "Give it a new id, icon, name and how. The \"earned\" part is the rule.",
+            "Example: earned when you have 2,000 XP. Save and check your trophy case!",
+          ],
+          code: '{ id: "myBadge", icon: "🦁", name: "Lion Heart", how: "Get 2,000 XP", earned: (s) => s.xp >= 2000 },',
+        },
+      ],
+    },
+    {
+      title: "Game designer",
+      why: "Games are just rules written in code. Change the rules, change the game!",
+      tasks: [
+        {
+          id: "code-bugbash",
+          text: "Change a Bug Bash rule",
+          steps: [
+            "Open bug-bash/game.js and find RULES near the top.",
+            "Try changing startingTests (your lives) or how many points a golden bug is worth.",
+            "Save, refresh the game and see how it feels.",
+          ],
+        },
+        {
+          id: "code-boss",
+          text: "Invent a new weekly boss",
+          steps: [
+            "Open level-up/boss.js and find: const BOSSES = [",
+            "Copy one boss and paste it at the end of the list.",
+            "Give it a name, an emoji and a funny line. It joins the weekly rotation!",
+          ],
+          code: '{ name: "The Homework Hydra", emoji: "🐉", line: "Grows two new worksheets for every one you finish!" },',
+        },
+        {
+          id: "code-xp",
+          text: "Change how much XP something gives",
+          steps: [
+            "Open level-up/trophies.js and find XP_RULES.",
+            "Change a number, like water: 5 to water: 10.",
+            "Save and refresh. Watch your XP jump! (Change it back if it feels like cheating 😄)",
+          ],
+        },
+      ],
+    },
+    {
+      title: "Real coder",
+      why: "Now you're writing code from scratch, like a pro.",
+      tasks: [
+        {
+          id: "code-console",
+          text: "Write your first function in the browser console",
+          steps: [
+            "Open any page of your website in Chrome or Edge and press F12. Click the Console tab.",
+            "Type the code below and press Enter.",
+            "Then type double(21) and press Enter. It answers 42!",
+            "Try making a function that triples a number.",
+          ],
+          code: "function double(n) {\n  return n * 2;\n}",
+        },
+        {
+          id: "code-page",
+          text: "Build a brand-new page: an \"About me\" page",
+          steps: [
+            "In VS Code, make a new file in the main folder called about.html.",
+            "Copy the code below into it, then change the words to be about you.",
+            "Open it with Live Server. Then add a link to it from index.html: <a href=\"about.html\">About me</a>",
+          ],
+          code: "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>About me</title>\n  <link rel=\"stylesheet\" href=\"style.css\">\n</head>\n<body>\n  <h1>About me</h1>\n  <p>I like soccer, swimming and taekwondo!</p>\n</body>\n</html>",
+        },
+        {
+          id: "code-idea",
+          text: "Build a new feature of your own idea with Claude",
+          steps: [
+            "Think of something you wish your website had.",
+            "Tell Claude your idea, and ask it to explain each step so you can type some of it yourself.",
+            "Test it, commit it and push it. You built a feature!",
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+// Every quest on the Quest Board, in order
+const QUESTS = [
+  { id: "backflip", icon: "🤸", blurb: "Learn every skill a backflip needs, then flip with a coach.", safety: "Never try a backflip alone, on a hard floor, or on a bed or trampoline without a coach. Stages 1 to 3 are safe to practice at home. The real flip happens only in stage 4, with a coach spotting you on mats.", ...SIDE_QUEST },
+  SPLITS_QUEST,
+  HANDSTAND_QUEST,
+  PUSHUP_QUEST,
+  JUGGLING_QUEST,
+  CODE_QUEST,
+];

@@ -256,6 +256,17 @@ function makeId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 }
 
+// The first day you actually used Level Up (the earliest day with anything
+// saved), so the boss and the monthly challenge don't count days before you started
+function startedOn() {
+  const days = [
+    ...doneDays, ...missedDays, ...Object.keys(habits), ...Object.keys(energyLog),
+    ...Object.keys(missionChecks), ...activityLog.map((entry) => entry.d),
+  ].filter((key) => /^\d{4}-\d{2}-\d{2}$/.test(key)).sort();
+  const first = days.length ? fromKey(days[0]) : today;
+  return first < planStart ? planStart : first;
+}
+
 // Saves a value that's a list or object
 function saveJSON(key, value) {
   save(key, JSON.stringify(value));
@@ -331,8 +342,9 @@ function estimateMinutes(plan) {
   return Math.max(5, Math.round(seconds / 60));
 }
 
-// Everything for one day: the workout and the food
-function planFor(date) {
+// Just the workout for one day (no food). It's quick to work out, so the
+// weekly boss (boss.js) can use it for every day of the week.
+function workoutFor(date) {
   let template = WEEK[dayIndex(date)];
   const untilTest = daysUntilTest(date);
 
@@ -375,6 +387,12 @@ function planFor(date) {
     practiceSports,
   };
   plan.minutes = estimateMinutes(plan);
+  return plan;
+}
+
+// Everything for one day: the workout and the food
+function planFor(date) {
+  const plan = workoutFor(date);
 
   // Food changes every day. "n" counts days since the plan started, and
   // each list starts at a different spot so the meals mix differently.
@@ -517,6 +535,7 @@ const flameIcon = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1 
 const DAY_SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 function render() {
+  renderMissions(); // in missions.js (first, because it can check missions off)
   const plan = planFor(selected);
   renderDay(plan);
   renderStrip();
@@ -535,6 +554,10 @@ function render() {
   renderCharts();   // in charts.js
   renderQuest();    // in quest.js
   renderQuiz();     // in quiz.js
+  renderBoss();     // in boss.js
+  renderMonthly();  // in missions.js
+  renderArcade();   // in arcade.js
+  renderKitchen();  // in kitchen.js
 }
 
 function renderDay(plan) {

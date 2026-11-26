@@ -3276,6 +3276,808 @@ body.coach-open {
   margin-top: 0.5rem;
 }
 
+/* 9f. QUEST BOARD, MISSIONS, BOSS AND MONTHLY CHALLENGE ------------- */
+
+/* The row of quest cards */
+.quest-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: 0.5rem;
+}
+
+.quest-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+  color: var(--fg);
+  text-align: left;
+  cursor: pointer;
+}
+
+.quest-card:hover {
+  border-color: var(--accent);
+}
+
+.quest-card[aria-pressed="true"] {
+  border: 2px solid var(--marker);
+  background: var(--marker-soft);
+}
+
+.quest-card__icon {
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+
+.quest-card__name {
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.quest-card__stage {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+}
+
+.quest-card.is-complete .quest-card__stage {
+  color: var(--teal);
+}
+
+.quest-card__bar {
+  width: 100%;
+  height: 0.35rem;
+  margin-top: 0.3rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.quest-card__bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--teal);
+}
+
+.quest-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 7rem; /* so the sticky top bar doesn't cover it */
+}
+
+.quest-detail__title {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+/* Code Quest's "How to do it" */
+.code-steps {
+  flex-basis: 100%;
+  margin-left: 1.95rem;
+}
+
+.code-steps summary {
+  color: var(--accent);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.code-steps ol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0.5rem 0;
+  padding-left: 1.2rem;
+  color: var(--dim);
+  font-size: 0.9375rem;
+}
+
+.code-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+}
+
+.code-box pre {
+  width: 100%;
+  margin: 0;
+  padding: 0.7rem 0.8rem;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--teal);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+/* Daily missions */
+.missions__list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mission {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.65rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.mission:first-child {
+  border-top: 0;
+}
+
+.mission__icon {
+  flex: none;
+  font-size: 1.4rem;
+}
+
+.mission__text {
+  flex: 1;
+  min-width: 0;
+}
+
+label.mission__text {
+  cursor: pointer;
+}
+
+.mission input {
+  flex: none;
+  width: 1.35rem;
+  height: 1.35rem;
+  accent-color: var(--teal);
+}
+
+.mission__auto {
+  flex: none;
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.mission.is-done .mission__text {
+  color: var(--dim);
+  text-decoration: line-through;
+}
+
+.mission.is-done .mission__auto {
+  color: var(--teal);
+}
+
+.missions__note,
+.boss__how,
+.boss__shelf {
+  color: var(--dim);
+  font-size: 0.875rem;
+}
+
+/* The weekly boss */
+.boss__fight {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.boss__emoji {
+  flex: none;
+  font-size: 3.6rem;
+  line-height: 1;
+}
+
+.boss__emoji.is-hit {
+  animation: boss-hit 0.5s ease-out;
+}
+
+@keyframes boss-hit {
+  20% { transform: translateX(-8px) rotate(-8deg); filter: brightness(1.8); }
+  40% { transform: translateX(8px) rotate(8deg); }
+  60% { transform: translateX(-5px) rotate(-4deg); }
+  80% { transform: translateX(3px); }
+}
+
+.boss.is-beaten .boss__emoji {
+  filter: grayscale(1);
+  opacity: 0.5;
+  transform: rotate(90deg);
+}
+
+.boss__line {
+  margin-top: 0.3rem;
+  color: var(--dim);
+  font-style: italic;
+}
+
+.boss__hp {
+  height: 1rem;
+  overflow: hidden;
+  border: 1px solid var(--bug-border);
+  border-radius: 999px;
+  background: var(--bug-soft);
+}
+
+.boss__hp-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ff3b3b, var(--bug));
+  transition: width 0.6s ease;
+}
+
+.boss__text {
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.boss.is-beaten .boss__text {
+  color: var(--teal);
+}
+
+/* The monthly challenge */
+.monthly.is-complete {
+  border-color: var(--teal);
+}
+
+.monthly.is-complete .quest-progress__text {
+  color: var(--teal);
+  font-weight: 600;
+}
+
+/* 9g. ARCADE AND KITCHEN ---------------------------------------------- */
+
+@media (min-width: 900px) {
+  .duo--even {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+.arcade-area,
+.spin-area {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.9rem;
+}
+
+/* A row of choices, like "Mini / Half / Full" */
+.picker {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+}
+
+.deck-key {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.3rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.deck-key__suit {
+  display: inline-block;
+  width: 1.4rem;
+  font-size: 1.25rem;
+  text-align: center;
+}
+
+.deck-key__suit.is-red,
+.playing-card.is-red {
+  color: #ff6b6b;
+}
+
+.deck-note,
+.deck-best {
+  color: var(--dim);
+  font-size: 0.875rem;
+}
+
+.deck-play {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+/* A playing card, drawn with CSS */
+.playing-card {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 8rem;
+  height: 11.2rem;
+  border-radius: 10px;
+  background: #fbfbf7;
+  color: #1c2233;
+  box-shadow: 0 10px 30px -10px var(--shadow);
+  animation: card-flip 0.35s ease-out;
+}
+
+@keyframes card-flip {
+  from { transform: rotateY(90deg) scale(0.9); }
+}
+
+.playing-card__suit {
+  font-size: 4rem;
+  line-height: 1;
+}
+
+.playing-card__corner {
+  position: absolute;
+  top: 0.45rem;
+  left: 0.55rem;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+}
+
+.playing-card__corner--bottom {
+  top: auto;
+  right: 0.55rem;
+  bottom: 0.45rem;
+  left: auto;
+  transform: rotate(180deg);
+}
+
+.deck-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 12rem;
+}
+
+.deck-count {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+}
+
+.deck-move {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 1.3rem + 1.2vw, 2.2rem);
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.deck-info .demo {
+  width: 7rem;
+  height: 5rem;
+}
+
+.deck-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* "Deck done!" and the other end screens */
+.arcade-end {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+}
+
+.arcade-end__big {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.arcade-end__best {
+  color: var(--marker);
+  font-weight: 700;
+}
+
+.arcade-end__xp {
+  color: var(--teal);
+  font-family: var(--font-code);
+  font-weight: 600;
+}
+
+/* Kick Caller */
+.kick-play {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 1.2rem 0.5rem;
+  border-radius: var(--radius-small);
+  background: var(--bg);
+  text-align: center;
+}
+
+.kick-call {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 1.6rem + 3vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1.05;
+}
+
+.kick-call.is-new {
+  animation: kick-pop 0.3s ease-out;
+}
+
+@keyframes kick-pop {
+  from { transform: scale(1.35); color: var(--marker); }
+}
+
+.kick-side {
+  min-height: 1.6rem;
+  font-family: var(--font-code);
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.kick-side[data-side="left"] {
+  color: var(--accent);
+}
+
+.kick-side[data-side="right"] {
+  color: var(--bug);
+}
+
+.kick-bar {
+  width: 100%;
+  height: 0.5rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.kick-bar__fill {
+  width: 100%;
+  height: 100%;
+  background: var(--teal);
+}
+
+.kick-status {
+  color: var(--dim);
+  font-family: var(--font-code);
+}
+
+/* Spin the wheel */
+.spin-area {
+  align-items: center;
+  text-align: center;
+}
+
+.wheel {
+  position: relative;
+  width: min(15rem, 70vw);
+}
+
+.wheel__disc {
+  display: block;
+  width: 100%;
+}
+
+.wheel__pointer {
+  position: absolute;
+  top: -0.6rem;
+  left: 50%;
+  z-index: 1;
+  width: 1.6rem;
+  transform: translateX(-50%);
+  fill: var(--fg);
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.6));
+}
+
+.wheel__rim {
+  fill: var(--line-strong);
+}
+
+.wheel__slice {
+  fill-opacity: 0.88;
+  stroke: var(--panel);
+  stroke-width: 2;
+}
+
+.wheel__icon {
+  font-size: 18px;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.wheel__hub {
+  fill: var(--panel);
+  stroke: var(--line-strong);
+  stroke-width: 3;
+}
+
+.spin-text {
+  color: var(--dim);
+}
+
+.spin-result {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+/* Smoothie Lab */
+.lab {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 860px) {
+  .lab {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.lab__picks {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lab-group__title {
+  margin-bottom: 0.45rem;
+  font-weight: 700;
+}
+
+.lab-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.lab-chip {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fg);
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+
+.lab-chip:hover {
+  border-color: var(--accent);
+}
+
+.lab-chip[aria-pressed="true"] {
+  border-color: var(--teal);
+  background: var(--teal-soft);
+  font-weight: 700;
+}
+
+.lab__result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1.25rem;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--bg);
+  text-align: center;
+}
+
+.cup {
+  width: 6.5rem;
+}
+
+.cup__drink {
+  transition: fill 0.4s ease;
+}
+
+.cup__glass {
+  fill: none;
+  stroke: var(--fg);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+
+.cup__straw {
+  stroke: var(--bug);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.cup__shine {
+  stroke: rgba(255, 255, 255, 0.45);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.lab-name {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.lab-recipe {
+  margin: 0;
+  padding-left: 1.1rem;
+  text-align: left;
+}
+
+.lab-why {
+  color: var(--dim);
+  font-size: 0.9375rem;
+}
+
+/* Recipe book */
+.search {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+}
+
+.search:focus-visible {
+  outline-offset: 0;
+}
+
+.book-count {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+}
+
+.book-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 34rem;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.book-item {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+}
+
+.book-item summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.6rem;
+  padding: 0.6rem 0.8rem;
+  cursor: pointer;
+}
+
+.book-item__type {
+  color: var(--accent);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+}
+
+.book-item__name {
+  flex: 1;
+  font-weight: 700;
+}
+
+.book-item__made {
+  color: var(--teal);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+}
+
+.book-item__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0 0.8rem 0.8rem;
+  font-size: 0.9375rem;
+}
+
+.book-item__body ul,
+.book-item__body ol {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.book-item__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.book-empty {
+  color: var(--dim);
+}
+
+/* Snack Swap */
+.snack-choices {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.snack-choice {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 9rem;
+  padding: 1rem 0.75rem;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+}
+
+.snack-choice:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.snack-choice:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.snack-choice__icon {
+  font-size: 2.2rem;
+  line-height: 1.2;
+}
+
+.snack-choice.is-right {
+  border-color: var(--teal);
+  background: var(--teal-soft);
+  opacity: 1;
+}
+
+.snack-choice.is-wrong {
+  border-color: var(--bug);
+  background: var(--bug-soft);
+  opacity: 1;
+}
+
+.snack-vs {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+}
+
 /* 10. SMALL SCREENS AND REDUCED MOTION --------------------------- */
 
 @media (max-width: 640px) {
