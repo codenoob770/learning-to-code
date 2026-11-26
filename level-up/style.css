@@ -618,8 +618,20 @@ body.expert-flash::after {
   background: var(--marker-soft);
 }
 
-.back-today {
-  align-self: flex-start;
+.day__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+/* "✓ Synced with your Claude account" */
+.sync-status {
+  margin-left: auto;
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
 }
 
 

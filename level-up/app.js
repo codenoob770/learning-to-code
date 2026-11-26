@@ -10,7 +10,8 @@
    7. The workout timer
    8. The beat trainer
    9. Sounds
-   10. Start!
+   10. Syncing across devices
+   11. Start!
    ============================================================= */
 
 const MAX_LEVEL = 12; // the plan gets harder for 12 weeks, then stays at the top level
@@ -73,23 +74,49 @@ function daysUntilTest(date) {
 
 
 /* 2. SAVING YOUR PROGRESS ----------------------------------------
-   localStorage keeps small bits of text in this browser, even after
-   you close it. try/catch keeps the page working if it's blocked.  */
+   Your progress is saved in up to three places:
+   - "memory": a copy in this page, so it works even if storage is blocked
+   - localStorage: small bits of text kept in THIS browser, even after
+     you close it
+   - your Claude account, when this page is opened on claude.ai. That's
+     what makes it the same on every device (see part 11).          */
+
+// Everything that counts as progress. (The sound setting stays per device.)
+const PROGRESS_KEYS = [
+  "levelUp.start", "levelUp.done", "levelUp.missed", "levelUp.expert",
+  "levelUp.expertDays", "levelUp.bests", "levelUp.testScores",
+  "levelUp.drinkRatings", "levelUp.drinkSkips", "levelUp.repeatAsked",
+];
+
+const memory = {};
+
+// Part 11 fills these in when the page is on claude.ai
+let cloudDoc = null;     // your progress document in your Claude account
+let cloudTimer = null;   // waits a moment before saving
+let cloudBusy = false;   // a save is on its way
+let cloudAgain = false;  // something changed while saving
+let lastCloudText = "";  // what your account has, as text
 
 function load(key, fallback) {
+  if (key in memory) return memory[key];
   try {
-    return localStorage.getItem(key) ?? fallback;
+    const value = localStorage.getItem(key);
+    if (value !== null) return value;
   } catch (error) {
-    return fallback;
+    // Storage is blocked. That's OK.
   }
+  return fallback;
 }
 
 function save(key, value) {
+  memory[key] = String(value);
   try {
     localStorage.setItem(key, value);
   } catch (error) {
-    // Couldn't save. The page still works, it just won't remember.
+    // Couldn't save in this browser. The page still works.
   }
+  // Progress also goes to your Claude account, if this page is on claude.ai
+  if (PROGRESS_KEYS.includes(key)) saveToCloudSoon();
 }
 
 // Reads saved JSON (lists and objects), or gives back the fallback
@@ -101,20 +128,39 @@ function loadJSON(key, fallback) {
   }
 }
 
-// The Monday your plan started. The first time you visit, that's this week's Monday.
-let planStart = load("levelUp.start", null) ? fromKey(load("levelUp.start")) : mondayOf(today);
-if (planStart > mondayOf(today)) planStart = mondayOf(today);
-save("levelUp.start", toKey(planStart));
+// Your progress, in the variables the rest of the page uses
+let planStart;     // the Monday your plan started
+let doneDays;      // days you marked as done (a Set: a list with no repeats)
+let missedDays;    // days you forgot or skipped your workout
+let bests;         // best beat-trainer scores, like { pushups: { count: 14, date: "2026-11-28" } }
+let testScores;    // scores from the real test, saved by test date
+let isExpert;      // expert mode on or off
+let expertDays;    // days you finished in expert mode
+let drinkRatings;  // like { "Mango Lassi": { score: 9, date: "2026-11-26" } } ("date" = the day you rated it)
+let drinkSkips;    // days you did NOT try the drink of the day
 
-// The days you marked as done, kept in a Set (a list with no repeats)
-const doneDays = new Set(loadJSON("levelUp.done", []));
+// Reads all your progress into the variables above. It runs when the page
+// opens, and again whenever another device changes something.
+function loadProgress() {
+  // The first time you visit, the plan starts on this week's Monday
+  planStart = load("levelUp.start", null) ? fromKey(load("levelUp.start")) : mondayOf(today);
+  if (planStart > mondayOf(today)) planStart = mondayOf(today);
+  doneDays = new Set(loadJSON("levelUp.done", []));
+  missedDays = new Set(loadJSON("levelUp.missed", []));
+  bests = loadJSON("levelUp.bests", {});
+  testScores = loadJSON("levelUp.testScores", {});
+  isExpert = load("levelUp.expert", "off") === "on";
+  expertDays = new Set(loadJSON("levelUp.expertDays", []));
+  drinkRatings = loadJSON("levelUp.drinkRatings", {});
+  drinkSkips = new Set(loadJSON("levelUp.drinkSkips", []));
+}
+
+loadProgress();
+if (load("levelUp.start", null) !== toKey(planStart)) save("levelUp.start", toKey(planStart));
 
 function saveDoneDays() {
   save("levelUp.done", JSON.stringify([...doneDays]));
 }
-
-// The days you forgot or skipped your workout
-const missedDays = new Set(loadJSON("levelUp.missed", []));
 
 function saveMissedDays() {
   save("levelUp.missed", JSON.stringify([...missedDays]));
@@ -130,26 +176,9 @@ function missedLastWeek() {
   return count;
 }
 
-// Best scores from the beat trainer, like { pushups: { count: 14, date: "2026-11-28" } }
-const bests = loadJSON("levelUp.bests", {});
-
-// Scores from the real test, saved by test date
-const testScores = loadJSON("levelUp.testScores", {});
-
-// Expert mode: on or off, and which days you finished in expert mode
-let isExpert = load("levelUp.expert", "off") === "on";
-const expertDays = new Set(loadJSON("levelUp.expertDays", []));
-
-// Your drink ratings, like { "Mango Lassi": { score: 9, date: "2026-11-26" } }
-// "date" is the day you rated it.
-const drinkRatings = loadJSON("levelUp.drinkRatings", {});
-
 function saveDrinkRatings() {
   save("levelUp.drinkRatings", JSON.stringify(drinkRatings));
 }
-
-// Days you did NOT try the drink of the day, like "2026-11-26"
-const drinkSkips = new Set(loadJSON("levelUp.drinkSkips", []));
 
 function saveDrinkSkips() {
   save("levelUp.drinkSkips", JSON.stringify([...drinkSkips]));
@@ -1401,8 +1430,142 @@ soundButton.addEventListener("click", () => {
 });
 
 
-/* 10. START! ------------------------------------------------------ */
+/* 10. SYNCING ACROSS DEVICES ---------------------------------------
+   When this page is opened on claude.ai, Claude gives it a small
+   database. Your progress is saved there in a private spot only you
+   can read (data/users/<your id>/progress), so it's the same on your
+   PC, iPad and phone, and changes show up on your other devices live.
+   On other copies of the page (like github.io) there's no window.claude,
+   so the page just uses this browser's storage instead.              */
+
+const syncStatus = document.querySelector("#sync-status");
+
+function showSync(message) {
+  syncStatus.textContent = message;
+}
+
+// All your progress as one object, in a fixed order, so two copies
+// with the same progress always turn into exactly the same text
+function progressData() {
+  const data = {};
+  for (const key of PROGRESS_KEYS) {
+    const value = load(key, null);
+    if (value !== null) data[key.replace("levelUp.", "")] = value;
+  }
+  return data;
+}
+
+function asText(data) {
+  return JSON.stringify(PROGRESS_KEYS.map((key) => data[key.replace("levelUp.", "")] ?? null));
+}
+
+// Wait a moment (in case you tap a few things in a row), then save
+function saveToCloudSoon() {
+  if (!cloudDoc) return;
+  clearTimeout(cloudTimer);
+  cloudTimer = setTimeout(saveToCloud, 700);
+}
+
+async function saveToCloud() {
+  cloudTimer = null;
+  if (!cloudDoc) return;
+  if (cloudBusy) {
+    cloudAgain = true; // one save at a time: go again when this one finishes
+    return;
+  }
+  const data = progressData();
+  const text = asText(data);
+  if (text === lastCloudText) return; // nothing new to save
+
+  cloudBusy = true;
+  lastCloudText = text;
+  showSync("Saving to your Claude account...");
+  try {
+    await cloudDoc.set(data);
+    showSync("✓ Synced with your Claude account");
+  } catch (error) {
+    lastCloudText = "";
+    showSync("Couldn't save online right now. It's still saved on this device.");
+  }
+  cloudBusy = false;
+  if (cloudAgain) {
+    cloudAgain = false;
+    saveToCloud();
+  }
+}
+
+// Another device changed something: copy it in and redraw the page
+function useCloudProgress(data) {
+  const text = asText(data);
+  if (text === lastCloudText) return; // we already have this
+  lastCloudText = text;
+
+  for (const key of PROGRESS_KEYS) {
+    const value = data[key.replace("levelUp.", "")];
+    if (typeof value !== "string") continue;
+    memory[key] = value;
+    try {
+      localStorage.setItem(key, value);
+    } catch (error) {
+      // Storage blocked. "memory" still has it.
+    }
+  }
+  loadProgress();
+  if (selected < planStart) selected = planStart;
+  showExpertMode();
+  render();
+}
+
+async function connectToCloud() {
+  if (!window.claude || !window.claude.use) {
+    showSync("Progress is saved on this device.");
+    return;
+  }
+  const db = await window.claude.use("db");
+  const user = await window.claude.use("user");
+  const id = user ? await user.id() : null;
+  if (!db || !id) {
+    showSync("Progress is saved on this device. Sign in to Claude to sync it.");
+    return;
+  }
+
+  const doc = db.collection(`data/users/${id}`).doc("progress");
+  showSync("Connecting to your Claude account...");
+  const slowTimer = setTimeout(() => showSync("Can't reach your Claude account yet. Progress is saved on this device."), 10000);
+
+  // Subscribe once: this runs now, and again whenever ANY device saves
+  doc.onSnapshot(
+    (snap) => {
+      // A copy saved earlier in this browser might be old: wait for the real answer
+      if (snap.metadata.fromCache) return;
+      clearTimeout(slowTimer);
+
+      const firstAnswer = cloudDoc === null;
+      cloudDoc = doc;
+
+      if (!snap.exists) {
+        // Nothing in your account yet: move this device's progress into it
+        if (firstAnswer) saveToCloud();
+        return;
+      }
+      // Skip our own save coming back, and don't overwrite changes that
+      // haven't been saved yet (they'll be saved in a moment)
+      if (snap.metadata.hasPendingWrites || cloudBusy || cloudTimer) return;
+      useCloudProgress(snap.data());
+      showSync("✓ Synced with your Claude account");
+    },
+    () => {
+      clearTimeout(slowTimer);
+      cloudDoc = null;
+      showSync("Syncing stopped. Progress is saved on this device.");
+    },
+  );
+}
+
+
+/* 11. START! ------------------------------------------------------ */
 
 showSoundSetting();
 showExpertMode();
 render();
+connectToCloud();

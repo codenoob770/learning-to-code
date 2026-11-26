@@ -24,10 +24,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=JetBrains+Mono:wght@400;600&display=swap">
 
-  <link rel="stylesheet" href="style.css">
+  <!-- The "?v=8" is a version number. Browsers keep old copies of files for a
+       while; changing the number makes them download the newest version.
+       Add 1 to it whenever you change style.css, plan.js or app.js. -->
+  <link rel="stylesheet" href="style.css?v=8">
   <!-- plan.js has to load before app.js, because app.js uses its data -->
-  <script src="plan.js" defer></script>
-  <script src="app.js" defer></script>
+  <script src="plan.js?v=8" defer></script>
+  <script src="app.js?v=8" defer></script>
 </head>
 <body>
 
@@ -103,7 +106,11 @@
 
       <!-- Seven buttons, one per day. app.js fills them in. -->
       <div class="strip" id="day-strip" role="group" aria-label="Days this week"></div>
-      <button class="text-button back-today" id="back-today" type="button" hidden>Back to today</button>
+      <div class="day__foot">
+        <button class="text-button" id="back-today" type="button" hidden>Back to today</button>
+        <!-- Says whether your progress is synced to your Claude account -->
+        <p class="sync-status" id="sync-status" role="status">Progress is saved on this device.</p>
+      </div>
     </section>
 
     <!-- ============ GYM TEST ============
