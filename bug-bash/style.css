@@ -519,6 +519,39 @@ button {
 }
 
 
+/* Workout power-ups from Level Up */
+.powerup-note {
+  margin: 0;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--teal);
+  border-radius: 8px;
+  background: rgba(127, 220, 200, 0.1);
+  color: var(--teal);
+  font-size: 0.9375rem;
+}
+
+.spray-button {
+  font-size: 1.05rem;
+}
+
+.spray-button:not(:disabled) {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(127, 220, 200, 0.2);
+}
+
+/* With power-ups there can be up to 8 test dots: two rows of four */
+.tests--many {
+  display: grid;
+  grid-template-columns: repeat(4, 0.6rem);
+  gap: 0.25rem;
+}
+
+.tests--many .test-dot {
+  width: 0.6rem;
+  height: 0.6rem;
+}
+
+
 /* 7. SMALL SCREENS AND REDUCED MOTION -------------------------- */
 
 @media (max-width: 640px) {
@@ -535,6 +568,31 @@ button {
 @media (max-width: 400px) {
   .stat--version {
     display: none;
+  }
+
+  .hud__stats {
+    gap: 0.75rem;
+  }
+}
+
+/* The smallest phones: smaller buttons, and the browser's back button
+   takes the place of "My website" */
+@media (max-width: 360px) {
+  .hud {
+    gap: 0.5rem;
+  }
+
+  .hud__home {
+    display: none;
+  }
+
+  .icon-button {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .stat dd {
+    font-size: 1.1rem;
   }
 }
 

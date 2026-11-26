@@ -8,8 +8,14 @@
       index.html -> the frame of the page (this file)
       style.css  -> how it looks (the same style as Bug Bash)
       plan.js     -> the workouts and recipes, written as data
-      trophies.js -> XP, levels and badges
+      demos.js    -> the animated stick figures that show each move
+      trophies.js -> XP, levels, badges and Bug Bash power-ups
       coach.js    -> the guided workout mode with the voice coach
+      practice.js -> my practice days (lighter workouts on those days)
+      habits.js   -> water and sleep
+      charts.js   -> the progress charts
+      grocery.js  -> the week's grocery list
+      ai-coach.js -> asking Claude questions (on the Claude version)
       app.js      -> what the buttons do, and building each day's plan
 
     Most of the page is empty here on purpose: app.js fills in the
@@ -29,13 +35,19 @@
   <!-- The "?v=8" is a version number. Browsers keep old copies of files for a
        while; changing the number makes them download the newest version.
        Add 1 to it (on every line below) whenever you change those files. -->
-  <link rel="stylesheet" href="style.css?v=9">
+  <link rel="stylesheet" href="style.css?v=10">
   <!-- These load in order. app.js goes last, because it starts the page
        and uses things from all the others. -->
-  <script src="plan.js?v=9" defer></script>
-  <script src="trophies.js?v=9" defer></script>
-  <script src="coach.js?v=9" defer></script>
-  <script src="app.js?v=9" defer></script>
+  <script src="plan.js?v=10" defer></script>
+  <script src="demos.js?v=10" defer></script>
+  <script src="trophies.js?v=10" defer></script>
+  <script src="coach.js?v=10" defer></script>
+  <script src="practice.js?v=10" defer></script>
+  <script src="habits.js?v=10" defer></script>
+  <script src="charts.js?v=10" defer></script>
+  <script src="grocery.js?v=10" defer></script>
+  <script src="ai-coach.js?v=10" defer></script>
+  <script src="app.js?v=10" defer></script>
 </head>
 <body>
 
@@ -155,8 +167,85 @@
       <!-- ============ FOOD AND DRINK (filled in by app.js) ============ -->
       <div class="fuel">
         <section class="panel drink" id="drink"></section>
+
+        <!-- ============ WATER AND SLEEP (habits.js) ============ -->
+        <section class="panel habits" aria-labelledby="habits-title">
+          <p class="eyebrow">// daily habits</p>
+          <h2 class="panel__title" id="habits-title">Water &amp; sleep</h2>
+          <div class="habit">
+            <p class="habit__label">💧 Glasses of water today</p>
+            <div class="glasses" id="water-glasses" role="group" aria-label="Glasses of water"></div>
+            <p class="habit__note" id="water-count">0 of 8 glasses</p>
+          </div>
+          <div class="habit">
+            <p class="habit__label">😴 Hours of sleep last night</p>
+            <div class="sleep-choices" id="sleep-choices" role="group" aria-label="Hours of sleep"></div>
+            <p class="habit__note" id="sleep-note"></p>
+          </div>
+        </section>
+
         <section class="panel meals" id="meals"></section>
       </div>
+    </div>
+
+    <!-- ============ PROGRESS CHARTS (charts.js) ============ -->
+    <section class="panel progress" aria-labelledby="progress-title">
+      <p class="eyebrow">// progress</p>
+      <h2 class="panel__title" id="progress-title">Watch yourself get stronger</h2>
+      <div class="charts">
+        <figure class="chart-card">
+          <figcaption>
+            <h3>Push-ups &amp; curl-ups</h3>
+            <p class="chart-legend">
+              <span><i class="swatch series-1"></i>Push-ups</span>
+              <span><i class="swatch series-2"></i>Curl-ups</span>
+              <span><i class="swatch swatch--test"></i>Gym test</span>
+            </p>
+          </figcaption>
+          <div class="chart-box" id="chart-reps"></div>
+          <div id="chart-reps-table"></div>
+        </figure>
+        <figure class="chart-card">
+          <figcaption>
+            <h3>Days finished each week</h3>
+            <p class="chart-legend">Out of 7 days</p>
+          </figcaption>
+          <div class="chart-box" id="chart-weeks"></div>
+          <div id="chart-weeks-table"></div>
+        </figure>
+      </div>
+    </section>
+
+    <div class="duo">
+      <!-- ============ PRACTICE DAYS (practice.js) ============ -->
+      <section class="panel practice-panel" aria-labelledby="practice-title">
+        <p class="eyebrow">// my sports</p>
+        <h2 class="panel__title" id="practice-title">Practice days</h2>
+        <div class="practice-grid" id="practice-grid"></div>
+        <p class="practice-summary" id="practice-summary"></p>
+      </section>
+
+      <!-- ============ AI COACH (ai-coach.js) ============ -->
+      <section class="panel ai" aria-labelledby="ai-title">
+        <p class="eyebrow">// ai coach</p>
+        <h2 class="panel__title" id="ai-title">Ask Coach</h2>
+        <p class="panel__lead">Questions about workouts, food or sleep? Ask away, and Claude answers.</p>
+        <p class="ai__offline" id="ai-offline" hidden>The AI coach works on the Claude version of Level Up. <a href="https://claude.ai/artifact/RNNVzhD9NzeeSdyN6HfbQR">Open it here</a>.</p>
+        <form class="ai__form" id="ai-form">
+          <div class="ai__starters" id="ai-starters">
+            <button class="chip-button" type="button" data-question="My legs are sore from yesterday. What should I do?">😣 Sore legs</button>
+            <button class="chip-button" type="button" data-question="Make me a healthy drink with: ">🥤 Invent a drink</button>
+            <button class="chip-button" type="button" data-question="Give me 3 tips for my push-up and curl-up test.">🏅 Test tips</button>
+            <button class="chip-button" type="button" data-question="What should I eat before soccer practice?">⚽ Pre-game food</button>
+          </div>
+          <label class="visually-hidden" for="ai-question">Your question</label>
+          <div class="ai__row">
+            <input id="ai-question" type="text" maxlength="300" autocomplete="off" placeholder="Ask Coach about sports or food...">
+            <button class="button" id="ai-ask" type="submit">Ask</button>
+          </div>
+        </form>
+        <p class="ai__answer" id="ai-answer" aria-live="polite" hidden></p>
+      </section>
     </div>
 
     <!-- ============ TROPHY CASE (filled in by trophies.js) ============ -->
@@ -176,6 +265,11 @@
           <summary>How to earn XP</summary>
           <ul id="xp-rules"></ul>
         </details>
+        <div class="powerups">
+          <p class="powerups__title">🐛 Bug Bash power-ups</p>
+          <p class="powerups__text" id="powerups-text"></p>
+          <a class="button button--quiet" id="powerups-link" href="../bug-bash/">Play Bug Bash</a>
+        </div>
       </div>
       <div class="trophies__badges">
         <p class="trophies__count" id="badge-count">0 of 12 badges</p>
@@ -206,6 +300,7 @@
       </button>
     </div>
     <div class="coach__body">
+      <div class="coach__demo" id="coach-demo" hidden></div>
       <h2 class="coach__name" id="coach-name">Get ready</h2>
       <p class="coach__time" id="coach-time" aria-live="off">0:00</p>
       <p class="coach__label" id="coach-label"></p>
@@ -216,6 +311,32 @@
       <button class="button button--quiet" id="coach-back" type="button">&larr; Back</button>
       <button class="button coach__main" id="coach-main" type="button">Pause</button>
       <button class="button button--quiet" id="coach-skip" type="button">Skip &rarr;</button>
+    </div>
+  </div>
+
+  <!-- ============ "SHOW ME" MOVE DEMO (demos.js) ============ -->
+  <div class="modal" id="demo-box" role="dialog" aria-modal="true" aria-labelledby="demo-title" hidden>
+    <div class="modal__card">
+      <div class="modal__head">
+        <h2 id="demo-title">How to do it</h2>
+        <button class="icon-button" id="demo-close" type="button" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <div class="demo-picture" id="demo-picture"></div>
+      <p class="demo-how" id="demo-how"></p>
+    </div>
+  </div>
+
+  <!-- ============ GROCERY LIST (grocery.js) ============ -->
+  <div class="modal" id="grocery-box" role="dialog" aria-modal="true" aria-labelledby="grocery-title" hidden>
+    <div class="modal__card modal__card--wide">
+      <div class="modal__head">
+        <h2 id="grocery-title">🛒 Grocery list</h2>
+        <button class="icon-button" id="grocery-close" type="button" aria-label="Close grocery list"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <p class="grocery__week" id="grocery-week"></p>
+      <div class="grocery__list" id="grocery-list"></div>
+      <button class="button" id="grocery-copy" type="button">Copy the list</button>
+      <textarea class="grocery__text" id="grocery-text" readonly hidden aria-label="Grocery list as text"></textarea>
     </div>
   </div>
 

@@ -837,9 +837,37 @@ const screens = {
   over: document.querySelector("#screen-over"),
 };
 
+/* WORKOUT POWER-UPS (from my Level Up page)
+   Level Up links here with "#powerups-3" or "#powerups-3-spray": that's
+   3 extra tests, plus a can of bug spray. On my github.io site, both pages
+   share the browser's storage, so this can also count Level Up's workouts
+   from the last 7 days by itself.                                      */
+function readPowerUps() {
+  const match = location.hash.match(/^#powerups-(\d)(-spray)?$/);
+  if (match) return { lives: Math.min(5, Number(match[1])), spray: Boolean(match[2]) };
+  try {
+    const done = JSON.parse(localStorage.getItem("levelUp.done") || "[]");
+    let workouts = 0;
+    const now = new Date();
+    for (let i = 0; i < 7; i++) {
+      const day = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+      const key = `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, "0")}-${String(day.getDate()).padStart(2, "0")}`;
+      if (done.includes(key) && day.getDay() !== 0) workouts += 1; // Sundays are rest days
+    }
+    return { lives: Math.min(5, workouts), spray: workouts >= 3 };
+  } catch (error) {
+    return { lives: 0, spray: false };
+  }
+}
+
+const POWER = readPowerUps();
+const TOTAL_TESTS = RULES.startingTests + POWER.lives;
+game.tests = TOTAL_TESTS;
+
 // One dot on the scoreboard for each test
 const testDots = [];
-for (let i = 0; i < RULES.startingTests; i++) {
+if (TOTAL_TESTS > 4) testsBox.classList.add("tests--many"); // two neat rows
+for (let i = 0; i < TOTAL_TESTS; i++) {
   const dot = document.createElement("span");
   dot.className = "test-dot";
   dot.setAttribute("aria-hidden", "true");
@@ -870,7 +898,7 @@ function updateScoreboard() {
   versionText.textContent = versionName();
 
   testDots.forEach((dot, i) => dot.classList.toggle("is-broken", i >= game.tests));
-  testsText.textContent = `${game.tests} of ${RULES.startingTests} passing`;
+  testsText.textContent = `${game.tests} of ${TOTAL_TESTS} passing`;
 }
 
 // Show one screen (or none, with null) and hide the others
@@ -879,6 +907,7 @@ function showScreen(name) {
     screen.hidden = key !== name;
   }
   pauseButton.disabled = game.mode !== "playing" && game.mode !== "paused";
+  updateSprayButton();
 }
 
 let toastTimer = null;
@@ -894,7 +923,8 @@ function startGame() {
   startAudio();
   game.mode = "playing";
   game.score = 0;
-  game.tests = RULES.startingTests;
+  game.tests = TOTAL_TESTS;
+  game.sprayUsed = false;
   game.streak = 0;
   game.squashed = 0;
   game.clicks = 0;
@@ -981,8 +1011,38 @@ soundButton.addEventListener("click", () => {
   }
 });
 
-// Keyboard shortcuts: P or Escape pauses, Enter starts a game
+// BUG SPRAY: a power-up from Level Up. Once a game, it squashes every
+// bug on the screen, but never a feature (the spray knows they aren't bugs!)
+const sprayButton = document.querySelector("#spray-button");
+
+function updateSprayButton() {
+  sprayButton.hidden = !POWER.spray;
+  sprayButton.disabled = game.mode !== "playing" || Boolean(game.sprayUsed);
+}
+
+function useSpray() {
+  if (!POWER.spray || game.mode !== "playing" || game.sprayUsed) return;
+  game.sprayUsed = true;
+  let count = 0;
+  for (const bug of [...bugs]) {
+    if (bug.kind === "feature") continue;
+    bugs.splice(bugs.indexOf(bug), 1);
+    addSplat(bug);
+    addBurst(bug.x, bug.y, LOOKS[bug.kind].goo);
+    game.score += bug.kind === "golden" ? RULES.goldenPoints : RULES.bugPoints;
+    count += 1;
+  }
+  sounds.levelUp();
+  showToast(count > 0 ? `Bug spray! ${count} ${count === 1 ? "bug" : "bugs"} squashed.` : "Bug spray! (No bugs around.)", "good");
+  updateSprayButton();
+  updateScoreboard();
+}
+
+sprayButton.addEventListener("click", useSpray);
+
+// Keyboard shortcuts: P or Escape pauses, Enter starts a game, S sprays
 document.addEventListener("keydown", (event) => {
+  if (event.key === "s" || event.key === "S") useSpray();
   if (event.key === "p" || event.key === "P" || event.key === "Escape") {
     if (game.mode === "playing") pauseGame();
     else if (game.mode === "paused") resumeGame();
@@ -1035,6 +1095,12 @@ for (let i = 0; i < 7; i++) {
 }
 
 document.querySelector("#best-score").textContent = game.best.toLocaleString();
+document.querySelector("#tests-total").textContent = TOTAL_TESTS;
+if (POWER.lives > 0) {
+  const note = document.querySelector("#powerup-note");
+  note.textContent = `💪 Workout power-ups from Level Up: +${POWER.lives} extra ${POWER.lives === 1 ? "test" : "tests"}${POWER.spray ? ", plus bug spray (press S or tap 🧴, once a game)" : ""}!`;
+  note.hidden = false;
+}
 showSoundSetting();
 updateScoreboard();
 showScreen("title");

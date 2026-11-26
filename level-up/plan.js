@@ -216,18 +216,18 @@ const WEEK = [
    get hurt. Cooling down helps you feel less sore tomorrow.         */
 
 const WARM_UP = [
-  { name: "Jog in place", amount: 45, unit: "sec" },
-  { name: "Arm circles (forward, then back)", amount: 20, unit: "sec" },
-  { name: "Leg swings", amount: 10, unit: "reps", each: "leg" },
-  { name: "Hip circles", amount: 10, unit: "reps", each: "way" },
-  { name: "Jumping jacks", amount: 30, unit: "sec" },
+  { name: "Jog in place", amount: 45, unit: "sec", demo: "jog" },
+  { name: "Arm circles (forward, then back)", amount: 20, unit: "sec", demo: "armCircles" },
+  { name: "Leg swings", amount: 10, unit: "reps", each: "leg", demo: "legSwings" },
+  { name: "Hip circles", amount: 10, unit: "reps", each: "way", demo: "hipCircles" },
+  { name: "Jumping jacks", amount: 30, unit: "sec", demo: "jacks" },
 ];
 
 const COOL_DOWN = [
-  { name: "Walk around and breathe slowly", amount: 30, unit: "sec" },
-  { name: "Hamstring stretch", amount: 30, unit: "sec", each: "leg" },
-  { name: "Quad stretch", amount: 30, unit: "sec", each: "leg" },
-  { name: "Child's pose", amount: 30, unit: "sec" },
+  { name: "Walk around and breathe slowly", amount: 30, unit: "sec", demo: "walk" },
+  { name: "Hamstring stretch", amount: 30, unit: "sec", each: "leg", demo: "hamstringStretch" },
+  { name: "Quad stretch", amount: 30, unit: "sec", each: "leg", demo: "quadStretch" },
+  { name: "Child's pose", amount: 30, unit: "sec", demo: "childsPose" },
 ];
 
 

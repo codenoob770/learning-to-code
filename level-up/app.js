@@ -86,7 +86,8 @@ const PROGRESS_KEYS = [
   "levelUp.start", "levelUp.done", "levelUp.missed", "levelUp.expert",
   "levelUp.expertDays", "levelUp.bests", "levelUp.testScores",
   "levelUp.drinkRatings", "levelUp.drinkSkips", "levelUp.repeatAsked",
-  "levelUp.seen",
+  "levelUp.seen", "levelUp.practice", "levelUp.habits", "levelUp.trainerLog",
+  "levelUp.grocery",
 ];
 
 const memory = {};
@@ -139,6 +140,10 @@ let isExpert;      // expert mode on or off
 let expertDays;    // days you finished in expert mode
 let drinkRatings;  // like { "Mango Lassi": { score: 9, date: "2026-11-26" } } ("date" = the day you rated it)
 let drinkSkips;    // days you did NOT try the drink of the day
+let practiceDays;  // your practice days, like { soccer: [1, 3] } (0 = Monday)
+let habits;        // water and sleep for each day, like { "2026-11-26": { water: 5, sleep: 9 } }
+let trainerLog;    // every beat-trainer result, for the charts
+let groceryChecks; // grocery items you've ticked off, by week
 
 // Reads all your progress into the variables above. It runs when the page
 // opens, and again whenever another device changes something.
@@ -154,6 +159,10 @@ function loadProgress() {
   expertDays = new Set(loadJSON("levelUp.expertDays", []));
   drinkRatings = loadJSON("levelUp.drinkRatings", {});
   drinkSkips = new Set(loadJSON("levelUp.drinkSkips", []));
+  practiceDays = loadJSON("levelUp.practice", {});
+  habits = loadJSON("levelUp.habits", {});
+  trainerLog = loadJSON("levelUp.trainerLog", []);
+  groceryChecks = loadJSON("levelUp.grocery", {});
 }
 
 loadProgress();
@@ -220,7 +229,7 @@ function moveFor(id, level) {
   // The last version whose "from" level we've reached
   const version = versions.filter((v) => v.from <= level).pop();
   const amount = Math.min(version.max, version.start + version.step * (level - version.from));
-  return { ...version, amount };
+  return { ...version, amount, id };
 }
 
 // Text like "12 reps", "30 sec each side" or "6 sprints"
@@ -273,8 +282,12 @@ function planFor(date) {
     };
   }
 
+  // On a practice day (practice.js), the workout is lighter: one round, no expert mode
+  const practiceSports = template.style === "rest" ? [] : practiceFor(date);
+  const lighter = practiceSports.length > 0;
+
   // Expert mode jumps ahead a few levels (but rest days stay restful)
-  const expert = isExpert && template.style !== "rest";
+  const expert = isExpert && template.style !== "rest" && !lighter;
   const level = expert ? Math.min(MAX_LEVEL, levelOf(date) + EXPERT.levelBoost) : levelOf(date);
 
   let rounds = template.style === "circuit" ? roundsFor(level) : 1;
@@ -283,6 +296,7 @@ function planFor(date) {
     rounds = Math.min(EXPERT.maxRounds, rounds + EXPERT.extraRounds);
     rest = Math.max(EXPERT.minRest, rest - EXPERT.restCut);
   }
+  if (lighter) rounds = 1;
 
   const plan = {
     ...template,
@@ -294,6 +308,7 @@ function planFor(date) {
     sportMoves: template.sport ? template.sport.moves.map((id) => moveFor(id, level)) : [],
     isTestDay: untilTest === 0,
     isPracticeDay: testDate !== null && TEST.practiceDaysBefore.includes(untilTest),
+    practiceSports,
   };
   plan.minutes = estimateMinutes(plan);
 
@@ -451,6 +466,9 @@ function render() {
   renderStats();
   renderTestPanel();
   renderTrophies(); // in trophies.js
+  renderPractice(); // in practice.js
+  renderHabits();   // in habits.js
+  renderCharts();   // in charts.js
 }
 
 function renderDay(plan) {
@@ -475,6 +493,7 @@ function renderStrip() {
     const missed = missedDays.has(toKey(date));
     let mark = done ? "✓" : "";
     if (missed) mark = "✕";
+    if (!mark) mark = practiceFor(date).map((sport) => sport.icon).join("");
     if (!done && !missed && daysUntilTest(date) === 0) mark = "TEST";
     let markClass = "chip__mark";
     if (done && expertDays.has(toKey(date))) markClass += " is-expert";
@@ -504,6 +523,7 @@ function movesHTML(moves, extraClass = "") {
       <div>
         <span class="move__name">${move.name}</span>
         <span class="move__how">${move.how}</span>
+        ${demoKeyFor(move) ? `<button class="demo-button" type="button" data-demo-id="${move.id}"><span data-demo-icon="${demoKeyFor(move)}"></span>Show me</button>` : ""}
       </div>
       ${amountHTML(move.name, move.amount, move.unit, move.each)}
     </li>`).join("");
@@ -613,8 +633,16 @@ function renderWorkout(plan) {
       ${movesHTML(plan.sportMoves, "moves--sport")}
     </div>` : "";
 
-  const practiceTip = isRest ? "" : `
-    <p class="tip"><strong>Swim, soccer or taekwondo today?</strong> Practice counts as a workout! Do the warm-up and sport skills, or just stretch.</p>`;
+  // On a practice day, a banner at the top. Otherwise, a tip at the bottom
+  // (only until you've set your practice days).
+  let practiceBanner = "";
+  let practiceTip = "";
+  if (plan.practiceSports.length > 0) {
+    const names = plan.practiceSports.map((sport) => `${sport.icon} ${sport.name}`).join(" and ");
+    practiceBanner = `<p class="practice-banner"><strong>${names} practice today!</strong> Practice counts as a workout, so this one is lighter: just 1 round.</p>`;
+  } else if (!isRest && Object.values(practiceDays).every((days) => days.length === 0)) {
+    practiceTip = `<p class="tip"><strong>Swim, soccer or taekwondo today?</strong> Practice counts as a workout! Set your practice days below, and those days get a lighter workout.</p>`;
+  }
 
   document.querySelector("#workout").innerHTML = `
     <div class="panel__head">
@@ -626,11 +654,12 @@ function renderWorkout(plan) {
 
     <ul class="meta" aria-label="Workout details">
       <li>About <strong>${plan.minutes} min</strong></li>
-      ${plan.style === "circuit" ? `<li><strong>${plan.rounds}</strong> rounds</li><li>Rest <strong>${plan.rest} sec</strong> between moves</li>` : ""}
+      ${plan.style === "circuit" ? `<li><strong>${plan.rounds}</strong> ${plan.rounds === 1 ? "round" : "rounds"}</li><li>Rest <strong>${plan.rest} sec</strong> between moves</li>` : ""}
       <li>No equipment</li>
     </ul>
 
     ${repeatHTML()}
+    ${practiceBanner}
     ${expertNote}
     ${practice}
     <button class="button button--start" id="start-coach" type="button">${playIcon} Start guided workout</button>
@@ -644,6 +673,7 @@ function renderWorkout(plan) {
     ${isRest ? "" : extraHTML("Cool-down after · about 2 min", COOL_DOWN)}
     ${practiceTip}
     ${footHTML(plan, isRest ? "Mark rest day done" : "Mark workout done", isRest ? "Did not stretch" : "Did not do workout")}`;
+  fillDemoIcons(document.querySelector("#workout")); // in demos.js
 }
 
 // Test day gets its own card instead of a workout
@@ -794,6 +824,7 @@ function renderMeals(plan) {
       <p>${plan.snack.what}</p>
       <p class="recipe__why">${plan.snack.why}</p>
     </div>
+    <button class="button button--quiet grocery-button" id="open-grocery" type="button">🛒 Grocery list for this week</button>
     <p class="water"><strong>Don't forget water!</strong> Keep a bottle with you and sip all day, especially before, during and after workouts and practice.</p>`;
 }
 
@@ -991,6 +1022,13 @@ document.querySelector("#workout").addEventListener("click", (event) => {
     showToast("Let's go! 💪");
   }
 
+  if (button.dataset.demoId) {
+    const plan = planFor(selected);
+    const move = [...plan.moves, ...plan.sportMoves].find((m) => m.id === button.dataset.demoId);
+    if (move) openDemo(demoKeyFor(move), move.name, move.how); // in demos.js
+    return;
+  }
+
   if (button.id === "start-coach") {
     openCoach(selected); // in coach.js
   }
@@ -1032,6 +1070,11 @@ document.querySelector("#workout").addEventListener("submit", (event) => {
   sounds.done();
   render();
   checkAchievements(true);
+});
+
+// The grocery list button (grocery.js)
+document.querySelector("#meals").addEventListener("click", (event) => {
+  if (event.target.closest("#open-grocery")) openGrocery();
 });
 
 // Rating the drink of the day (and resetting old ratings)
@@ -1358,6 +1401,10 @@ function stopTrainer() {
     return;
   }
 
+  // Save every result, so the charts can show your progress
+  trainerLog.push({ date: toKey(today), exercise: trainer.exercise, count: trainer.count });
+  save("levelUp.trainerLog", JSON.stringify(trainerLog));
+
   if (!best || trainer.count > best.count) {
     bests[trainer.exercise] = { count: trainer.count, date: toKey(today) };
     save("levelUp.bests", JSON.stringify(bests));
@@ -1368,6 +1415,7 @@ function stopTrainer() {
     checkAchievements(true);
   } else {
     trainerCue.textContent = `${trainer.count} ${name}. Your best is ${best.count}. Keep at it!`;
+    renderCharts();
   }
   renderBests();
 }

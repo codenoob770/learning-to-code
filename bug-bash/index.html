@@ -23,8 +23,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=JetBrains+Mono:wght@400;600&display=swap">
 
-  <link rel="stylesheet" href="style.css">
-  <script src="game.js" defer></script>
+  <!-- "?v=2" makes browsers download the newest version after an update -->
+  <link rel="stylesheet" href="style.css?v=2">
+  <script src="game.js?v=2" defer></script>
 </head>
 <body>
 
@@ -48,6 +49,8 @@
     </dl>
 
     <div class="hud__buttons">
+      <!-- Bug spray: a power-up you earn by working out in Level Up -->
+      <button class="icon-button spray-button" id="spray-button" type="button" aria-label="Use bug spray (S)" title="Bug spray (S): squash every bug, once a game" hidden disabled>🧴</button>
       <button class="icon-button" id="pause-button" type="button" aria-label="Pause" title="Pause (P)" disabled>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5v14M15 5v14"/></svg>
       </button>
@@ -71,6 +74,7 @@
         <p class="panel__eyebrow">// a tiny game about coding</p>
         <h1 class="panel__title" id="title-heading">Bug <span class="marker">Bash</span></h1>
         <p class="panel__lead">Your code is crawling with bugs! Squash them before they reach production.</p>
+        <p class="powerup-note" id="powerup-note" hidden></p>
 
         <!-- Each little <canvas> gets a bug drawn on it by game.js -->
         <ul class="legend">
@@ -93,7 +97,7 @@
 
         <p class="panel__tip">
           Squash bugs in a row without missing to build a combo, up to ×5.
-          You have 3 tests. Every bug that gets through breaks one.
+          You have <span id="tests-total">3</span> tests. Every bug that gets through breaks one.
         </p>
 
         <div class="panel__actions">

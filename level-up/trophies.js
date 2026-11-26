@@ -26,6 +26,9 @@ const XP_RULES = {
   drinkRating: 10,  // each drink you rate
   trainerRep: 5,    // each rep of your best push-ups and best curl-ups
   testScores: 200,  // saving your real gym test scores
+  water: 5,         // each glass of water (up to 8 a day)
+  sleepLogged: 10,  // logging how long you slept
+  goodSleep: 10,    // extra for 9 hours or more
 };
 
 function isRestDay(date) {
@@ -71,6 +74,21 @@ function trophyStats() {
     if (all) perfectWeek = true;
   }
 
+  // Water and sleep (habits.js)
+  let waterDays = 0;
+  let sleepDays = 0;
+  for (const day of Object.values(habits)) {
+    xp += Math.min(day.water || 0, 8) * XP_RULES.water;
+    if ((day.water || 0) >= 8) waterDays += 1;
+    if (typeof day.sleep === "number") {
+      xp += XP_RULES.sleepLogged;
+      if (day.sleep >= 9) {
+        xp += XP_RULES.goodSleep;
+        sleepDays += 1;
+      }
+    }
+  }
+
   const ratings = Object.keys(drinkRatings).length;
   const pushups = bests.pushups ? bests.pushups.count : 0;
   const curlups = bests.curlups ? bests.curlups.count : 0;
@@ -80,7 +98,7 @@ function trophyStats() {
   xp += (pushups + curlups) * XP_RULES.trainerRep;
   if (testDone) xp += XP_RULES.testScores;
 
-  return { xp, workouts, bestStreak, comeback, perfectWeek, ratings, pushups, curlups, testDone, expertCount: expertDays.size };
+  return { xp, workouts, bestStreak, comeback, perfectWeek, ratings, pushups, curlups, testDone, waterDays, sleepDays, expertCount: expertDays.size };
 }
 
 
@@ -127,6 +145,8 @@ const BADGES = [
   { id: "test", icon: "🏅", name: "Test Day Hero", how: "Save your gym test scores", earned: (s) => s.testDone },
   { id: "taster", icon: "🥤", name: "Taste Tester", how: "Rate 5 drinks", earned: (s) => s.ratings >= 5 },
   { id: "allDrinks", icon: "🌈", name: "Drink Explorer", how: "Rate every drink", earned: (s) => s.ratings >= DRINKS.length },
+  { id: "water", icon: "💧", name: "Hydration Hero", how: "8 glasses of water on 5 days", earned: (s) => s.waterDays >= 5 },
+  { id: "sleep", icon: "😴", name: "Sleep Champ", how: "9+ hours of sleep on 5 nights", earned: (s) => s.sleepDays >= 5 },
 ];
 
 
@@ -146,6 +166,8 @@ function renderTrophies() {
 
   const earned = BADGES.filter((badge) => badge.earned(stats));
   document.querySelector("#badge-count").textContent = `${earned.length} of ${BADGES.length} badges`;
+  renderPowerUps();
+
   document.querySelector("#badges").innerHTML = BADGES.map((badge) => {
     const got = earned.includes(badge);
     return `
@@ -166,7 +188,40 @@ document.querySelector("#xp-rules").innerHTML = [
   ["Rate a drink", `+${XP_RULES.drinkRating}`],
   ["Beat trainer best", `+${XP_RULES.trainerRep} per rep`],
   ["Save your test scores", `+${XP_RULES.testScores}`],
+  ["Drink a glass of water", `+${XP_RULES.water}`],
+  ["Log your sleep", `+${XP_RULES.sleepLogged}`],
+  ["Sleep 9 hours or more", `+${XP_RULES.goodSleep} more`],
 ].map(([what, xp]) => `<li><span>${what}</span><span>${xp} XP</span></li>`).join("");
+
+
+/* 4b. BUG BASH POWER-UPS ------------------------------------------
+   Workouts in the last 7 days earn power-ups in Bug Bash:
+   +1 extra test (life) per workout, up to 5, and a can of bug spray
+   (squashes every bug on screen once a game) for 3 or more.
+   They travel to Bug Bash in the link, like "#powerups-3-spray".   */
+
+function bugBashPowerUps() {
+  let workouts = 0;
+  for (let i = 0; i < 7; i++) {
+    const date = addDays(today, -i);
+    if (doneDays.has(toKey(date)) && !isRestDay(date)) workouts += 1;
+  }
+  return { lives: Math.min(5, workouts), spray: workouts >= 3, workouts };
+}
+
+function renderPowerUps() {
+  const power = bugBashPowerUps();
+  // On claude.ai, link to the Claude version of Bug Bash; elsewhere to the folder next door
+  const bugBash = window.claude && window.claude.use ? "https://claude.ai/artifact/MH6FXk37dqcHHrdg4Sjkrx" : "../bug-bash/";
+  const hash = power.lives > 0 ? `#powerups-${power.lives}${power.spray ? "-spray" : ""}` : "";
+  let text = "Finish workouts to earn Bug Bash power-ups: an extra life for each one this week, and bug spray for 3 or more!";
+  if (power.lives > 0) {
+    text = `${power.workouts} ${power.workouts === 1 ? "workout" : "workouts"} in the last 7 days: <strong>+${power.lives} extra ${power.lives === 1 ? "test" : "tests"}</strong>${power.spray ? " and <strong>bug spray</strong>" : ""} in Bug Bash!`;
+    if (!power.spray) text += ` Do ${3 - power.workouts} more for bug spray.`;
+  }
+  document.querySelector("#powerups-text").innerHTML = text;
+  document.querySelector("#powerups-link").href = bugBash + hash;
+}
 
 
 /* 5. CELEBRATIONS -------------------------------------------------

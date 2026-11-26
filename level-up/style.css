@@ -14,6 +14,7 @@
    8. Food and drink
    9. Timer, buttons and messages
    9b. Guided workout, trophy case and celebrations
+   9c. Demos, habits, charts, practice days, AI coach and groceries
    10. Small screens and reduced motion
    ============================================================= */
 
@@ -42,6 +43,11 @@
   --teal-soft: rgba(127, 220, 200, 0.12);
   --shadow: rgba(0, 0, 0, 0.55);
   --marker-border: rgba(255, 226, 77, 0.35);
+
+  /* Chart colors: checked to be easy to tell apart, also for color-blind
+     eyes, on both the normal and the expert-mode background */
+  --chart-1: #e76624;  /* push-ups */
+  --chart-2: #2aa892;  /* curl-ups, and days done */
 
   /* Colors for the faint code in the background */
   --tok-comment: #59658a;
@@ -2004,6 +2010,686 @@ body.coach-open {
   pointer-events: none;
 }
 
+
+/* 9c. DEMOS, HABITS, CHARTS, PRACTICE, AI COACH AND GROCERIES ------ */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- Stick-figure demos --- */
+.demo {
+  display: block;
+  overflow: visible;
+}
+
+.demo__limb {
+  fill: none;
+  stroke: var(--fg);
+  stroke-width: 3.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.demo__limb--far {
+  stroke: var(--dim);
+}
+
+.demo__head {
+  fill: var(--fg);
+}
+
+.demo__ground {
+  stroke: var(--line-strong);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.demo__props {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.demo__tape {
+  stroke: var(--marker);
+  stroke-width: 3;
+}
+
+.demo-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+  padding: 0.15rem 0.6rem 0.15rem 0.2rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--accent);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.demo-button:hover {
+  border-color: var(--line-strong);
+}
+
+.demo-button .demo {
+  width: 2rem;
+  height: 1.45rem;
+}
+
+.demo-button .demo__limb {
+  stroke-width: 5;
+}
+
+.coach__demo {
+  width: min(16rem, 60vw);
+  margin-bottom: -0.5rem;
+}
+
+@media (max-height: 700px) {
+  .coach__demo {
+    width: min(10rem, 45vw);
+  }
+}
+
+/* --- Pop-ups (move demo and grocery list) --- */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 62;
+  display: grid;
+  place-items: center;
+  padding-block: 1rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.modal__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  width: min(100%, 26rem);
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 1.25rem 1.4rem 1.5rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+
+.modal__card--wide {
+  width: min(100%, 34rem);
+}
+
+.modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.modal__head h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.demo-picture {
+  padding: 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+}
+
+.demo-how {
+  color: var(--dim);
+}
+
+/* --- Water and sleep --- */
+.habit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.habit + .habit {
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.habit__label {
+  font-weight: 700;
+}
+
+.habit__note {
+  color: var(--dim);
+  font-size: 0.875rem;
+}
+
+.glasses {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 0.3rem;
+}
+
+.glass {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  height: 3rem;
+  padding: 0.3rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+  cursor: pointer;
+}
+
+.glass:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.glass svg {
+  width: 1.3rem;
+  height: 1.6rem;
+}
+
+.glass__cup {
+  fill: none;
+  stroke: var(--dim);
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+
+.glass__water {
+  fill: transparent;
+}
+
+.glass.is-full {
+  border-color: var(--chart-2);
+}
+
+.glass.is-full .glass__water {
+  fill: var(--chart-2);
+}
+
+.glass.is-full .glass__cup {
+  stroke: var(--teal);
+}
+
+.sleep-choices {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.3rem;
+}
+
+.sleep-choice {
+  min-width: 0;
+  height: 2.6rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sleep-choice[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.sleep-choice:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* --- Charts --- */
+.charts {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 860px) {
+  .charts {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  }
+}
+
+.chart-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 0;
+  margin: 0;
+}
+
+.chart-card h3 {
+  font-size: 1.1rem;
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+}
+
+.chart-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.swatch {
+  display: inline-block;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 50%;
+}
+
+.swatch.series-1 { background: var(--chart-1); }
+.swatch.series-2 { background: var(--chart-2); }
+
+.swatch--test {
+  width: 0.6rem;
+  height: 0.6rem;
+  border: 2px solid var(--fg);
+  border-radius: 1px;
+  transform: rotate(45deg);
+}
+
+.chart-box {
+  position: relative;
+  min-width: 0;
+}
+
+.chart {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  touch-action: pan-y;
+}
+
+.chart__grid {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.chart__tick {
+  fill: var(--dim);
+  font-family: var(--font-code);
+  font-size: 11px;
+}
+
+.chart__label {
+  fill: var(--fg);
+  font-family: var(--font-code);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.chart__line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.chart__line.series-1 { stroke: var(--chart-1); }
+.chart__line.series-2 { stroke: var(--chart-2); }
+
+/* Dots get a ring the color of the panel, so they stand out where lines cross */
+.chart__dot {
+  stroke: var(--panel);
+  stroke-width: 2;
+}
+
+.chart__dot.series-1 { fill: var(--chart-1); }
+.chart__dot.series-2 { fill: var(--chart-2); }
+
+.chart__dot--test {
+  stroke: var(--fg);
+}
+
+.chart__bar {
+  fill: var(--chart-2);
+}
+
+.chart__crosshair {
+  stroke: var(--dim);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.chart__hit {
+  fill: transparent;
+}
+
+.chart__tooltip {
+  position: absolute;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--bg);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.chart__tooltip span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--dim);
+}
+
+.chart__tooltip strong,
+.chart__tooltip b {
+  color: var(--fg);
+}
+
+.chart-empty {
+  padding: 2.5rem 1rem;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-small);
+  color: var(--dim);
+  text-align: center;
+}
+
+.chart-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0.9rem 0.8rem;
+  width: calc(100% - 1.8rem);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.chart-table th,
+.chart-table td {
+  padding: 0.3rem 0.4rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.chart-table th {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+/* --- Practice days and the AI coach, side by side on wide screens --- */
+.duo {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 900px) {
+  .duo {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    align-items: start;
+  }
+}
+
+.practice-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.practice-grid__row {
+  display: grid;
+  grid-template-columns: 6.8rem repeat(7, minmax(0, 1fr));
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.practice-grid__row--head span {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.practice-grid__sport {
+  font-size: 0.875rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.practice-day {
+  min-width: 0;
+  height: 2.3rem;
+  padding: 0;
+  border: 1px dashed var(--line-strong);
+  border-radius: 6px;
+  background: transparent;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.practice-day[aria-pressed="true"] {
+  border-style: solid;
+  border-color: var(--teal);
+  background: var(--teal-soft);
+}
+
+.practice-summary {
+  color: var(--dim);
+  font-size: 0.875rem;
+}
+
+.practice-banner {
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--teal);
+  border-radius: var(--radius-small);
+  background: var(--teal-soft);
+  font-size: 0.9375rem;
+}
+
+.ai .eyebrow {
+  color: var(--accent);
+}
+
+.ai__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.ai__starters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.chip-button {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fg);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.chip-button:hover {
+  border-color: var(--accent);
+}
+
+.ai__row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ai__row input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+  font-size: 1rem; /* 16px, so phones don't zoom in */
+}
+
+.ai__answer {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-left-width: 1px;
+  border-radius: var(--radius-small);
+  background: var(--bg);
+  white-space: pre-wrap; /* keep Claude's line breaks */
+}
+
+.ai__answer.is-error {
+  color: var(--bug);
+}
+
+.ai__offline {
+  color: var(--dim);
+}
+
+/* --- Bug Bash power-ups --- */
+.powerups {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+}
+
+.powerups__title {
+  font-weight: 700;
+}
+
+.powerups__text {
+  color: var(--dim);
+  font-size: 0.9375rem;
+}
+
+.powerups__text strong {
+  color: var(--marker);
+}
+
+/* --- Grocery list --- */
+.grocery-button {
+  align-self: flex-start;
+}
+
+.grocery__week {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+}
+
+.grocery__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.grocery__section {
+  margin-top: 0.5rem;
+  color: var(--marker);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.grocery__items {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.grocery__items li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.grocery__items input {
+  flex: none;
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: var(--teal);
+}
+
+.grocery__items label {
+  flex: 1;
+  cursor: pointer;
+}
+
+.grocery__items input:checked + label {
+  color: var(--dim);
+  text-decoration: line-through;
+}
+
+.grocery__uses {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.grocery__text {
+  min-height: 8rem;
+  padding: 0.6rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 480px) {
+  .practice-grid__row {
+    grid-template-columns: 5.4rem repeat(7, minmax(0, 1fr));
+  }
+
+  .practice-grid__sport {
+    font-size: 0.8125rem;
+  }
+}
 
 /* 10. SMALL SCREENS AND REDUCED MOTION --------------------------- */
 

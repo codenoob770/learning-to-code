@@ -57,8 +57,21 @@ harder every week for 12 weeks, and the food changes every day.
 - `level-up/app.js` builds each day's page and runs the timer and buttons.
 - `level-up/coach.js` is the **guided workout**: press "Start guided workout"
   and a voice coach walks through every step with automatic timers.
-- `level-up/trophies.js` gives you **XP, levels and 12 badges**, with confetti
+- `level-up/trophies.js` gives you **XP, levels and 14 badges**, with confetti
   when you level up. Change `XP_RULES` there to give more or less XP.
+- `level-up/demos.js` has **animated stick figures** for every move ("Show me"
+  buttons, and in the guided workout). Each one is a list of poses.
+- `level-up/practice.js`: pick your **practice days** for swim, soccer and
+  taekwondo, and those days get a lighter workout.
+- `level-up/habits.js`: tap glasses of **water** and log your **sleep**.
+- `level-up/charts.js`: **progress charts** for push-ups, curl-ups and
+  workouts per week.
+- `level-up/grocery.js`: a **grocery list** for the week, sorted by store
+  section, with check boxes and a copy button.
+- `level-up/ai-coach.js`: **Ask Coach** lets you ask Claude about workouts and
+  food. It only works on the Claude version of the page.
+- **Bug Bash power-ups:** workouts in the last 7 days give extra tests (lives)
+  in Bug Bash, plus bug spray for 3 or more. Press **S** in the game to spray!
 
 Your progress (which days you marked done, and your week) is saved in your
 browser, so it stays on the computer or phone where you use it.

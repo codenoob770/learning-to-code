@@ -38,10 +38,10 @@ function coachSteps(plan) {
     if (timed && item.each) {
       // A timed move on each side becomes two steps, one per side
       for (const side of [1, 2]) {
-        steps.push({ section, name: item.name, how: item.how || "", label: `${item.each} ${side} of 2`, seconds });
+        steps.push({ section, name: item.name, how: item.how || "", label: `${item.each} ${side} of 2`, seconds, demo: demoKeyFor(item) });
       }
     } else {
-      steps.push({ section, name: item.name, how: item.how || "", label: amountText(item.amount, item.unit, item.each), seconds });
+      steps.push({ section, name: item.name, how: item.how || "", label: amountText(item.amount, item.unit, item.each), seconds, demo: demoKeyFor(item) });
     }
   }
 
@@ -98,6 +98,7 @@ function closeCoach() {
   clearInterval(coach.interval);
   coach = null;
   coachBox.hidden = true;
+  document.querySelector("#coach-demo").replaceChildren(); // stops its animation
   document.body.classList.remove("coach-open");
   stopTalking();
   letScreenSleep();
@@ -133,6 +134,8 @@ function finishCoach() {
     : `${minutes} min of hard work. (It's a future day, so it isn't marked done.)`;
   document.querySelector("#coach-label").textContent = xpGained > 0 ? `+${xpGained} XP` : "";
   coachTime.textContent = "🎉";
+  document.querySelector("#coach-demo").replaceChildren();
+  document.querySelector("#coach-demo").hidden = true;
   document.querySelector("#coach-next").textContent = "";
   coachBox.classList.remove("is-rest", "is-ready");
   coachMain.textContent = "Close";
@@ -162,6 +165,17 @@ function showStep() {
   document.querySelector("#coach-back").disabled = coach.index === 0;
   document.querySelector("#coach-skip").disabled = false;
   coachBox.classList.toggle("is-rest", Boolean(step.isRest));
+
+  // The stick figure showing the move (demos.js). Rests show what's coming up next.
+  const demoStep = step.isRest ? next : step;
+  const demoSpot = document.querySelector("#coach-demo");
+  if (demoStep && demoStep.demo) {
+    demoSpot.replaceChildren(createDemo(demoStep.demo, `Animation showing how to do ${demoStep.name}`));
+    demoSpot.hidden = false;
+  } else {
+    demoSpot.replaceChildren();
+    demoSpot.hidden = true;
+  }
 
   if (step.seconds === null) {
     // A rep move: do it at your own pace, then tap Done
