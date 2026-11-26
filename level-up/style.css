@@ -1,0 +1,1056 @@
+/* =============================================================
+   style.css for Level Up
+   -------------------------------------------------------------
+   Same look as Bug Bash: a code editor at night, a yellow
+   highlighter and panels that float over faint code.
+
+   1. Design tokens
+   2. Base
+   3. Background code
+   4. Scoreboard (the bar at the top)
+   5. Page layout and panels
+   6. The day picker
+   7. Workout
+   8. Food and drink
+   9. Timer, buttons and messages
+   10. Small screens and reduced motion
+   ============================================================= */
+
+
+/* 1. DESIGN TOKENS ---------------------------------------------
+   Layout idea: a code editor at night. A scoreboard on top, the
+   day picker under it, then the workout beside the food. This page
+   always uses this one dark look, like Bug Bash.                  */
+
+:root {
+  --bg: #0e1424;            /* the code editor background */
+  --panel: #141b2f;         /* scoreboard and bars */
+  --panel-glass: rgba(20, 27, 47, 0.94);
+  --line: #252e48;          /* borders */
+  --line-strong: #36415f;
+  --fg: #e3e8f5;            /* main text */
+  --dim: #8792b2;           /* quieter text */
+  --faint: #4a5677;         /* background code and line numbers */
+  --accent: #a3b4ff;        /* blue, like keywords in code */
+  --marker: #ffe24d;        /* highlighter yellow: meals */
+  --marker-soft: rgba(255, 226, 77, 0.1);
+  --bug: #ff7a5c;           /* coral: the workout */
+  --bug-soft: rgba(255, 122, 92, 0.12);
+  --bug-border: rgba(255, 122, 92, 0.45);
+  --teal: #7fdcc8;          /* teal: drinks and "done" */
+  --teal-soft: rgba(127, 220, 200, 0.12);
+  --shadow: rgba(0, 0, 0, 0.55);
+
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-code: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --radius: 12px;
+  --radius-small: 8px;
+
+  color-scheme: dark;
+}
+
+
+/* 2. BASE ------------------------------------------------------ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+/* On phones with a notch, this paints the strip above the sticky scoreboard */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 30;
+  background: var(--panel);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+a {
+  color: var(--accent);
+  text-underline-offset: 0.2em;
+}
+
+button {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.eyebrow {
+  color: var(--accent);
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+}
+
+/* The highlighter, same as Bug Bash */
+.marker {
+  display: inline-block;
+  padding: 0 0.12em;
+  border-radius: 0.12em 0.3em 0.15em 0.35em;
+  background: var(--marker);
+  color: var(--bg);
+  transform: rotate(-2deg);
+}
+
+
+/* 3. BACKGROUND CODE ------------------------------------------- */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  padding-top: 5.5rem;
+  overflow: hidden;
+  color: var(--faint);
+  font-family: var(--font-code);
+  font-size: 13px;
+  line-height: 24px;
+  opacity: 0.55;
+  pointer-events: none;
+  counter-reset: line;
+  -webkit-mask-image: linear-gradient(to bottom, black 55%, transparent);
+  mask-image: linear-gradient(to bottom, black 55%, transparent);
+}
+
+.code-line {
+  display: block;
+  white-space: pre;
+}
+
+.code-line::before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  width: 2.5rem;
+  margin-right: 1.25rem;
+  text-align: right;
+}
+
+.tok-comment { color: #59658a; font-style: italic; }
+.tok-keyword { color: #6c7bc4; }
+.tok-func { color: #4f9a8b; }
+.tok-string { color: #a8963c; }
+.tok-number { color: #b07c62; }
+
+
+/* 4. SCOREBOARD ------------------------------------------------ */
+
+.hud {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  padding-block: 0.55rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.hud__home {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: -0.5rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.hud__home:hover {
+  background: var(--line);
+  color: var(--fg);
+}
+
+.hud__home svg,
+.icon-button svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hud__title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.hud__stats {
+  display: flex;
+  gap: 1.5rem;
+  margin: 0 0 0 auto; /* pushes the stats to the right */
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat dt {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.stat dd {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+}
+
+/* A quick "bump" when a number changes */
+.stat dd.bump {
+  animation: bump 0.3s ease-out;
+}
+
+@keyframes bump {
+  40% {
+    transform: scale(1.25);
+    color: var(--teal);
+  }
+}
+
+.icon-button {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--fg);
+  cursor: pointer;
+}
+
+.icon-button:hover {
+  background: var(--line);
+}
+
+
+/* 5. PAGE LAYOUT AND PANELS ------------------------------------- */
+
+.wrap {
+  width: 100%;
+  max-width: 76rem;
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-block: 1.5rem 8rem; /* extra room at the bottom for the timer */
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  min-width: 0;
+  padding: clamp(1.15rem, 3vw, 1.75rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel-glass);
+  box-shadow: 0 30px 80px -30px var(--shadow);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+/* Workout and food side by side on wide screens */
+.layout {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 980px) {
+  .layout {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.fuel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.panel__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+.panel__title {
+  font-size: clamp(1.6rem, 1.3rem + 1.2vw, 2.25rem);
+  font-weight: 800;
+}
+
+.panel__lead {
+  color: var(--dim);
+}
+
+.note {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem 2rem;
+  padding-inline: 0.25rem;
+  color: var(--dim);
+  font-size: 0.875rem;
+}
+
+.note p:first-child {
+  max-width: 46rem;
+}
+
+.note strong {
+  color: var(--fg);
+}
+
+
+/* 6. THE DAY PICKER --------------------------------------------- */
+
+.day__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+}
+
+.day__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.day__name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.85rem;
+  font-size: clamp(2.5rem, 1.9rem + 3vw, 4rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+.today-pill {
+  padding: 0.2rem 0.55rem;
+  border-radius: 0.2rem 0.45rem 0.25rem 0.5rem;
+  background: var(--marker);
+  color: var(--bg);
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  transform: rotate(-3deg);
+}
+
+.day__date {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.9375rem;
+}
+
+.day__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.strip {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  min-width: 0;
+  padding: 0.55rem 0.2rem 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+  color: var(--fg);
+  cursor: pointer;
+}
+
+.chip:hover:not(:disabled) {
+  border-color: var(--line-strong);
+}
+
+.chip:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.chip__day {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.chip__date {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.chip__mark {
+  height: 1.1rem;
+  color: var(--teal);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.chip.is-today .chip__day {
+  color: var(--marker);
+  font-weight: 600;
+}
+
+.chip[aria-pressed="true"] {
+  border-color: var(--marker);
+  background: var(--marker-soft);
+}
+
+.back-today {
+  align-self: flex-start;
+}
+
+
+/* 7. WORKOUT ---------------------------------------------------- */
+
+.level-pill {
+  padding: 0.25rem 0.65rem;
+  border: 1px solid var(--bug-border);
+  border-radius: 999px;
+  color: var(--bug);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.workout .eyebrow {
+  color: var(--bug);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.meta li {
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+}
+
+.meta strong {
+  color: var(--fg);
+}
+
+.how-it-works {
+  color: var(--dim);
+  font-size: 0.9375rem;
+}
+
+.how-it-works strong {
+  color: var(--fg);
+}
+
+/* The list of moves, numbered 01, 02, 03... by CSS */
+.moves {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: move;
+}
+
+.move {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 0.85rem 0.75rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+}
+
+.move::before {
+  counter-increment: move;
+  content: counter(move, decimal-leading-zero);
+  color: var(--faint);
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.move__name {
+  display: block;
+  font-weight: 700;
+}
+
+.move__how {
+  display: block;
+  color: var(--dim);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.amount {
+  max-width: 8.5rem;
+  color: var(--bug);
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: right;
+}
+
+/* Timed moves get a button that starts the timer */
+.amount--timed {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--bug-border);
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.amount--timed:hover {
+  background: var(--bug-soft);
+}
+
+.amount--timed svg,
+.rest-button svg {
+  flex: none;
+  width: 0.75rem;
+  height: 0.75rem;
+  fill: currentColor;
+}
+
+.rest-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+}
+
+.rest-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--fg);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.rest-button:hover {
+  background: var(--line);
+}
+
+/* Warm-up and cool-down fold open and closed */
+.extra {
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-small);
+}
+
+.extra summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0.9rem;
+  color: var(--accent);
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.extra summary::-webkit-details-marker {
+  display: none;
+}
+
+.extra summary::after {
+  content: "+";
+}
+
+.extra[open] summary::after {
+  content: "−";
+}
+
+.extra ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0 0.9rem 0.85rem;
+  list-style: none;
+}
+
+.extra li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.9375rem;
+}
+
+.extra li span:last-child {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+.workout__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.adjust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.done-note {
+  color: var(--dim);
+  font-size: 0.875rem;
+}
+
+
+/* 8. FOOD AND DRINK --------------------------------------------- */
+
+.drink .eyebrow,
+.drink .recipe__label {
+  color: var(--teal);
+}
+
+.meals .eyebrow {
+  color: var(--marker);
+}
+
+.recipe {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* A line between each meal */
+.recipe + .recipe,
+.recipe + .snack {
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--line);
+}
+
+.recipe__label {
+  color: var(--marker);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.recipe__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+}
+
+.recipe h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.drink .recipe h3 {
+  font-size: clamp(1.5rem, 1.3rem + 1vw, 1.9rem);
+  font-weight: 800;
+}
+
+.recipe__time {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+.recipe ul,
+.recipe ol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.recipe ul li::marker {
+  color: var(--dim);
+}
+
+.recipe ol li::marker {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+}
+
+.recipe__steps summary {
+  color: var(--accent);
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.recipe__steps ol {
+  margin-top: 0.5rem;
+}
+
+.recipe__why {
+  color: var(--dim);
+  font-size: 0.9375rem;
+}
+
+.recipe__why strong {
+  color: var(--fg);
+}
+
+.drink .recipe__why {
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--radius-small);
+  background: var(--teal-soft);
+  color: var(--fg);
+}
+
+.snack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.snack h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.snack p:not(.recipe__label) {
+  font-size: 0.9375rem;
+}
+
+.water {
+  padding: 0.75rem 0.9rem;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-small);
+  color: var(--dim);
+  font-size: 0.9375rem;
+}
+
+.water strong {
+  color: var(--teal);
+}
+
+
+/* 9. TIMER, BUTTONS AND MESSAGES --------------------------------- */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border: 2px solid var(--marker);
+  border-radius: var(--radius-small);
+  background: var(--marker);
+  color: var(--bg);
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+.button:hover:not(:disabled) {
+  transform: translateY(-2px) rotate(-1deg);
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(1px) scale(0.98);
+}
+
+.button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.button--quiet {
+  border-color: var(--line-strong);
+  background: transparent;
+  color: var(--fg);
+}
+
+.button--done {
+  border-color: var(--teal);
+  background: var(--teal);
+}
+
+.text-button {
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.text-button:hover:not(:disabled) {
+  border-color: var(--line-strong);
+  color: var(--fg);
+}
+
+.text-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* The timer bar along the bottom of the screen */
+.timer {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 40;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  border-top: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: 0 -20px 50px -20px var(--shadow);
+}
+
+.timer__progress {
+  height: 4px;
+  background: var(--line);
+}
+
+.timer__fill {
+  width: 0;
+  height: 100%;
+  background: var(--marker);
+  transition: width 0.25s linear;
+}
+
+.timer__inner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  max-width: 76rem;
+  margin-inline: auto;
+  padding-block: 0.7rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+.timer__text {
+  min-width: 0;
+}
+
+.timer__label {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.timer__name {
+  overflow: hidden;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timer__time {
+  margin-left: auto;
+  font-family: var(--font-display);
+  font-size: 2.25rem;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer.is-done .timer__time {
+  color: var(--teal);
+}
+
+.timer.is-done .timer__fill {
+  background: var(--teal);
+}
+
+.toast {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 4.5rem);
+  right: 0;
+  left: 0;
+  z-index: 50;
+  width: fit-content;
+  max-width: calc(100% - 32px);
+  margin: 0 auto;
+  padding: 0.5rem 1.1rem;
+  border: 1px solid var(--teal);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--teal);
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+
+.toast.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* 10. SMALL SCREENS AND REDUCED MOTION --------------------------- */
+
+@media (max-width: 640px) {
+  .hud__title,
+  .hud__home-text,
+  .stat--total {
+    display: none;
+  }
+
+  .hud__stats {
+    gap: 1rem;
+  }
+
+  .day__nav {
+    width: 100%;
+  }
+
+  .day__nav .button {
+    flex: 1;
+    padding-inline: 0.75rem;
+  }
+
+  .move {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .move::before {
+    display: none;
+  }
+
+  .adjust {
+    margin-left: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

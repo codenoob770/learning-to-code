@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    Level Up: a daily workout and healthy-eating plan.
+
+    It's made of four files:
+      index.html -> the frame of the page (this file)
+      style.css  -> how it looks (the same style as Bug Bash)
+      plan.js    -> the workouts and recipes, written as data
+      app.js     -> what the buttons do, and building each day's plan
+
+    Most of the page is empty here on purpose: app.js fills in the
+    workout and recipes for whichever day you're looking at.
+  -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Level Up</title>
+  <meta name="description" content="A daily workout, a healthy drink and meals for sports. It gets a little harder every week.">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+
+  <!-- Same fonts as my website and Bug Bash -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=JetBrains+Mono:wght@400;600&display=swap">
+
+  <link rel="stylesheet" href="style.css">
+  <!-- plan.js has to load before app.js, because app.js uses its data -->
+  <script src="plan.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+
+  <!-- Faint code in the background, just for looks (like Bug Bash) -->
+  <div class="backdrop" aria-hidden="true">
+    <span class="code-line"><span class="tok-comment">// level-up.js</span></span>
+    <span class="code-line"><span class="tok-keyword">const</span> you = { strength: <span class="tok-number">1</span>, speed: <span class="tok-number">1</span> };</span>
+    <span class="code-line"> </span>
+    <span class="code-line"><span class="tok-keyword">function</span> <span class="tok-func">train</span>(today) {</span>
+    <span class="code-line">  you.strength += <span class="tok-number">1</span>;</span>
+    <span class="code-line">  you.speed += <span class="tok-number">1</span>;</span>
+    <span class="code-line">  <span class="tok-keyword">return</span> <span class="tok-func">rest</span>(); <span class="tok-comment">// muscles grow while you rest</span></span>
+    <span class="code-line">}</span>
+    <span class="code-line"> </span>
+    <span class="code-line"><span class="tok-keyword">while</span> (week &lt;= <span class="tok-number">12</span>) {</span>
+    <span class="code-line">  <span class="tok-func">warmUp</span>();</span>
+    <span class="code-line">  <span class="tok-func">train</span>(today);</span>
+    <span class="code-line">  <span class="tok-func">eat</span>(<span class="tok-string">"real food"</span>);</span>
+    <span class="code-line">  <span class="tok-func">drink</span>(<span class="tok-string">"water"</span>);</span>
+    <span class="code-line">  <span class="tok-func">sleep</span>(<span class="tok-number">9</span>); <span class="tok-comment">// seriously</span></span>
+    <span class="code-line">}</span>
+    <span class="code-line"> </span>
+    <span class="code-line"><span class="tok-comment">// TODO: get stronger than last week</span></span>
+    <span class="code-line"><span class="tok-keyword">if</span> (tired) <span class="tok-func">drink</span>(<span class="tok-string">"more water"</span>);</span>
+    <span class="code-line"><span class="tok-keyword">if</span> (sore) <span class="tok-func">stretch</span>();</span>
+    <span class="code-line"><span class="tok-keyword">if</span> (hungry) <span class="tok-func">eat</span>(<span class="tok-string">"a banana"</span>);</span>
+    <span class="code-line"> </span>
+    <span class="code-line"><span class="tok-func">levelUp</span>(you);</span>
+  </div>
+
+  <!-- ============ SCOREBOARD ============ -->
+  <header class="hud">
+    <a class="hud__home" href="../index.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      <span class="hud__home-text">My website</span>
+    </a>
+    <p class="hud__title">Level <span class="marker">Up</span></p>
+
+    <dl class="hud__stats">
+      <div class="stat"><dt>Week</dt><dd id="stat-week">1</dd></div>
+      <div class="stat"><dt>This week</dt><dd id="stat-this-week">0/7</dd></div>
+      <div class="stat"><dt>Streak</dt><dd id="stat-streak">0</dd></div>
+      <div class="stat stat--total"><dt>Total</dt><dd id="stat-total">0</dd></div>
+    </dl>
+
+    <button class="icon-button" id="sound-button" type="button" aria-label="Timer sounds" aria-pressed="true" title="Timer sounds on or off">
+      <svg class="icon-sound-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>
+      <svg class="icon-sound-off" viewBox="0 0 24 24" aria-hidden="true" hidden><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="m23 9-6 6M17 9l6 6"/></svg>
+    </button>
+  </header>
+
+  <main class="wrap page" id="main">
+
+    <!-- ============ WHICH DAY ============ -->
+    <section class="panel day" aria-labelledby="day-name">
+      <div class="day__top">
+        <div class="day__heading">
+          <p class="eyebrow" id="day-eyebrow">// week 1 · day 1</p>
+          <h1 class="day__name"><span id="day-name">Monday</span> <span class="today-pill" id="today-pill">Today</span></h1>
+          <p class="day__date" id="day-date"></p>
+        </div>
+        <div class="day__nav">
+          <button class="button button--quiet" id="prev-day" type="button">&larr; Previous day</button>
+          <button class="button" id="next-day" type="button">Next day &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Seven buttons, one per day. app.js fills them in. -->
+      <div class="strip" id="day-strip" role="group" aria-label="Days this week"></div>
+      <button class="text-button back-today" id="back-today" type="button" hidden>Back to today</button>
+    </section>
+
+    <div class="layout">
+      <!-- ============ WORKOUT (filled in by app.js) ============ -->
+      <section class="panel workout" id="workout" aria-live="polite"></section>
+
+      <!-- ============ FOOD AND DRINK (filled in by app.js) ============ -->
+      <div class="fuel">
+        <section class="panel drink" id="drink"></section>
+        <section class="panel meals" id="meals"></section>
+      </div>
+    </div>
+
+    <footer class="note">
+      <p>
+        <strong>Play it safe:</strong> always warm up first, and drink water.
+        Feeling the burn is normal, but sharp pain isn't, so stop if something hurts.
+        If you have an injury, asthma or another health condition, check with a doctor
+        or coach before starting.
+      </p>
+      <p><a href="../index.html">Back to my website</a></p>
+    </footer>
+  </main>
+
+  <!-- ============ WORKOUT TIMER (shows up at the bottom when you start one) ============ -->
+  <div class="timer" id="timer" hidden>
+    <div class="timer__progress"><div class="timer__fill" id="timer-fill"></div></div>
+    <div class="timer__inner">
+      <div class="timer__text">
+        <p class="timer__label" id="timer-label">Timer</p>
+        <p class="timer__name" id="timer-name"></p>
+      </div>
+      <p class="timer__time" id="timer-time" role="timer" aria-live="off">0:00</p>
+      <button class="icon-button" id="timer-pause" type="button" aria-label="Pause timer">
+        <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5v14M15 5v14"/></svg>
+        <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true" hidden><path d="M7 4.5v15l12-7.5z"/></svg>
+      </button>
+      <button class="icon-button" id="timer-stop" type="button" aria-label="Close timer">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Short messages like "Nice work!" pop up here -->
+  <p class="toast" id="toast" role="status" aria-live="polite"></p>
+
+</body>
+</html>

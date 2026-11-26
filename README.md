@@ -13,6 +13,7 @@ every line can be opened, read and changed.
 | `script.js`   | The **behavior**: the theme button, the Run button, the playground   |
 | `favicon.svg` | The little icon in the browser tab                                   |
 | `bug-bash/`   | **Bug Bash**, a little game (see below)                              |
+| `level-up/`   | **Level Up**, my daily workout and healthy food plan (see below)     |
 
 Every file is full of comments that explain what each part does. Reading them
 from top to bottom is a good way to learn how the site works.
@@ -28,6 +29,20 @@ The game is drawn on a `<canvas>` by `bug-bash/game.js`. The easiest thing to
 change is the `RULES` list near the top of that file: give yourself more tests,
 make golden bugs worth more, or make new versions come out faster. Save,
 refresh, and see how the game feels.
+
+## Level Up: workouts and healthy food
+
+Open `level-up/index.html`. Every day has a no-equipment workout, a healthy
+drink and meals (breakfast, lunch, dinner and a snack). It opens on today, and
+the **Next day** button moves through the week. The workouts get a little
+harder every week for 12 weeks, and the food changes every day.
+
+- `level-up/plan.js` holds all the exercises and recipes. Add your own
+  favorite meal or change a workout there.
+- `level-up/app.js` builds each day's page and runs the timer and buttons.
+
+Your progress (which days you marked done, and your week) is saved in your
+browser, so it stays on the computer or phone where you use it.
 
 ## How to look at the site on your computer
 
