@@ -40,6 +40,9 @@ harder every week for 12 weeks, and the food changes every day.
 - `level-up/plan.js` holds all the exercises and recipes. Add your own
   favorite meal or change a workout there.
 - Each day ends with **sport skills** for swimming, soccer or taekwondo.
+- **Rate the drink of the day** from 1 to 10. 1–3 means never again, 4–7 keeps
+  it in the mix, and 8–10 makes it come back more often. Each day, every
+  drink "rolls" a lucky number and the highest wins; favorites get extra rolls.
 - **Expert mode** (the flame button at the top) turns the whole page red and
   makes workouts way harder: 5 levels ahead, an extra round and shorter rests.
   The `EXPERT` setting in `plan.js` controls how much harder it gets.

@@ -123,6 +123,14 @@ const testScores = loadJSON("levelUp.testScores", {});
 let isExpert = load("levelUp.expert", "off") === "on";
 const expertDays = new Set(loadJSON("levelUp.expertDays", []));
 
+// Your drink ratings, like { "Mango Lassi": { score: 9, date: "2026-11-26" } }
+// "date" is the day you rated it.
+const drinkRatings = loadJSON("levelUp.drinkRatings", {});
+
+function saveDrinkRatings() {
+  save("levelUp.drinkRatings", JSON.stringify(drinkRatings));
+}
+
 // The day you're looking at right now. It starts on today.
 let selected = today;
 
@@ -237,15 +245,123 @@ function planFor(date) {
 
   // Food changes every day. "n" counts days since the plan started, and
   // each list starts at a different spot so the meals mix differently.
-  const n = (weekOf(date) - 1) * 7 + dayIndex(date);
+  const n = dayNumber(date);
   const pick = (list, offset) => list[(n + offset) % list.length];
-  plan.drink = pick(DRINKS, 0);
+  plan.drink = drinkFor(date);
   plan.breakfast = pick(BREAKFASTS, 2);
   plan.lunch = pick(LUNCHES, 5);
   plan.dinner = pick(DINNERS, 3);
   plan.snack = pick(SNACKS, 1);
 
   return plan;
+}
+
+
+// Counts days since the plan started: 0, 1, 2...
+function dayNumber(date) {
+  return (weekOf(date) - 1) * 7 + dayIndex(date);
+}
+
+
+/* 3b. PICKING THE DRINK OF THE DAY ---------------------------------
+   Every day, each drink rolls a "lucky number" and the highest one wins.
+   Your ratings change how many rolls a drink gets:
+     not rated  1 roll
+     1-3        no rolls: never again
+     4-7        1 roll, like normal
+     8-9        2 rolls (it keeps its best one), so it wins more often
+     10         3 rolls, so it wins the most often
+   Drinks you haven't had in a while get a bonus roll for every week since
+   you last had it (and new ones get one too), so nothing gets forgotten.
+   Yesterday's drink sits out, so you never get the same one two days in a row.
+
+   A rating starts counting the day AFTER you give it, so the drink
+   you just rated doesn't disappear from today.                        */
+
+function ratingFor(drink, date) {
+  const rating = drinkRatings[drink.name];
+  if (!rating || fromKey(rating.date) >= date) return null;
+  return rating.score;
+}
+
+function rollsFor(score) {
+  if (score === null) return 1; // not rated yet
+  if (score <= 3) return 0;     // never again
+  if (score === 10) return 3;
+  if (score >= 8) return 2;
+  return 1;
+}
+
+// Turns any text into a random-looking number between 0 and 1. The same
+// text always gives the same number, so each day's drink stays the same
+// every time you open the page. (It's a "hash function".)
+function luckyNumber(text) {
+  let hash = 2166136261;
+  for (const char of text) {
+    hash ^= char.charCodeAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  // Mix the bits up some more
+  hash ^= hash >>> 16;
+  hash = Math.imul(hash, 2246822507);
+  hash ^= hash >>> 13;
+  hash = Math.imul(hash, 3266489909);
+  hash ^= hash >>> 16;
+  return (hash >>> 0) / 4294967296;
+}
+
+// Works out the drink for every day from the start of the plan up to
+// "lastDate", one day at a time (because each day needs to know what
+// yesterday's drink was). Gives back a Map: "2026-11-26" -> drink.
+function drinksUntil(lastDate) {
+  const drinks = new Map();
+  const lastHad = new Map(); // drink -> the last date you had it
+  let yesterday = null;
+
+  for (let date = planStart; date <= lastDate; date = addDays(date, 1)) {
+    let best = null;
+    let bestNumber = -1;
+
+    // Said "never again" to (almost) everything? Then everything plays.
+    const allRuledOut = DRINKS.every((d) => d === yesterday || rollsFor(ratingFor(d, date)) === 0);
+
+    for (const drink of DRINKS) {
+      if (drink === yesterday) continue;
+      let rolls = allRuledOut ? 1 : rollsFor(ratingFor(drink, date));
+
+      // Bonus rolls for drinks you haven't had in a while
+      if (rolls > 0) {
+        rolls += lastHad.has(drink) ? Math.floor(daysBetween(lastHad.get(drink), date) / 7) : 1;
+      }
+
+      for (let roll = 1; roll <= rolls; roll++) {
+        const number = luckyNumber(`${toKey(date)} ${drink.name} ${roll}`);
+        if (number > bestNumber) {
+          best = drink;
+          bestNumber = number;
+        }
+      }
+    }
+
+    drinks.set(toKey(date), best);
+    lastHad.set(best, date);
+    yesterday = best;
+  }
+  return drinks;
+}
+
+function drinkFor(date) {
+  return drinksUntil(date).get(toKey(date));
+}
+
+// The next time a drink shows up after a certain day, or null if not soon
+function nextTimeFor(drink, afterDate) {
+  const drinks = drinksUntil(addDays(afterDate, 90));
+  for (let i = 1; i <= 90; i++) {
+    const date = addDays(afterDate, i);
+    if (drinks.get(toKey(date)) === drink) return date;
+  }
+  return null;
 }
 
 
@@ -497,9 +613,56 @@ function recipeHTML(label, recipe, showSteps) {
 }
 
 function renderDrink(drink) {
+  const rating = drinkRatings[drink.name];
+  const score = rating ? rating.score : null;
+
+  // The 1 to 10 buttons
+  let buttons = "";
+  for (let i = 1; i <= 10; i++) {
+    let group = "mid";
+    if (i <= 3) group = "low";
+    if (i >= 8) group = "high";
+    buttons += `<button class="rate rate--${group}" type="button" data-score="${i}" aria-pressed="${score === i}" aria-label="${i} out of 10">${i}</button>`;
+  }
+
+  // What your rating means for this drink
+  let result = "1–3: never again · 4–7: stays in the mix · 8–10: comes back more often";
+  if (score !== null) {
+    const next = nextTimeFor(drink, selected > today ? selected : today);
+    const nextText = next ? ` Next time: <strong>${shortDate(next)}</strong>.` : "";
+    if (score <= 3) result = "<strong>Never again!</strong> You'll get other drinks instead.";
+    else if (score <= 7) result = `Got it, it stays in the mix.${nextText}`;
+    else if (score <= 9) result = `<strong>A favorite!</strong> It comes back more often.${nextText}`;
+    else result = `<strong>You love it!</strong> It comes back the most often of all.${nextText}`;
+  }
+
+  // The list of every drink you've rated, so you can change your mind
+  const rated = DRINKS.filter((d) => drinkRatings[d.name]);
+  const ratedList = rated.length === 0 ? "" : `
+    <details class="extra ratings">
+      <summary>Your drink ratings (${rated.length})</summary>
+      <ul>
+        ${rated.map((d) => `
+          <li>
+            <span>${d.name}</span>
+            <span class="ratings__right">
+              <strong class="score score--${drinkRatings[d.name].score <= 3 ? "low" : drinkRatings[d.name].score >= 8 ? "high" : "mid"}">${drinkRatings[d.name].score}/10</strong>
+              <button class="text-button" type="button" data-unrate="${d.name}">Reset</button>
+            </span>
+          </li>`).join("")}
+      </ul>
+    </details>`;
+
   document.querySelector("#drink").innerHTML = `
     <p class="eyebrow">// drink of the day</p>
-    ${recipeHTML("Blend it, shake it, sip it", drink, true)}`;
+    ${recipeHTML("Blend it, shake it, sip it", drink, true)}
+    <div class="rating" role="group" aria-labelledby="rating-title">
+      <p class="rating__title" id="rating-title">How much do you like it?</p>
+      <div class="rating__scale">${buttons}</div>
+      <div class="rating__ends" aria-hidden="true"><span>1 = don't like it</span><span>10 = love it</span></div>
+      <p class="rating__result" aria-live="polite">${result}</p>
+    </div>
+    ${ratedList}`;
 }
 
 function renderMeals(plan) {
@@ -715,6 +878,39 @@ document.querySelector("#workout").addEventListener("submit", (event) => {
   save("levelUp.testScores", JSON.stringify(testScores));
   showToast("Scores saved. Proud of you!");
   sounds.done();
+});
+
+// Rating the drink of the day (and resetting old ratings)
+document.querySelector("#drink").addEventListener("click", (event) => {
+  const rateButton = event.target.closest("[data-score]");
+  const resetButton = event.target.closest("[data-unrate]");
+  if (!rateButton && !resetButton) return;
+
+  const drinkBefore = planFor(selected).drink.name;
+
+  if (resetButton) {
+    delete drinkRatings[resetButton.dataset.unrate];
+    saveDrinkRatings();
+    render();
+    showToast("Rating reset. It's back in the mix!");
+    return;
+  }
+
+  const score = Number(rateButton.dataset.score);
+  drinkRatings[drinkBefore] = { score, date: toKey(today) };
+  saveDrinkRatings();
+  sounds.rate(score);
+  render();
+
+  // On a future day, a "never again" drink gets swapped out right away
+  if (score <= 3 && planFor(selected).drink.name !== drinkBefore) {
+    showToast("Swapped! Here's a different drink for this day.");
+    return;
+  }
+  if (score <= 3) showToast("Never again! 👋");
+  else if (score >= 8) showToast("Added to your favorites! 😋");
+  else showToast("Thanks for rating!");
+  document.querySelector(`#drink [data-score="${score}"]`).focus(); // keep keyboard users in place
 });
 
 // The expert mode button. Turning it on adds data-mode="expert" to the
@@ -1030,6 +1226,11 @@ const sounds = {
   done: () => {
     startAudio();
     [523, 659, 784, 1047].forEach((pitch, i) => beep(pitch, 0.12, i * 0.08, 0.1));
+  },
+  // Higher rating, higher note!
+  rate: (score) => {
+    startAudio();
+    beep(300 + score * 70, 0.14);
   },
   expertOn: () => {
     startAudio();

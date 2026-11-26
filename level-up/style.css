@@ -1290,6 +1290,93 @@ body.expert-flash::after {
   color: var(--fg);
 }
 
+/* Rating the drink from 1 to 10 */
+.rating {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.rating__title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.rating__scale {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 0.3rem;
+}
+
+.rate {
+  min-width: 0;
+  height: 2.6rem;
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.rate:hover {
+  transform: translateY(-2px);
+}
+
+/* Low scores are coral, middle ones blue-gray, high ones teal */
+.rate--low { border-color: var(--bug-border); }
+.rate--high { border-color: rgba(127, 220, 200, 0.45); }
+
+.rate--low[aria-pressed="true"] { border-color: var(--bug); background: var(--bug); color: var(--bg); }
+.rate--mid[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: var(--bg); }
+.rate--high[aria-pressed="true"] { border-color: var(--teal); background: var(--teal); color: var(--bg); }
+
+.rating__ends {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+}
+
+.rating__result {
+  color: var(--dim);
+  font-size: 0.9375rem;
+}
+
+.rating__result strong {
+  color: var(--fg);
+}
+
+.ratings__right {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.ratings .text-button {
+  padding: 0.2rem 0.5rem;
+}
+
+.score--low { color: var(--bug); }
+.score--mid { color: var(--accent); }
+.score--high { color: var(--teal); }
+
+/* On narrow phones, the 1 to 10 buttons go on two rows */
+@media (max-width: 480px) {
+  .rating__scale {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
 .snack {
   display: flex;
   flex-direction: column;

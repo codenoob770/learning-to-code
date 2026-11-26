@@ -326,6 +326,34 @@ const DRINKS = [
     steps: ["Put everything in a blender.", "Blend until smooth. Tastes like a vacation."],
     why: "Coconut water has potassium, one of the minerals you lose when you sweat.",
   },
+  {
+    name: "Blueberry Vanilla Smoothie",
+    minutes: 5,
+    ingredients: ["1 cup frozen blueberries", "1 banana", "1 cup milk", "½ cup vanilla yogurt"],
+    steps: ["Put everything in a blender.", "Blend until smooth and purple."],
+    why: "Blueberries are packed with antioxidants, which help your body recover from hard workouts.",
+  },
+  {
+    name: "Orange Creamsicle Smoothie",
+    minutes: 5,
+    ingredients: ["1 orange, peeled (or ½ cup orange juice)", "½ cup vanilla yogurt", "½ cup milk", "½ frozen banana", "A few ice cubes"],
+    steps: ["Put everything in a blender.", "Blend until creamy. Tastes like the ice cream bar!"],
+    why: "Oranges are full of vitamin C, which helps keep you from getting sick during the season.",
+  },
+  {
+    name: "Cucumber Mint Water",
+    minutes: 2,
+    ingredients: ["1 big water bottle of cold water", "5 thin cucumber slices", "2 lime or lemon slices", "A few mint leaves"],
+    steps: ["Drop everything into your water bottle.", "Let it sit in the fridge for 30 minutes so the flavor soaks in. Refill the water all day."],
+    why: "Plain water is the best drink there is, and this makes it way more fun to keep sipping.",
+  },
+  {
+    name: "Healthy Hot Cocoa",
+    minutes: 5,
+    ingredients: ["1 cup milk", "1 tbsp cocoa powder", "1 tsp honey", "A pinch of cinnamon"],
+    steps: ["Warm the milk in a mug in the microwave for about 1 minute. Careful, it gets hot!", "Stir in the cocoa, honey and cinnamon until smooth."],
+    why: "Warm, cozy and full of protein from the milk. Perfect after a cold soccer practice.",
+  },
 ];
 
 const BREAKFASTS = [
