@@ -24,8 +24,8 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=JetBrains+Mono:wght@400;600&display=swap">
 
   <!-- "?v=2" makes browsers download the newest version after an update -->
-  <link rel="stylesheet" href="style.css?v=2">
-  <script src="game.js?v=2" defer></script>
+  <link rel="stylesheet" href="style.css?v=3">
+  <script src="game.js?v=3" defer></script>
 </head>
 <body>
 
@@ -68,6 +68,9 @@
     <!-- Short messages like "Combo ×2!" pop up here -->
     <p class="toast" id="toast" role="status" aria-live="polite"></p>
 
+    <!-- Power-ups you caught (like ❄️ 4s), shown during a game -->
+    <p class="effects" id="effects" hidden></p>
+
     <!-- Title screen -->
     <section class="screen" id="screen-title" aria-labelledby="title-heading">
       <div class="panel">
@@ -93,7 +96,13 @@
             <div><strong>Feature</strong><span>Don't squash it! Let it reach production.</span></div>
             <span class="legend__points legend__points--feature">+25</span>
           </li>
+          <li>
+            <canvas class="legend__icon" data-kind="boss" aria-hidden="true"></canvas>
+            <div><strong>Boss bug</strong><span>Shows up every few versions. Tap it LOTS!</span></div>
+            <span class="legend__points legend__points--boss">+200</span>
+          </li>
         </ul>
+        <p class="panel__tip">Catch power-ups as they float down: ❄️ freeze, ⭐ double points and 🛡️ shield.</p>
 
         <p class="panel__tip">
           Squash bugs in a row without missing to build a combo, up to ×5.
@@ -104,6 +113,10 @@
           <button class="button" id="start-button" type="button">Start squashing</button>
           <p class="panel__best">Best score: <strong id="best-score">0</strong></p>
         </div>
+        <button class="daily-button" id="daily-button" type="button">
+          <span class="daily-button__title">📅 Daily challenge: <strong id="daily-name">Golden Day</strong></span>
+          <span class="daily-button__note" id="daily-note"></span>
+        </button>
       </div>
     </section>
 
@@ -126,12 +139,14 @@
         <h2 class="panel__title" id="over-heading">All tests broke!</h2>
         <p class="panel__lead">Your rank: <strong id="final-rank">Intern</strong></p>
         <p class="new-best" id="new-best" hidden>New best score!</p>
+        <p class="daily-result" id="daily-result" hidden></p>
 
         <dl class="results">
           <div><dt>Score</dt><dd id="final-score">0</dd></div>
           <div><dt>Bugs squashed</dt><dd id="final-squashed">0</dd></div>
           <div><dt>Accuracy</dt><dd id="final-accuracy">0%</dd></div>
           <div><dt>Reached</dt><dd id="final-version">v1.0</dd></div>
+          <div><dt>Bosses</dt><dd id="final-bosses">0</dd></div>
         </dl>
 
         <div class="panel__actions">

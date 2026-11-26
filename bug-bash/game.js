@@ -37,6 +37,10 @@ const RULES = {
   squashesPerCombo: 4,    // squashes in a row needed for each +1 to the combo
   secondsPerVersion: 20,  // a new "version" (a harder level) comes out this often
   productionHeight: 46,   // height of the red zone at the bottom, in pixels
+  bossEvery: 3,           // a boss bug shows up every 3rd version (v1.2, v1.5, v1.8...)
+  bossHits: 8,            // taps to squash the first boss (each boss after needs 3 more)
+  bossPoints: 200,
+  powerUpEvery: 16,       // about how many seconds between power-ups
 };
 
 // The canvas can't use CSS variables, so the game's colors live here.
@@ -57,7 +61,26 @@ const LOOKS = {
   bug:     { shell: "#ff7a5c", dark: "#9c3324", legs: "#ffb48a", goo: "#b9e65c" },
   golden:  { shell: "#ffe24d", dark: "#a8820a", legs: "#fff0a8", goo: "#ffe24d" },
   feature: { shell: "#7fdcc8", dark: "#2e8c78", legs: "#c4f1e7", goo: "#7fdcc8" },
+  boss:    { shell: "#a98bff", dark: "#4b3aa8", legs: "#d6c9ff", goo: "#c59bff" },
 };
+
+// Power-ups that float down during a game. Tap one to catch it!
+const POWER_UPS = {
+  freeze: { icon: "❄️", name: "Freeze!", color: "#8fe3ff", note: "Bugs are slow for 5 seconds" },
+  double: { icon: "⭐", name: "Double points!", color: "#ffe24d", note: "for 8 seconds" },
+  shield: { icon: "🛡️", name: "Shield!", color: "#7fdcc8", note: "It blocks the next bug that gets through" },
+};
+
+// The daily challenge: one special rule a day, the same for everyone
+const DAILY_RULES = [
+  { id: "golden", name: "Golden Day", note: "Golden bugs show up 3 times as often!" },
+  { id: "features", name: "Feature Frenzy", note: "Lots of features. Don't squash them!" },
+  { id: "speed", name: "Speed Run", note: "You start at v1.3 speed. Hang on!" },
+  { id: "bosses", name: "Boss Rush", note: "A boss bug every 2 versions!" },
+  { id: "oneLife", name: "One Life", note: "Just 1 test. No mistakes!" },
+  { id: "power", name: "Power Party", note: "Power-ups drop twice as often!" },
+  { id: "tiny", name: "Tiny Bugs", note: "The bugs are extra small today!" },
+];
 
 // The code the bugs crawl over. Just for fun: none of it is real!
 const BACKGROUND_CODE = [
@@ -133,6 +156,15 @@ const game = {
   version: 0,      // 0 means v1.0, 1 means v1.1, and so on
   spawnTimer: 0,   // seconds until the next bug appears
   shake: 0,        // how much the screen is shaking right now
+  totalTests: 3,   // tests at the start of this game
+  daily: false,    // playing the daily challenge?
+  rule: null,      // the daily challenge's special rule
+  dropTimer: 0,    // seconds until the next power-up
+  freeze: 0,       // seconds of "freeze" left
+  double: 0,       // seconds of "double points" left
+  shield: 0,       // shields ready to block a bug
+  bosses: 0,       // boss bugs that showed up this game
+  bossesSquashed: 0,
 };
 
 // Lists ("arrays") of everything on screen
@@ -141,6 +173,7 @@ let splats = [];
 let particles = [];
 let popups = [];
 let ripples = [];
+let drops = []; // power-ups floating down
 
 // Small helpers for saving things in the browser. try/catch keeps the
 // game working even if the browser blocks storage.
@@ -219,29 +252,71 @@ const sounds = {
 
 /* 4. MAKING BUGS AND MOVING THEM -------------------------------- */
 
+// A random number from 0 to 1. In the daily challenge, it comes from a
+// "seeded" generator, so the bugs come in the same order for everyone.
+function rand() {
+  return game.daily ? game.rng() : Math.random();
+}
+
+// Mulberry32: a tiny seeded random number generator
+function seededRandom(seed) {
+  return function () {
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function todayKey() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+}
+
+// Today's daily challenge rule (it changes every day)
+function dailyRule() {
+  const now = new Date();
+  const dayNumber = Math.floor(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 86400000);
+  return DAILY_RULES[dayNumber % DAILY_RULES.length];
+}
+
+function ruleIs(id) {
+  return game.daily && game.rule && game.rule.id === id;
+}
+
 // Bugs get a little bigger on bigger screens
 function bugSize() {
   return Math.max(20, Math.min(30, Math.min(width, height) / 22));
 }
 
 function makeBug(kind, x, y, angle) {
+  let size = bugSize() * (kind === "golden" ? 0.85 : 1);
+  if (kind === "boss") size = bugSize() * 2.3;
+  if (ruleIs("tiny") && kind !== "boss") size *= 0.7;
+  let speed = kind === "golden" ? 1.6 : 0.85 + rand() * 0.3;
+  if (kind === "boss") speed = 0.42;
   return {
-    kind,                                     // "bug", "golden" or "feature"
+    kind,                                     // "bug", "golden", "feature" or "boss"
     x,
     y,
     angle,                                    // which way it faces (in radians)
-    size: bugSize() * (kind === "golden" ? 0.85 : 1),
-    speed: kind === "golden" ? 1.6 : 0.85 + Math.random() * 0.3,
+    size,
+    speed,
     wobble: Math.random() * Math.PI * 2,      // where it is in its side-to-side wiggle
     legs: Math.random() * Math.PI * 2,        // where its legs are in their walk
+    hp: 1,                                    // taps left to squash it (bosses need lots)
+    maxHp: 1,
+    hit: 0,                                   // a boss flashes for a moment when you hit it
   };
 }
 
 // Pick a random kind of bug. Features only show up after the first few seconds.
 function randomKind() {
-  const roll = Math.random(); // a random number from 0 to 1
-  if (roll < 0.08) return "golden";
-  if (game.time > 8 && roll < 0.2) return "feature";
+  const roll = rand(); // a random number from 0 to 1
+  const golden = ruleIs("golden") ? 0.24 : 0.08;
+  const feature = ruleIs("features") ? 0.4 : 0.12;
+  if (roll < golden) return "golden";
+  if (game.time > 8 && roll < golden + feature) return "feature";
   return "bug";
 }
 
@@ -249,8 +324,26 @@ function randomKind() {
 function spawnBug() {
   if (width < 100) return;
   const margin = 40;
-  const x = margin + Math.random() * (width - margin * 2);
+  const x = margin + rand() * (width - margin * 2);
   bugs.push(makeBug(randomKind(), x, -30, Math.PI / 2));
+}
+
+// A BOSS BUG: big, slow, and it takes lots of taps to squash
+function spawnBoss() {
+  if (game.mode !== "playing" && game.mode !== "paused") return; // the game ended first
+  const boss = makeBug("boss", width / 2, -60, Math.PI / 2);
+  boss.hp = RULES.bossHits + game.bosses * 3;
+  boss.maxHp = boss.hp;
+  bugs.push(boss);
+  game.bosses += 1;
+  showToast("⚠️ A BOSS BUG appeared! Tap it lots!", "bad");
+  sounds.ouch();
+}
+
+// A power-up floats down from the top
+function spawnDrop() {
+  const kinds = Object.keys(POWER_UPS);
+  drops.push({ kind: kinds[Math.floor(rand() * kinds.length)], x: 50 + rand() * Math.max(1, width - 100), y: -24, sway: rand() * 6 });
 }
 
 // On the title screen, bugs wander in from the left, right or top edge.
@@ -294,7 +387,8 @@ function moveBugDown(bug, dt) {
   if (bug.x > width - 30) target += 0.7;  // too close to the right edge: steer left
   turnToward(bug, target, 4, dt);
 
-  const pixelsPerSecond = (height / crossingTime()) * bug.speed;
+  const slow = game.freeze > 0 ? 0.35 : 1; // the freeze power-up
+  const pixelsPerSecond = (height / crossingTime()) * bug.speed * slow;
   bug.x += Math.cos(bug.angle) * pixelsPerSecond * dt;
   bug.y += Math.sin(bug.angle) * pixelsPerSecond * dt;
 }
@@ -330,6 +424,13 @@ canvas.addEventListener("pointerdown", (event) => {
   const x = event.clientX - box.left;
   const y = event.clientY - box.top;
 
+  // Power-ups first: they float on top of the bugs
+  const drop = game.mode === "playing" && drops.find((d) => Math.hypot(d.x - x, d.y - y) < 32);
+  if (drop) {
+    catchPowerUp(drop);
+    return;
+  }
+
   const bug = findBugAt(x, y);
   if (bug) {
     squash(bug);
@@ -337,6 +438,52 @@ canvas.addEventListener("pointerdown", (event) => {
     missed(x, y);
   }
 });
+
+function catchPowerUp(drop) {
+  drops.splice(drops.indexOf(drop), 1);
+  const power = POWER_UPS[drop.kind];
+  if (drop.kind === "freeze") game.freeze = 5;
+  if (drop.kind === "double") game.double = 8;
+  if (drop.kind === "shield") game.shield = Math.min(2, game.shield + 1);
+  addBurst(drop.x, drop.y, power.color);
+  addPopup(drop.x, drop.y, power.name, power.color);
+  showToast(`${power.icon} ${power.name} ${power.note}`, "good");
+  sounds.golden();
+  updateEffects();
+}
+
+// Points are doubled while "double points" is on
+function pointBoost() {
+  return game.double > 0 ? 2 : 1;
+}
+
+// One tap on a boss bug
+function hitBoss(boss) {
+  boss.hp -= 1;
+  boss.hit = 0.15;
+  game.clicks += 1;
+  game.streak += 1;
+  addBurst(boss.x, boss.y, LOOKS.boss.goo);
+  sounds.squash();
+  if (boss.hp > 0) {
+    addPopup(boss.x, boss.y - boss.size * 0.8, `${boss.hp}`, LOOKS.boss.shell);
+    updateScoreboard();
+    return;
+  }
+  // Squashed it!
+  bugs.splice(bugs.indexOf(boss), 1);
+  addSplat(boss);
+  for (let i = 0; i < 3; i++) addBurst(boss.x + (Math.random() - 0.5) * boss.size, boss.y + (Math.random() - 0.5) * boss.size, LOOKS.boss.goo);
+  const points = RULES.bossPoints * pointBoost();
+  game.score += points;
+  game.squashed += 1;
+  game.bossesSquashed += 1;
+  game.shake = 0.25;
+  addPopup(boss.x, boss.y, `+${points}`, LOOKS.boss.shell);
+  showToast(`💥 BOSS SQUASHED! +${points}`, "good");
+  sounds.levelUp();
+  updateScoreboard();
+}
 
 // Find the bug closest to a point, if one is close enough to hit.
 // The hit area is a bit bigger than the bug so fingers can hit it too.
@@ -359,6 +506,10 @@ function comboMultiplier() {
 }
 
 function squash(bug) {
+  if (bug.kind === "boss" && game.mode === "playing") {
+    hitBoss(bug);
+    return;
+  }
   bugs.splice(bugs.indexOf(bug), 1); // take it out of the list
   addSplat(bug);
   addBurst(bug.x, bug.y, LOOKS[bug.kind].goo);
@@ -380,7 +531,7 @@ function squash(bug) {
   game.squashed += 1;
   game.streak += 1;
   const combo = comboMultiplier();
-  const points = (bug.kind === "golden" ? RULES.goldenPoints : RULES.bugPoints) * combo;
+  const points = (bug.kind === "golden" ? RULES.goldenPoints : RULES.bugPoints) * combo * pointBoost();
   game.score += points;
   addPopup(bug.x, bug.y, `+${points}`, bug.kind === "golden" ? LOOKS.golden.shell : COLORS.text);
 
@@ -424,13 +575,31 @@ function reachedProduction(bug) {
     return;
   }
 
+  // A shield (power-up) blocks it
+  if (game.shield > 0) {
+    game.shield -= 1;
+    addPopup(bug.x, y, "blocked!", POWER_UPS.shield.color);
+    addBurst(bug.x, y + 10, POWER_UPS.shield.color);
+    showToast("🛡️ Your shield blocked it!", "good");
+    sounds.shipped();
+    updateEffects();
+    return;
+  }
+
+  if (bug.kind === "boss") {
+    addPopup(bug.x, y, "−2 tests", COLORS.danger);
+    addBurst(bug.x, y + 10, COLORS.danger);
+    breakTest("The BOSS reached production!", 2);
+    return;
+  }
+
   addPopup(bug.x, y, "−1 test", COLORS.danger);
   addBurst(bug.x, y + 10, COLORS.danger);
   breakTest(bug.kind === "golden" ? "A golden bug got away!" : "A bug reached production!");
 }
 
-function breakTest(message) {
-  game.tests -= 1;
+function breakTest(message, count = 1) {
+  game.tests = Math.max(0, game.tests - count);
   game.streak = 0;
   game.shake = 0.4;
   sounds.ouch();
@@ -439,7 +608,7 @@ function breakTest(message) {
   if (game.tests <= 0) {
     endGame();
   } else {
-    showToast(`${message} −1 test`, "bad");
+    showToast(`${message} −${count} ${count === 1 ? "test" : "tests"}`, "bad");
   }
 }
 
@@ -468,13 +637,34 @@ function updateGame(dt) {
     showToast(`${versionName()} released! Bugs got faster.`, "good");
     sounds.levelUp();
     updateScoreboard();
+    const every = ruleIs("bosses") ? 2 : RULES.bossEvery;
+    if (version % every === every - 1) setTimeout(spawnBoss, 1200);
   }
+
+  // Power-ups: a new one now and then, and the timers of the ones you caught
+  game.dropTimer -= dt;
+  if (game.dropTimer <= 0) {
+    spawnDrop();
+    const every = ruleIs("power") ? RULES.powerUpEvery / 2 : RULES.powerUpEvery;
+    game.dropTimer = every * (0.7 + rand() * 0.6);
+  }
+  for (const drop of [...drops]) {
+    drop.sway += dt * 2;
+    drop.y += (height / 7) * dt;
+    drop.x += Math.sin(drop.sway) * 30 * dt;
+    if (drop.y > height - RULES.productionHeight) drops.splice(drops.indexOf(drop), 1);
+  }
+  const hadEffects = game.freeze > 0 || game.double > 0;
+  game.freeze = Math.max(0, game.freeze - dt);
+  game.double = Math.max(0, game.double - dt);
+  if (hadEffects) updateEffects();
+  for (const bug of bugs) bug.hit = Math.max(0, bug.hit - dt);
 
   // Time for a new bug?
   game.spawnTimer -= dt;
   if (game.spawnTimer <= 0) {
     spawnBug();
-    game.spawnTimer = spawnInterval() * (0.7 + Math.random() * 0.6);
+    game.spawnTimer = spawnInterval() * (0.7 + rand() * 0.6);
   }
 
   // Move every bug. [...bugs] makes a copy, so we can safely remove
@@ -589,6 +779,8 @@ function draw() {
   ripples.forEach(drawRipple);
   bugs.forEach((bug) => drawBug(ctx, bug));
   bugs.filter((bug) => bug.kind === "feature").forEach(drawFeatureTag);
+  bugs.filter((bug) => bug.kind === "boss").forEach(drawBossBar);
+  drops.forEach(drawDrop);
   particles.forEach(drawParticle);
   popups.forEach(drawPopup);
   ctx.globalAlpha = 1;
@@ -719,12 +911,12 @@ function drawBug(c, bug) {
   c.arc(s * 0.58, 0, s * 0.24, 0, Math.PI * 2);
   c.fill();
 
-  // Shell (golden bugs glow)
-  if (bug.kind === "golden") {
+  // Shell (golden bugs glow, and a boss flashes white when you hit it)
+  if (bug.kind === "golden" || bug.kind === "boss") {
     c.shadowColor = look.shell;
     c.shadowBlur = 18;
   }
-  c.fillStyle = look.shell;
+  c.fillStyle = bug.hit > 0 ? "#ffffff" : look.shell;
   c.beginPath();
   c.ellipse(0, 0, s * 0.56, s * 0.43, 0, 0, Math.PI * 2);
   c.fill();
@@ -752,6 +944,41 @@ function drawBug(c, bug) {
   c.fill();
 
   c.restore();
+}
+
+// A boss bug's health bar, and the word BOSS
+function drawBossBar(boss) {
+  const barWidth = boss.size * 1.6;
+  const top = boss.y - boss.size - 18;
+  ctx.fillStyle = "rgba(0, 0, 0, 0.55)";
+  ctx.fillRect(boss.x - barWidth / 2 - 2, top - 2, barWidth + 4, 10);
+  ctx.fillStyle = LOOKS.boss.shell;
+  ctx.fillRect(boss.x - barWidth / 2, top, barWidth * (boss.hp / boss.maxHp), 6);
+  ctx.font = '700 11px "JetBrains Mono", ui-monospace, monospace';
+  ctx.textAlign = "center";
+  ctx.textBaseline = "bottom";
+  ctx.fillStyle = "#efeaff";
+  ctx.fillText(`BOSS ${boss.hp}`, boss.x, top - 4);
+}
+
+// A power-up: a glowing bubble with an emoji inside
+function drawDrop(drop) {
+  const power = POWER_UPS[drop.kind];
+  ctx.save();
+  ctx.shadowColor = power.color;
+  ctx.shadowBlur = 16;
+  ctx.fillStyle = "rgba(14, 20, 36, 0.85)";
+  ctx.strokeStyle = power.color;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.arc(drop.x, drop.y, 19, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+  ctx.font = "20px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(power.icon, drop.x, drop.y + 1);
 }
 
 // A little "feature" name tag floating above each feature
@@ -863,16 +1090,45 @@ function readPowerUps() {
 const POWER = readPowerUps();
 const TOTAL_TESTS = RULES.startingTests + POWER.lives;
 game.tests = TOTAL_TESTS;
+game.totalTests = TOTAL_TESTS;
 
-// One dot on the scoreboard for each test
-const testDots = [];
-if (TOTAL_TESTS > 4) testsBox.classList.add("tests--many"); // two neat rows
-for (let i = 0; i < TOTAL_TESTS; i++) {
-  const dot = document.createElement("span");
-  dot.className = "test-dot";
-  dot.setAttribute("aria-hidden", "true");
-  testsBox.append(dot);
-  testDots.push(dot);
+// One dot on the scoreboard for each test (made again at the start of
+// each game, since the "One Life" daily challenge has just 1 test)
+let testDots = [];
+function makeTestDots(total) {
+  testDots.forEach((dot) => dot.remove());
+  testDots = [];
+  testsBox.classList.toggle("tests--many", total > 4); // two neat rows
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement("span");
+    dot.className = "test-dot";
+    dot.setAttribute("aria-hidden", "true");
+    testsBox.append(dot);
+    testDots.push(dot);
+  }
+}
+makeTestDots(TOTAL_TESTS);
+
+// Power-ups you caught, shown at the top of the game area
+const effectsText = document.querySelector("#effects");
+function updateEffects() {
+  const parts = [];
+  if (game.freeze > 0) parts.push(`❄️ ${Math.ceil(game.freeze)}s`);
+  if (game.double > 0) parts.push(`⭐ ×2 ${Math.ceil(game.double)}s`);
+  if (game.shield > 0) parts.push(`🛡️${game.shield > 1 ? ` ×${game.shield}` : ""}`);
+  const text = game.mode === "playing" || game.mode === "paused" ? parts.join("  ") : "";
+  if (effectsText.textContent !== text) effectsText.textContent = text;
+  effectsText.hidden = text === "";
+}
+
+// Today's best score in the daily challenge
+function dailyBest() {
+  try {
+    const saved = JSON.parse(load("bugBashDaily", "null"));
+    return saved && saved.date === todayKey() ? saved.best : 0;
+  } catch (error) {
+    return 0;
+  }
 }
 
 function versionName() {
@@ -898,7 +1154,7 @@ function updateScoreboard() {
   versionText.textContent = versionName();
 
   testDots.forEach((dot, i) => dot.classList.toggle("is-broken", i >= game.tests));
-  testsText.textContent = `${game.tests} of ${TOTAL_TESTS} passing`;
+  testsText.textContent = `${game.tests} of ${game.totalTests} passing`;
 }
 
 // Show one screen (or none, with null) and hide the others
@@ -919,23 +1175,37 @@ function showToast(message, mood = "") {
   toastTimer = setTimeout(() => toast.classList.remove("is-visible"), 1800);
 }
 
-function startGame() {
+// daily = true starts today's daily challenge
+function startGame(daily = false) {
   startAudio();
+  game.daily = daily;
+  game.rule = daily ? dailyRule() : null;
+  game.rng = seededRandom(daily ? Number(todayKey().replace(/-/g, "")) : 1);
   game.mode = "playing";
   game.score = 0;
-  game.tests = TOTAL_TESTS;
+  game.totalTests = ruleIs("oneLife") ? 1 : TOTAL_TESTS;
+  game.tests = game.totalTests;
+  makeTestDots(game.totalTests);
   game.sprayUsed = false;
   game.streak = 0;
   game.squashed = 0;
   game.clicks = 0;
-  game.time = 0;
-  game.version = 0;
+  game.version = ruleIs("speed") ? 3 : 0;
+  game.time = game.version * RULES.secondsPerVersion;
   game.spawnTimer = 0.6;
+  game.dropTimer = 10;
+  game.freeze = 0;
+  game.double = 0;
+  game.shield = 0;
+  game.bosses = 0;
+  game.bossesSquashed = 0;
   bugs = [];
   splats = [];
+  drops = [];
   showScreen(null);
   updateScoreboard();
-  showToast("Squash the bugs! Leave the features alone.");
+  updateEffects();
+  showToast(daily ? `📅 ${game.rule.name}: ${game.rule.note}` : "Squash the bugs! Leave the features alone.");
 }
 
 function pauseGame() {
@@ -979,14 +1249,40 @@ function endGame() {
   document.querySelector("#final-rank").textContent = rankFor(game.score);
   document.querySelector("#new-best").hidden = !isNewBest;
   document.querySelector("#best-score").textContent = game.best.toLocaleString();
+  document.querySelector("#final-bosses").textContent = game.bossesSquashed;
+
+  // The daily challenge keeps its own best score for today
+  const dailyNote = document.querySelector("#daily-result");
+  if (game.daily) {
+    const before = dailyBest();
+    if (game.score > before) save("bugBashDaily", JSON.stringify({ date: todayKey(), best: game.score }));
+    dailyNote.textContent = game.score > before
+      ? `📅 New best in today's challenge (${game.rule.name})!`
+      : `📅 Today's challenge best: ${before.toLocaleString()}`;
+    dailyNote.hidden = false;
+  } else {
+    dailyNote.hidden = true;
+  }
+  updateDailyButton();
+  drops = [];
+  updateEffects();
 
   showScreen("over");
   document.querySelector("#again-button").focus();
 }
 
+// The daily challenge button on the title screen
+function updateDailyButton() {
+  const rule = dailyRule();
+  const best = dailyBest();
+  document.querySelector("#daily-name").textContent = rule.name;
+  document.querySelector("#daily-note").textContent = `${rule.note}${best ? ` Today's best: ${best.toLocaleString()}` : ""}`;
+}
+
 // Buttons
-document.querySelector("#start-button").addEventListener("click", startGame);
-document.querySelector("#again-button").addEventListener("click", startGame);
+document.querySelector("#start-button").addEventListener("click", () => startGame(false));
+document.querySelector("#daily-button").addEventListener("click", () => startGame(true));
+document.querySelector("#again-button").addEventListener("click", () => startGame(game.daily));
 document.querySelector("#resume-button").addEventListener("click", resumeGame);
 
 pauseButton.addEventListener("click", () => {
@@ -1026,6 +1322,11 @@ function useSpray() {
   let count = 0;
   for (const bug of [...bugs]) {
     if (bug.kind === "feature") continue;
+    if (bug.kind === "boss") {
+      // Bosses are too tough: the spray takes off 4 hits
+      for (let i = 0; i < 4 && bugs.includes(bug); i++) hitBoss(bug);
+      continue;
+    }
     bugs.splice(bugs.indexOf(bug), 1);
     addSplat(bug);
     addBurst(bug.x, bug.y, LOOKS[bug.kind].goo);
@@ -1049,7 +1350,7 @@ document.addEventListener("keydown", (event) => {
   }
   const onAButton = event.target.closest && event.target.closest("button, a");
   if (event.key === "Enter" && !onAButton && (game.mode === "title" || game.mode === "over")) {
-    startGame();
+    startGame(game.mode === "over" && game.daily);
   }
 });
 
@@ -1103,6 +1404,7 @@ if (POWER.lives > 0) {
 }
 showSoundSetting();
 updateScoreboard();
+updateDailyButton();
 showScreen("title");
 
 // THE GAME LOOP. requestAnimationFrame asks the browser to call loop()

@@ -358,6 +358,27 @@ button {
   height: 44px;
 }
 
+/* Small or short screens: the Start buttons go right under the title,
+   and the guide to the bugs comes after them */
+@media (max-width: 639px), (max-height: 720px) {
+  #screen-title .panel__actions { order: 1; }
+  #screen-title .daily-button { order: 2; }
+  #screen-title .legend,
+  #screen-title .panel__tip { order: 3; }
+}
+
+/* Wider screens: the four kinds of bugs in two columns, so it all fits */
+@media (min-width: 640px) {
+  #screen-title .panel {
+    width: min(100%, 40rem);
+  }
+
+  #screen-title .legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 .legend strong {
   display: block;
   font-size: 0.9375rem;
@@ -379,6 +400,61 @@ button {
 .legend__points--bug { color: var(--bug); }
 .legend__points--golden { color: var(--marker); }
 .legend__points--feature { color: var(--teal); }
+.legend__points--boss { color: #a98bff; }
+
+/* The daily challenge button on the title screen */
+.daily-button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  width: 100%;
+  padding: 0.75rem 0.95rem;
+  border: 1px dashed var(--marker);
+  border-radius: 8px;
+  background: rgba(255, 226, 77, 0.07);
+  color: var(--fg);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.daily-button:hover {
+  background: rgba(255, 226, 77, 0.14);
+}
+
+.daily-button__title strong {
+  color: var(--marker);
+}
+
+.daily-button__note {
+  color: var(--dim);
+  font-size: 0.875rem;
+}
+
+.daily-result {
+  margin: 0;
+  color: var(--marker);
+  font-weight: 700;
+}
+
+/* Power-ups you caught, just above the red zone */
+.effects {
+  position: absolute;
+  bottom: calc(46px + 0.6rem);
+  left: 0.75rem;
+  z-index: 4;
+  margin: 0;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(14, 20, 36, 0.85);
+  color: var(--fg);
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+  white-space: pre;
+  pointer-events: none;
+}
 
 .panel__tip {
   margin: 0;
@@ -422,6 +498,10 @@ button {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.5rem;
   margin: 0;
+}
+
+.results div:last-child:nth-child(odd) {
+  grid-column: 1 / -1; /* an odd one out takes the whole row */
 }
 
 .results div {
