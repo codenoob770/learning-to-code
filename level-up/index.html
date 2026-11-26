@@ -16,6 +16,7 @@
       charts.js   -> the progress charts
       grocery.js  -> the week's grocery list
       ai-coach.js -> asking Claude questions (on the Claude version)
+      quest.js    -> the Backflip Quest side quest
       app.js      -> what the buttons do, and building each day's plan
 
     Most of the page is empty here on purpose: app.js fills in the
@@ -35,19 +36,20 @@
   <!-- The "?v=8" is a version number. Browsers keep old copies of files for a
        while; changing the number makes them download the newest version.
        Add 1 to it (on every line below) whenever you change those files. -->
-  <link rel="stylesheet" href="style.css?v=10">
+  <link rel="stylesheet" href="style.css?v=11">
   <!-- These load in order. app.js goes last, because it starts the page
        and uses things from all the others. -->
-  <script src="plan.js?v=10" defer></script>
-  <script src="demos.js?v=10" defer></script>
-  <script src="trophies.js?v=10" defer></script>
-  <script src="coach.js?v=10" defer></script>
-  <script src="practice.js?v=10" defer></script>
-  <script src="habits.js?v=10" defer></script>
-  <script src="charts.js?v=10" defer></script>
-  <script src="grocery.js?v=10" defer></script>
-  <script src="ai-coach.js?v=10" defer></script>
-  <script src="app.js?v=10" defer></script>
+  <script src="plan.js?v=11" defer></script>
+  <script src="demos.js?v=11" defer></script>
+  <script src="trophies.js?v=11" defer></script>
+  <script src="coach.js?v=11" defer></script>
+  <script src="practice.js?v=11" defer></script>
+  <script src="habits.js?v=11" defer></script>
+  <script src="charts.js?v=11" defer></script>
+  <script src="grocery.js?v=11" defer></script>
+  <script src="ai-coach.js?v=11" defer></script>
+  <script src="quest.js?v=11" defer></script>
+  <script src="app.js?v=11" defer></script>
 </head>
 <body>
 
@@ -214,6 +216,26 @@
           <div id="chart-weeks-table"></div>
         </figure>
       </div>
+    </section>
+
+    <!-- ============ SIDE QUEST: BACKFLIP (quest.js) ============ -->
+    <section class="panel quest" aria-labelledby="quest-title">
+      <div class="panel__head">
+        <p class="eyebrow">// side quest</p>
+        <span class="quest-tag">+25 XP per task</span>
+      </div>
+      <h2 class="panel__title" id="quest-title">🤸 Backflip Quest</h2>
+      <p class="panel__lead">Learn every skill a backflip needs, one stage at a time. Check off a task when you can do it, and finish a stage to unlock the next.</p>
+      <p class="quest-safety">
+        <strong>⚠️ Safety first:</strong> never try a backflip alone, on a hard floor, or on a bed or
+        trampoline without a coach. Stages 1 to 3 are safe to practice at home. The real flip happens
+        only in stage 4, with a coach spotting you on mats.
+      </p>
+      <div class="quest-progress">
+        <p class="quest-progress__text" id="quest-progress-text"></p>
+        <div class="xpbar" aria-hidden="true"><div class="xpbar__fill" id="quest-fill"></div></div>
+      </div>
+      <div class="quest-stages" id="quest-stages"></div>
     </section>
 
     <div class="duo">

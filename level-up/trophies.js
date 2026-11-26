@@ -29,6 +29,7 @@ const XP_RULES = {
   water: 5,         // each glass of water (up to 8 a day)
   sleepLogged: 10,  // logging how long you slept
   goodSleep: 10,    // extra for 9 hours or more
+  questTask: 25,    // each Backflip Quest task (quest.js)
 };
 
 function isRestDay(date) {
@@ -89,6 +90,13 @@ function trophyStats() {
     }
   }
 
+  // Backflip Quest (quest.js): XP for each task, and how many stages are done
+  // in order (stage 3 only counts once stages 1 and 2 are done too)
+  const questTaskIds = SIDE_QUEST.stages.flatMap((stage) => stage.tasks.map((task) => task.id));
+  xp += questTaskIds.filter((id) => questTasks.has(id)).length * XP_RULES.questTask;
+  const firstOpenStage = SIDE_QUEST.stages.findIndex((stage) => !stage.tasks.every((task) => questTasks.has(task.id)));
+  const questStages = firstOpenStage === -1 ? SIDE_QUEST.stages.length : firstOpenStage;
+
   const ratings = Object.keys(drinkRatings).length;
   const pushups = bests.pushups ? bests.pushups.count : 0;
   const curlups = bests.curlups ? bests.curlups.count : 0;
@@ -98,7 +106,7 @@ function trophyStats() {
   xp += (pushups + curlups) * XP_RULES.trainerRep;
   if (testDone) xp += XP_RULES.testScores;
 
-  return { xp, workouts, bestStreak, comeback, perfectWeek, ratings, pushups, curlups, testDone, waterDays, sleepDays, expertCount: expertDays.size };
+  return { xp, workouts, bestStreak, comeback, perfectWeek, ratings, pushups, curlups, testDone, waterDays, sleepDays, questStages, expertCount: expertDays.size };
 }
 
 
@@ -147,6 +155,8 @@ const BADGES = [
   { id: "allDrinks", icon: "🌈", name: "Drink Explorer", how: "Rate every drink", earned: (s) => s.ratings >= DRINKS.length },
   { id: "water", icon: "💧", name: "Hydration Hero", how: "8 glasses of water on 5 days", earned: (s) => s.waterDays >= 5 },
   { id: "sleep", icon: "😴", name: "Sleep Champ", how: "9+ hours of sleep on 5 nights", earned: (s) => s.sleepDays >= 5 },
+  { id: "flipReady", icon: "🦘", name: "Flip Ready", how: "Finish stages 1 to 3 of the Backflip Quest", earned: (s) => s.questStages >= 3 },
+  { id: "backflip", icon: "🤸", name: "Backflip Legend", how: "Finish the whole Backflip Quest", earned: (s) => s.questStages >= SIDE_QUEST.stages.length },
 ];
 
 
@@ -191,6 +201,7 @@ document.querySelector("#xp-rules").innerHTML = [
   ["Drink a glass of water", `+${XP_RULES.water}`],
   ["Log your sleep", `+${XP_RULES.sleepLogged}`],
   ["Sleep 9 hours or more", `+${XP_RULES.goodSleep} more`],
+  ["Backflip Quest task", `+${XP_RULES.questTask}`],
 ].map(([what, xp]) => `<li><span>${what}</span><span>${xp} XP</span></li>`).join("");
 
 

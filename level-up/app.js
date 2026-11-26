@@ -87,7 +87,7 @@ const PROGRESS_KEYS = [
   "levelUp.expertDays", "levelUp.bests", "levelUp.testScores",
   "levelUp.drinkRatings", "levelUp.drinkSkips", "levelUp.repeatAsked",
   "levelUp.seen", "levelUp.practice", "levelUp.habits", "levelUp.trainerLog",
-  "levelUp.grocery",
+  "levelUp.grocery", "levelUp.quest",
 ];
 
 const memory = {};
@@ -144,6 +144,7 @@ let practiceDays;  // your practice days, like { soccer: [1, 3] } (0 = Monday)
 let habits;        // water and sleep for each day, like { "2026-11-26": { water: 5, sleep: 9 } }
 let trainerLog;    // every beat-trainer result, for the charts
 let groceryChecks; // grocery items you've ticked off, by week
+let questTasks;    // Backflip Quest tasks you've checked off (quest.js)
 
 // Reads all your progress into the variables above. It runs when the page
 // opens, and again whenever another device changes something.
@@ -163,6 +164,7 @@ function loadProgress() {
   habits = loadJSON("levelUp.habits", {});
   trainerLog = loadJSON("levelUp.trainerLog", []);
   groceryChecks = loadJSON("levelUp.grocery", {});
+  questTasks = new Set(loadJSON("levelUp.quest", []));
 }
 
 loadProgress();
@@ -469,6 +471,7 @@ function render() {
   renderPractice(); // in practice.js
   renderHabits();   // in habits.js
   renderCharts();   // in charts.js
+  renderQuest();    // in quest.js
 }
 
 function renderDay(plan) {

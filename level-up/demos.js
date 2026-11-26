@@ -46,6 +46,21 @@ function change(pose, changes) {
   return { ...pose, ...changes };
 }
 
+// A copy of a pose turned around a center point, for rolls. A positive
+// angle (in degrees) turns it backward: counterclockwise on the screen.
+function turnPose(pose, angle, [cx, cy]) {
+  const radians = (angle * Math.PI) / 180;
+  const cos = Math.cos(radians);
+  const sin = Math.sin(radians);
+  const turned = {};
+  for (const [joint, [x, y]] of Object.entries(pose)) {
+    const dx = x - cx;
+    const dy = y - cy;
+    turned[joint] = [cx + dx * cos + dy * sin, cy - dx * sin + dy * cos]; // y points down on screens
+  }
+  return turned;
+}
+
 // A copy of a pose slid sideways (dx) and up or down (dy)
 function slide(pose, dx, dy) {
   const moved = {};
@@ -83,6 +98,20 @@ const PUSHUP_DOWN = {
   e1: [79, 66], w1: [86, 74], e2: [77, 66], w2: [84, 74],
   k1: [33, 72], f1: [16, 74], k2: [33, 72], f2: [16, 74],
 };
+
+// Tucked up in a ball, chin to chest, hands by your ears (for rolls)
+const TUCK = {
+  h: [55, 46], n: [50, 51], s: [42, 60], p: [46, 70],
+  e1: [58, 44], w1: [51, 40], e2: [57, 45], w2: [50, 41],
+  k1: [56, 59], f1: [58, 71], k2: [55, 60], f2: [57, 72],
+};
+
+// The tuck turned by "angle" with its middle at x, resting on the floor
+function rollPose(angle, x) {
+  const turned = turnPose(TUCK, angle, [51, 58]);
+  const lowest = Math.max(...Object.entries(turned).map(([joint, [, y]]) => y + (joint === "h" ? 5 : 0)));
+  return slide(turned, x - 51, 74 - lowest);
+}
 
 const SQUAT = {
   h: [63, 29], n: [58, 36], p: [47, 55],
@@ -334,6 +363,53 @@ const DEMOS = {
     speed: 2,
   },
 
+  // --- Backflip Quest skills ---
+  setJump: {
+    frames: [
+      change(STAND, { e1: [61, 14], w1: [62, 4], e2: [59, 14], w2: [58, 4] }),
+      { h: [63, 24], n: [60, 31], p: [54, 50], e1: [54, 38], w1: [48, 44], e2: [53, 38], w2: [47, 44], k1: [66, 58], f1: [62, 74], k2: [65, 58], f2: [61, 74] },
+      change(standingPose(60, 10), { e1: [61, 4], w1: [62, -5], e2: [59, 4], w2: [58, -5] }),
+    ],
+    hold: 150,
+  },
+  tuckJump: {
+    frames: [
+      { h: [63, 24], n: [60, 31], p: [54, 50], e1: [54, 38], w1: [48, 44], e2: [53, 38], w2: [47, 44], k1: [66, 58], f1: [62, 74], k2: [65, 58], f2: [61, 74] },
+      { h: [60, 4], n: [60, 12], p: [58, 32], e1: [66, 18], w1: [71, 26], e2: [65, 19], w2: [70, 27], k1: [70, 24], f1: [64, 36], k2: [69, 25], f2: [63, 37] },
+      SQUAT,
+    ],
+    hold: 120,
+  },
+  hollowHold: {
+    frames: [
+      { h: [26, 62], n: [33, 65], p: [56, 71], e1: [24, 60], w1: [13, 57], e2: [25, 61], w2: [14, 58], k1: [74, 67], f1: [93, 63], k2: [74, 68], f2: [93, 64] },
+      { h: [26, 63], n: [33, 66], p: [56, 71], e1: [24, 61], w1: [13, 58], e2: [25, 62], w2: [14, 59], k1: [74, 67.5], f1: [93, 64], k2: [74, 68.5], f2: [93, 65] },
+    ],
+    hold: 900,
+  },
+  hollowRock: {
+    frames: [
+      { h: [22, 68], n: [30, 70], p: [54, 70], e1: [20, 66], w1: [9, 64], e2: [21, 67], w2: [10, 65], k1: [72, 62], f1: [90, 54], k2: [72, 63], f2: [90, 55] },
+      { h: [30, 56], n: [36, 61], p: [58, 71], e1: [28, 54], w1: [17, 50], e2: [29, 55], w2: [18, 51], k1: [76, 70], f1: [95, 70], k2: [76, 71], f2: [95, 71] },
+    ],
+    hold: 40,
+  },
+  bridgeBackbend: {
+    frames: [
+      { h: [24, 70], n: [32, 71], p: [56, 71], e1: [33, 63], w1: [27, 72], e2: [32, 64], w2: [26, 73], k1: [70, 57], f1: [78, 74], k2: [69, 57], f2: [77, 74] },
+      { h: [30, 62], n: [36, 56], s: [50, 36], p: [64, 46], e1: [33, 64], w1: [30, 74], e2: [32, 64], w2: [29, 74], k1: [74, 58], f1: [78, 74], k2: [73, 58], f2: [77, 74] },
+    ],
+    hold: 700,
+  },
+  backwardRoll: {
+    // The tucked-up ball turns all the way around as it rolls back:
+    // crouch, sit back, roll onto your shoulders, push, land on your feet
+    frames: [-30, -30, 15, 60, 105, 150, 195, 240, 285, 330, 330].map((angle, step) => rollPose(angle, 78 - Math.max(0, step - 1) * 6)),
+    hold: 0,
+    speed: 3,
+    linear: true, // a steady roll, no slowing down between poses
+  },
+
   // --- Stretches and warm-ups ---
   catCow: {
     frames: [
@@ -539,7 +615,8 @@ function startDemoAnimation() {
       const time = now % (step * demo.frames.length);
       const index = Math.floor(time / step);
       const into = time - index * step;
-      const amount = into < hold ? 0 : easeInOut((into - hold) / move);
+      const progress = (into - hold) / move;
+      const amount = into < hold ? 0 : demo.linear ? progress : easeInOut(progress);
       drawPose(svg, blendPoses(demo.frames[index], demo.frames[(index + 1) % demo.frames.length], amount));
     }
     requestAnimationFrame(frame);

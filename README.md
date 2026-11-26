@@ -58,7 +58,7 @@ harder every week for 12 weeks, and the food changes every day.
 - `level-up/app.js` builds each day's page and runs the timer and buttons.
 - `level-up/coach.js` is the **guided workout**: press "Start guided workout"
   and a voice coach walks through every step with automatic timers.
-- `level-up/trophies.js` gives you **XP, levels and 14 badges**, with confetti
+- `level-up/trophies.js` gives you **XP, levels and 16 badges**, with confetti
   when you level up. Change `XP_RULES` there to give more or less XP.
 - `level-up/demos.js` has **animated stick figures** for every move ("Show me"
   buttons, and in the guided workout). Each one is a list of poses.
@@ -71,6 +71,11 @@ harder every week for 12 weeks, and the food changes every day.
   section, with check boxes and a copy button.
 - `level-up/ai-coach.js`: **Ask Coach** lets you ask Claude about workouts and
   food. It only works on the Claude version of the page.
+- `level-up/quest.js`: the **Backflip Quest** side quest. Four stages build
+  every skill a backflip needs (jumping, core, going backward, tucking), with a
+  "Show me" demo for each task and +25 XP per task. Stages 1 to 3 are safe at
+  home. Stage 4, the real flip, is only with a coach spotting you on mats.
+  The stages and tasks are in `SIDE_QUEST` in `plan.js`.
 - **Bug Bash power-ups:** workouts in the last 7 days give extra tests (lives)
   in Bug Bash, plus bug spray for 3 or more. Press **S** in the game to spray!
 

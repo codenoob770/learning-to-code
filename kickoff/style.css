@@ -2849,6 +2849,31 @@ body.coach-open {
   }
 }
 
+/* Very small phones (320px wide): squeeze the top bar so it fits */
+@media (max-width: 359px) {
+  .hud {
+    gap: 0.375rem;
+  }
+
+  .hud__stats {
+    gap: 0.5rem;
+  }
+
+  .hud__home {
+    margin-left: -0.25rem;
+    padding-inline: 0.25rem;
+  }
+
+  .stat dt {
+    letter-spacing: 0.04em;
+  }
+
+  .stat dd {
+    font-size: 1.0625rem;
+    white-space: nowrap;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

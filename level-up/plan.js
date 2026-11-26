@@ -12,6 +12,7 @@
    4. My gym test
    5. Expert mode
    6. Recipes: drinks, breakfasts, lunches, dinners and snacks
+   7. Side quest: the backflip
    ============================================================= */
 
 
@@ -543,3 +544,56 @@ const SNACKS = [
   { name: "Eggs + tomatoes", what: "2 hard-boiled eggs and a handful of cherry tomatoes", why: "Make a batch of eggs on Sunday for the whole week." },
   { name: "Crackers + turkey", what: "Whole-grain crackers with a few slices of turkey", why: "Like a homemade snack pack, but better for you." },
 ];
+
+
+/* 7. SIDE QUEST: THE BACKFLIP --------------------------------------
+   Stages unlock one at a time. Stages 1 to 3 build every skill a
+   backflip needs, safely at home. Stage 4, the real flip, is ONLY
+   with a coach spotting you on mats. "demo" names a stick-figure
+   demo in demos.js.                                                  */
+
+const SIDE_QUEST = {
+  name: "Backflip Quest",
+  stages: [
+    {
+      title: "Build your launch pad",
+      why: "A backflip starts with a big, explosive jump and a tight core.",
+      tasks: [
+        { id: "tuck10", text: "10 tuck jumps in a row (knees to your chest, land softly)", demo: "tuckJump" },
+        { id: "hollow30", text: "Hold a hollow body for 30 seconds", demo: "hollowHold" },
+        { id: "squat20", text: "20 squats with good form", demo: "squat" },
+        { id: "reach10", text: "Jump and touch something high, 10 times in a row", demo: "setJump" },
+      ],
+    },
+    {
+      title: "Get comfy going backward",
+      why: "Your body needs to learn that going upside down backward is okay.",
+      where: "On a soft mat or thick carpet, with an adult nearby.",
+      tasks: [
+        { id: "bridge10", text: "Push up into a bridge and hold it for 10 seconds", demo: "bridgeBackbend" },
+        { id: "backroll5", text: "5 backward rolls on a soft mat. Push with your hands so your neck stays safe.", demo: "backwardRoll" },
+        { id: "rocks20", text: "20 hollow body rocks", demo: "hollowRock" },
+      ],
+    },
+    {
+      title: "Power and tuck",
+      why: "A great backflip is a big jump straight UP, then a fast, tight tuck.",
+      tasks: [
+        { id: "tuck15", text: "15 tuck jumps in a row, knees all the way up", demo: "tuckJump" },
+        { id: "set10", text: "Practice the \"set\": swing your arms up and jump straight up tall, 10 times", demo: "setJump" },
+        { id: "hollow45", text: "Hold a hollow body for 45 seconds", demo: "hollowHold" },
+      ],
+    },
+    {
+      title: "The backflip (with a coach!)",
+      coachOnly: true,
+      why: "You've built the skills. Now a coach teaches you the flip safely, with mats and spotting.",
+      where: "A gymnastics or tumbling class, a trampoline park class with an instructor, or ask your taekwondo instructor. Lots of dojangs teach flips!",
+      tasks: [
+        { id: "coach", text: "Find a coach who can spot you" },
+        { id: "spotted", text: "Do a backflip with your coach spotting you, on mats" },
+        { id: "solo", text: "Land a backflip on your own, when your coach says you're ready 🎉" },
+      ],
+    },
+  ],
+};
