@@ -9,7 +9,8 @@
    1. Exercises, and how they get harder
    2. The weekly schedule
    3. Warm-up and cool-down
-   4. Recipes: drinks, breakfasts, lunches, dinners and snacks
+   4. My gym test
+   5. Recipes: drinks, breakfasts, lunches, dinners and snacks
    ============================================================= */
 
 
@@ -72,7 +73,7 @@ const EXERCISES = {
 
   // --- Core ---
   curlup: [
-    { from: 1, name: "Curl-ups", how: "On your back, knees bent, feet flat. Slide your hands up your thighs as you curl your shoulders up, then lower slowly.", start: 10, step: 2, max: 25, unit: "reps" },
+    { from: 1, name: "Curl-ups", how: "On your back, knees bent, feet flat, arms straight with palms on the floor. Curl up slowly so your fingers slide forward about 3 inches, then lower until your head touches the floor. Just like the gym test!", start: 10, step: 2, max: 25, unit: "reps" },
   ],
   plank: [
     { from: 1, name: "Plank", how: "Forearms on the floor, body straight from head to heels. Don't let your hips sag.", start: 20, step: 5, max: 60, unit: "sec" },
@@ -119,6 +120,48 @@ const EXERCISES = {
     { from: 1, name: "Quick feet", how: "Tiny, super-fast steps in place on the balls of your feet. Great for any sport.", start: 15, step: 5, max: 30, unit: "sec" },
   ],
 
+  // --- Swimming (dry-land training: exercises out of the pool) ---
+  ytw: [
+    { from: 1, name: "Y-T-W raises", how: "Lie face down. Lift your arms off the floor in a Y shape, then a T, then a W, holding each for 2 seconds. That's one rep. Strong shoulders for every stroke.", start: 4, step: 1, max: 10, unit: "reps", pace: 7 },
+  ],
+  streamlineHold: [
+    { from: 1, name: "Streamline hold", how: "Stand tall on your toes, arms squeezed behind your ears, one hand on top of the other, just like pushing off the wall.", start: 20, step: 5, max: 45, unit: "sec" },
+  ],
+  flutterKicks: [
+    { from: 1, name: "Flutter kicks", how: "On your back, legs straight and a little off the floor. Small, fast kicks like freestyle. Keep your lower back pressed down.", start: 20, step: 5, max: 45, unit: "sec" },
+  ],
+  streamlineJumps: [
+    { from: 1, name: "Streamline jumps", how: "Arms in a tight streamline overhead. Squat, then jump straight up as high as you can, like a start off the blocks. Land softly.", start: 6, step: 1, max: 12, unit: "reps", pace: 4 },
+  ],
+
+  // --- Soccer ---
+  balanceReach: [
+    { from: 1, name: "Single-leg balance reach", how: "Stand on one leg. Reach your other foot forward, out to the side and back without touching down. Strong ankles help stop sprains.", start: 5, step: 1, max: 10, unit: "reps", each: "leg", pace: 4 },
+  ],
+  lateralShuffle: [
+    { from: 1, name: "Defensive shuffles", how: "Stay low like you're marking a player. Shuffle 5 quick steps to the side and back without crossing your feet.", start: 20, step: 5, max: 40, unit: "sec" },
+  ],
+  toeTaps: [
+    { from: 1, name: "Ball toe taps", how: "Tap the top of a soccer ball with one foot, then the other, as fast as you can. No ball? Tap a step or a shoe.", start: 20, step: 5, max: 45, unit: "sec" },
+  ],
+  sprintTurn: [
+    { from: 1, name: "Sprint, stop and turn", how: "Sprint 5 big steps, plant your foot, turn and sprint back. Changing direction fast is how you beat defenders.", start: 4, step: 1, max: 8, unit: "reps", pace: 8 },
+  ],
+
+  // --- Taekwondo ---
+  chamberHold: [
+    { from: 1, name: "Chamber holds", how: "In fighting stance, lift your knee into your kick chamber and hold it still. Builds the balance and hip strength behind every kick.", start: 10, step: 3, max: 30, unit: "sec", each: "leg" },
+  ],
+  slowKicks: [
+    { from: 1, name: "Slow-motion front kicks", how: "Chamber, kick out over 3 seconds, pull back over 3 seconds, then step down. Slow kicks build control and power.", start: 4, step: 1, max: 10, unit: "reps", each: "leg", pace: 7 },
+  ],
+  stanceBounce: [
+    { from: 1, name: "Fighting-stance bounce", how: "Bounce lightly on the balls of your feet in fighting stance. Switch your stance every 10 seconds.", start: 30, step: 5, max: 60, unit: "sec" },
+  ],
+  kickCombo: [
+    { from: 1, name: "Kick combos", how: "Front kick, then roundhouse kick with the same leg. Snap each kick back fast. That's one combo.", start: 5, step: 1, max: 12, unit: "combos", each: "leg", pace: 4 },
+  ],
+
   // --- Rest and stretch (these stay the same every week) ---
   catCow: [
     { from: 1, name: "Cat-cow", how: "On hands and knees, round your back up like a cat, then let it dip and look up. Move slowly with your breathing.", start: 8, step: 0, max: 8, unit: "reps", pace: 4 },
@@ -135,6 +178,12 @@ const EXERCISES = {
   figure4: [
     { from: 1, name: "Figure-4 stretch", how: "On your back, cross one ankle over the other knee and gently pull that leg toward you.", start: 30, step: 0, max: 30, unit: "sec", each: "side" },
   ],
+  butterfly: [
+    { from: 1, name: "Butterfly stretch", how: "Sit with the soles of your feet together and gently press your knees toward the floor. Helps with higher kicks.", start: 45, step: 0, max: 45, unit: "sec" },
+  ],
+  sideLunge: [
+    { from: 1, name: "Side lunge stretch", how: "Wide stance. Shift your weight to one side and bend that knee, keeping the other leg straight. Hold, then switch.", start: 30, step: 0, max: 30, unit: "sec", each: "side" },
+  ],
   walk: [
     { from: 1, name: "Easy walk", how: "A relaxed walk outside. Great for sore muscles and for clearing your head.", start: 20, step: 0, max: 20, unit: "min" },
   ],
@@ -146,16 +195,18 @@ const EXERCISES = {
    in order. "style" decides how the day works:
      circuit: do every move, rest, then repeat for a few rounds
      play:    one round, outside if you can
-     rest:    gentle stretching, no warm-up needed                  */
+     rest:    gentle stretching, no warm-up needed
+
+   "sport" adds a few skills for one of my sports at the end.       */
 
 const WEEK = [
-  { day: "Monday", title: "Upper body power", focus: "Strong arms, chest and shoulders for throwing, swimming and shooting.", style: "circuit", moves: ["pushup", "dips", "shoulderTaps", "superman", "inchworm"] },
-  { day: "Tuesday", title: "Leg day", focus: "Strong legs mean faster sprints and higher jumps.", style: "circuit", moves: ["squat", "lunge", "wallSit", "bridge", "calfRaise"] },
-  { day: "Wednesday", title: "Core crusher", focus: "A strong core helps with every sport, from kicking to throwing.", style: "circuit", moves: ["curlup", "plank", "bicycle", "deadBug", "sidePlank"] },
-  { day: "Thursday", title: "Speed & cardio", focus: "Get your heart pumping and your feet fast.", style: "circuit", moves: ["jacks", "highKnees", "skaters", "mountainClimbers", "burpee", "lineHops"] },
-  { day: "Friday", title: "Full-body challenge", focus: "A bit of everything from this week, back to back.", style: "circuit", moves: ["squat", "pushup", "lunge", "mountainClimbers", "plank"] },
-  { day: "Saturday", title: "Play day", focus: "Get outside and have fun. Moving is moving!", style: "play", moves: ["play", "sprints", "quickFeet"] },
-  { day: "Sunday", title: "Rest & stretch", focus: "Rest days are when your muscles rebuild and get stronger. Take it easy.", style: "rest", moves: ["catCow", "childsPose", "hamstring", "quad", "figure4", "walk"] },
+  { day: "Monday", title: "Upper body power", focus: "Strong arms, chest and shoulders for swimming, blocking and throw-ins.", style: "circuit", moves: ["pushup", "dips", "shoulderTaps", "superman", "inchworm"], sport: { name: "Swimming", moves: ["ytw", "streamlineHold"] } },
+  { day: "Tuesday", title: "Leg day", focus: "Strong legs mean faster sprints, harder shots and higher kicks.", style: "circuit", moves: ["squat", "lunge", "wallSit", "bridge", "calfRaise"], sport: { name: "Soccer", moves: ["balanceReach", "lateralShuffle"] } },
+  { day: "Wednesday", title: "Core crusher", focus: "A strong core helps with every sport: kicks, shots and every swim stroke.", style: "circuit", moves: ["curlup", "plank", "bicycle", "deadBug", "sidePlank"], sport: { name: "Swimming", moves: ["flutterKicks", "streamlineJumps"] } },
+  { day: "Thursday", title: "Speed & cardio", focus: "Get your heart pumping and your feet fast.", style: "circuit", moves: ["jacks", "highKnees", "skaters", "mountainClimbers", "burpee", "lineHops"], sport: { name: "Soccer", moves: ["toeTaps", "sprintTurn"] } },
+  { day: "Friday", title: "Full-body challenge", focus: "A bit of everything from this week, back to back.", style: "circuit", moves: ["squat", "pushup", "lunge", "mountainClimbers", "plank"], sport: { name: "Taekwondo", moves: ["chamberHold", "slowKicks"] } },
+  { day: "Saturday", title: "Play day", focus: "Get outside and have fun. Moving is moving!", style: "play", moves: ["play", "sprints", "quickFeet"], sport: { name: "Taekwondo", moves: ["stanceBounce", "kickCombo"] } },
+  { day: "Sunday", title: "Rest & stretch", focus: "Rest days are when your muscles rebuild and get stronger. Take it easy.", style: "rest", moves: ["catCow", "childsPose", "hamstring", "quad", "figure4", "butterfly", "sideLunge", "walk"] },
 ];
 
 
@@ -179,7 +230,25 @@ const COOL_DOWN = [
 ];
 
 
-/* 4. RECIPES -----------------------------------------------------
+/* 4. MY GYM TEST ---------------------------------------------------
+   The site counts down to the test, adds practice tests, makes the day
+   before a rest day and turns test day into a test-day plan.
+   Got a new test coming up? Change the date ("year-month-day").
+   No test? Set date to null.
+
+   secondsPerRep: lots of school tests (like FitnessGram) go to a beat
+   of one rep every 3 seconds. If your teacher uses a different beat,
+   change it here.                                                     */
+
+const TEST = {
+  date: "2026-12-03",
+  name: "Push-up & curl-up test",
+  secondsPerRep: 3,
+  practiceDaysBefore: [5, 2], // practice tests this many days before the test
+};
+
+
+/* 5. RECIPES -----------------------------------------------------
    Every recipe makes one serving. The plan picks a different mix
    each day, so it takes a while before the same day repeats.
    Allergic to something, or don't like it? Swap it for something

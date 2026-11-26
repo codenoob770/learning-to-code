@@ -5,10 +5,12 @@
    2. Saving your progress
    3. Working out a day's plan (using plan.js)
    4. Building the page
-   5. Buttons: next day, done, harder, easier
-   6. The workout timer
-   7. Sounds
-   8. Start!
+   5. The gym test panel
+   6. Buttons: next day, done, harder, easier
+   7. The workout timer
+   8. The beat trainer
+   9. Sounds
+   10. Start!
    ============================================================= */
 
 const MAX_LEVEL = 12; // the plan gets harder for 12 weeks, then stays at the top level
@@ -54,7 +56,20 @@ function fromKey(key) {
   return new Date(year, month - 1, day);
 }
 
+// "Sat, Nov 28"
+function shortDate(date) {
+  return date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+}
+
 const today = startOfDay(new Date());
+
+// The gym test date from plan.js, or null if there's no test
+const testDate = typeof TEST !== "undefined" && TEST && TEST.date ? fromKey(TEST.date) : null;
+
+// How many days from a date until the test (0 = test day, 1 = the day before...)
+function daysUntilTest(date) {
+  return testDate ? daysBetween(date, testDate) : null;
+}
 
 
 /* 2. SAVING YOUR PROGRESS ----------------------------------------
@@ -77,22 +92,32 @@ function save(key, value) {
   }
 }
 
+// Reads saved JSON (lists and objects), or gives back the fallback
+function loadJSON(key, fallback) {
+  try {
+    return JSON.parse(load(key, "null")) ?? fallback;
+  } catch (error) {
+    return fallback;
+  }
+}
+
 // The Monday your plan started. The first time you visit, that's this week's Monday.
 let planStart = load("levelUp.start", null) ? fromKey(load("levelUp.start")) : mondayOf(today);
 if (planStart > mondayOf(today)) planStart = mondayOf(today);
 save("levelUp.start", toKey(planStart));
 
 // The days you marked as done, kept in a Set (a list with no repeats)
-let doneDays;
-try {
-  doneDays = new Set(JSON.parse(load("levelUp.done", "[]")));
-} catch (error) {
-  doneDays = new Set();
-}
+const doneDays = new Set(loadJSON("levelUp.done", []));
 
 function saveDoneDays() {
   save("levelUp.done", JSON.stringify([...doneDays]));
 }
+
+// Best scores from the beat trainer, like { pushups: { count: 14, date: "2026-11-28" } }
+const bests = loadJSON("levelUp.bests", {});
+
+// Scores from the real test, saved by test date
+const testScores = loadJSON("levelUp.testScores", {});
 
 // The day you're looking at right now. It starts on today.
 let selected = today;
@@ -147,45 +172,65 @@ function toSeconds(amount, unit) {
   return unit === "min" ? amount * 60 : amount;
 }
 
-// A rough guess at how long the whole workout takes, in minutes
-function estimateMinutes(moves, rounds, rest, style) {
+// Roughly how many seconds a list of moves takes, done once
+function secondsFor(moves) {
   let seconds = 0;
   for (const move of moves) {
     let moveSeconds = isTimed(move.unit) ? toSeconds(move.amount, move.unit) : move.amount * (move.pace || 3);
     if (move.each) moveSeconds *= 2;
     seconds += moveSeconds;
   }
-  seconds = seconds * rounds + rest * (moves.length - 1) * rounds + 60 * (rounds - 1);
-  if (style !== "rest") seconds += 4 * 60; // warm-up and cool-down
+  return seconds;
+}
+
+// A rough guess at how long the whole workout takes, in minutes
+function estimateMinutes(plan) {
+  let seconds = secondsFor(plan.moves) * plan.rounds;
+  seconds += plan.rest * (plan.moves.length - 1) * plan.rounds + 60 * (plan.rounds - 1);
+  seconds += secondsFor(plan.sportMoves);
+  if (plan.style !== "rest") seconds += 4 * 60; // warm-up and cool-down
   return Math.max(5, Math.round(seconds / 60));
 }
 
 // Everything for one day: the workout and the food
 function planFor(date) {
-  const template = WEEK[dayIndex(date)];
+  let template = WEEK[dayIndex(date)];
+  const untilTest = daysUntilTest(date);
+
+  // The day before the test is a rest day, so your arms and abs are fresh
+  if (untilTest === 1) {
+    template = {
+      ...WEEK[6], // Sunday's rest and stretch
+      day: template.day,
+      title: "Rest before your test",
+      focus: "No push-ups or curl-ups today, so your muscles are fresh tomorrow. Stretch, eat a good dinner and get a full night's sleep.",
+    };
+  }
+
   const level = levelOf(date);
-  const rounds = template.style === "circuit" ? roundsFor(level) : 1;
-  const rest = template.style === "circuit" ? restFor(level) : 0;
-  const moves = template.moves.map((id) => moveFor(id, level));
+  const plan = {
+    ...template,
+    level,
+    rounds: template.style === "circuit" ? roundsFor(level) : 1,
+    rest: template.style === "circuit" ? restFor(level) : 0,
+    moves: template.moves.map((id) => moveFor(id, level)),
+    sportMoves: template.sport ? template.sport.moves.map((id) => moveFor(id, level)) : [],
+    isTestDay: untilTest === 0,
+    isPracticeDay: testDate !== null && TEST.practiceDaysBefore.includes(untilTest),
+  };
+  plan.minutes = estimateMinutes(plan);
 
   // Food changes every day. "n" counts days since the plan started, and
   // each list starts at a different spot so the meals mix differently.
   const n = (weekOf(date) - 1) * 7 + dayIndex(date);
   const pick = (list, offset) => list[(n + offset) % list.length];
+  plan.drink = pick(DRINKS, 0);
+  plan.breakfast = pick(BREAKFASTS, 2);
+  plan.lunch = pick(LUNCHES, 5);
+  plan.dinner = pick(DINNERS, 3);
+  plan.snack = pick(SNACKS, 1);
 
-  return {
-    ...template,
-    level,
-    rounds,
-    rest,
-    moves,
-    minutes: estimateMinutes(moves, rounds, rest, template.style),
-    drink: pick(DRINKS, 0),
-    breakfast: pick(BREAKFASTS, 2),
-    lunch: pick(LUNCHES, 5),
-    dinner: pick(DINNERS, 3),
-    snack: pick(SNACKS, 1),
-  };
+  return plan;
 }
 
 
@@ -200,10 +245,15 @@ function render() {
   const plan = planFor(selected);
   renderDay(plan);
   renderStrip();
-  renderWorkout(plan);
+  if (plan.isTestDay) {
+    renderTestDay(plan);
+  } else {
+    renderWorkout(plan);
+  }
   renderDrink(plan.drink);
   renderMeals(plan);
   renderStats();
+  renderTestPanel();
 }
 
 function renderDay(plan) {
@@ -223,14 +273,17 @@ function renderStrip() {
     const date = addDays(monday, i);
     const classes = ["chip"];
     if (sameDay(date, today)) classes.push("is-today");
+    if (daysUntilTest(date) === 0) classes.push("is-test");
     const done = doneDays.has(toKey(date));
+    let mark = done ? "✓" : "";
+    if (!done && daysUntilTest(date) === 0) mark = "TEST";
     html += `
       <button class="${classes.join(" ")}" type="button" data-date="${toKey(date)}"
         aria-pressed="${sameDay(date, selected)}" ${date < planStart ? "disabled" : ""}
-        aria-label="${WEEK[i].day} ${date.getDate()}${done ? ", done" : ""}">
+        aria-label="${WEEK[i].day} ${date.getDate()}${done ? ", done" : ""}${daysUntilTest(date) === 0 ? ", test day" : ""}">
         <span class="chip__day">${DAY_SHORT[i]}</span>
         <span class="chip__date">${date.getDate()}</span>
-        <span class="chip__mark" aria-hidden="true">${done ? "✓" : ""}</span>
+        <span class="chip__mark" aria-hidden="true">${mark}</span>
       </button>`;
   }
   document.querySelector("#day-strip").innerHTML = html;
@@ -243,6 +296,18 @@ function amountHTML(name, amount, unit, each) {
   return `<button class="amount amount--timed" type="button" data-seconds="${toSeconds(amount, unit)}" data-name="${name}">${playIcon}${text}</button>`;
 }
 
+function movesHTML(moves, extraClass = "") {
+  const items = moves.map((move) => `
+    <li class="move">
+      <div>
+        <span class="move__name">${move.name}</span>
+        <span class="move__how">${move.how}</span>
+      </div>
+      ${amountHTML(move.name, move.amount, move.unit, move.each)}
+    </li>`).join("");
+  return `<ol class="moves ${extraClass}">${items}</ol>`;
+}
+
 function extraHTML(title, items) {
   const rows = items.map((item) => `<li><span>${item.name}</span><span>${amountText(item.amount, item.unit, item.each)}</span></li>`).join("");
   return `
@@ -252,27 +317,42 @@ function extraHTML(title, items) {
     </details>`;
 }
 
+// The bottom of the workout card: the done button and the harder/easier buttons
+function footHTML(plan, doneLabel) {
+  const isDone = doneDays.has(toKey(selected));
+  let doneButton;
+  if (selected > today) {
+    doneButton = `<button class="button" type="button" disabled>Come back on ${plan.day}!</button>`;
+  } else if (isDone) {
+    doneButton = `<button class="button button--done" id="done-button" type="button">✓ Done! Nice work</button>`;
+  } else {
+    doneButton = `<button class="button" id="done-button" type="button">${doneLabel}</button>`;
+  }
+  return `
+    <div class="workout__foot">
+      ${doneButton}
+      <div class="adjust">
+        <button class="text-button" id="easier" type="button" ${weekOf(today) <= 1 ? "disabled" : ""}>Too hard? Go back a week</button>
+        <button class="text-button" id="harder" type="button">Too easy? Skip ahead a week</button>
+      </div>
+    </div>`;
+}
+
 function renderWorkout(plan) {
   const isRest = plan.style === "rest";
-  const isDone = doneDays.has(toKey(selected));
-  const isFuture = selected > today;
-  const week = weekOf(selected);
-
-  const levelText = week > MAX_LEVEL ? "Max level" : `Level ${plan.level} of ${MAX_LEVEL}`;
+  const levelText = weekOf(selected) > MAX_LEVEL ? "Max level" : `Level ${plan.level} of ${MAX_LEVEL}`;
 
   let howItWorks = "Do each move once, top to bottom. Take your time and focus on good form.";
   if (plan.style === "circuit") {
     howItWorks = `Do every move with a short rest between them. That's one round. Rest a minute, then go again: <strong>${plan.rounds} rounds</strong> in total.`;
   }
 
-  const moves = plan.moves.map((move) => `
-    <li class="move">
-      <div>
-        <span class="move__name">${move.name}</span>
-        <span class="move__how">${move.how}</span>
-      </div>
-      ${amountHTML(move.name, move.amount, move.unit, move.each)}
-    </li>`).join("");
+  const practice = plan.isPracticeDay ? `
+    <div class="practice">
+      <p class="practice__title">Practice test today!</p>
+      <p>Before your workout, use the beat trainer at the top of the page: push-ups until you can't keep up, rest 5 minutes, then curl-ups. Your best scores get saved. Then do the workout below, but go easy.</p>
+      <button class="text-button" type="button" id="go-trainer">Go to the beat trainer &uarr;</button>
+    </div>` : "";
 
   const restRow = plan.style === "circuit" ? `
     <div class="rest-row">
@@ -281,14 +361,18 @@ function renderWorkout(plan) {
       <button class="rest-button" type="button" data-seconds="60" data-name="Rest between rounds">${playIcon}60 sec</button>
     </div>` : "";
 
-  let doneButton;
-  if (isFuture) {
-    doneButton = `<button class="button" type="button" disabled>Come back on ${plan.day}!</button>`;
-  } else if (isDone) {
-    doneButton = `<button class="button button--done" id="done-button" type="button">✓ Done! Nice work</button>`;
-  } else {
-    doneButton = `<button class="button" id="done-button" type="button">${isRest ? "Mark rest day done" : "Mark workout done"}</button>`;
-  }
+  const sport = plan.sport ? `
+    <div class="sport">
+      <div class="sport__head">
+        <p class="eyebrow">// sport skills</p>
+        <span class="sport__name">${plan.sport.name}</span>
+      </div>
+      <p class="how-it-works">After your rounds, do these once.</p>
+      ${movesHTML(plan.sportMoves, "moves--sport")}
+    </div>` : "";
+
+  const practiceTip = isRest ? "" : `
+    <p class="tip"><strong>Swim, soccer or taekwondo today?</strong> Practice counts as a workout! Do the warm-up and sport skills, or just stretch.</p>`;
 
   document.querySelector("#workout").innerHTML = `
     <div class="panel__head">
@@ -304,21 +388,68 @@ function renderWorkout(plan) {
       <li>No equipment</li>
     </ul>
 
+    ${practice}
     ${isRest ? "" : extraHTML("Warm-up first · about 2 min", WARM_UP)}
 
     <p class="how-it-works">${howItWorks}</p>
-    <ol class="moves">${moves}</ol>
+    ${movesHTML(plan.moves)}
     ${restRow}
+    ${sport}
 
     ${isRest ? "" : extraHTML("Cool-down after · about 2 min", COOL_DOWN)}
+    ${practiceTip}
+    ${footHTML(plan, isRest ? "Mark rest day done" : "Mark workout done")}`;
+}
 
-    <div class="workout__foot">
-      ${doneButton}
-      <div class="adjust">
-        <button class="text-button" id="easier" type="button" ${weekOf(today) <= 1 ? "disabled" : ""}>Too hard? Go back a week</button>
-        <button class="text-button" id="harder" type="button">Too easy? Skip ahead a week</button>
+// Test day gets its own card instead of a workout
+function renderTestDay(plan) {
+  const scores = testScores[TEST.date] || {};
+  const bestPush = bests.pushups ? bests.pushups.count : null;
+  const bestCurl = bests.curlups ? bests.curlups.count : null;
+  const practiceLine = bestPush !== null || bestCurl !== null
+    ? `<p class="how-it-works">Your best practice scores: <strong>${bestPush ?? "–"} push-ups</strong> and <strong>${bestCurl ?? "–"} curl-ups</strong>. Go beat them!</p>`
+    : "";
+
+  const testWarmUp = [
+    { name: "Jumping jacks", amount: 30, unit: "sec" },
+    { name: "Arm circles (forward, then back)", amount: 20, unit: "sec" },
+    { name: "Easy push-ups, nice and slow", amount: 3, unit: "reps" },
+    { name: "Easy curl-ups, nice and slow", amount: 3, unit: "reps" },
+  ];
+
+  document.querySelector("#workout").innerHTML = `
+    <div class="panel__head">
+      <p class="eyebrow">// test day</p>
+      <span class="level-pill level-pill--test">Good luck!</span>
+    </div>
+    <h2 class="panel__title">${TEST.name}</h2>
+    <p class="panel__lead">You practiced for this. Here's how to do your best.</p>
+    ${practiceLine}
+
+    <ol class="tips">
+      <li><strong>Fuel up.</strong> Eat a normal breakfast and drink water, but nothing huge right before gym.</li>
+      <li><strong>Warm up</strong> before the test if you get the chance (the list is below).</li>
+      <li><strong>Push-ups:</strong> body straight as a board, lower until your elbows bend to 90°, then push all the way up.</li>
+      <li><strong>Curl-ups:</strong> keep your feet flat, curl up slowly, and let your head touch the floor between reps.</li>
+      <li><strong>Stay with the beat.</strong> Going faster doesn't get you more points, it just tires you out.</li>
+      <li><strong>Breathe out</strong> every time you push up or curl up.</li>
+      <li><strong>Whatever your score, it's your starting point.</strong> You'll beat it next time.</li>
+    </ol>
+
+    ${extraHTML("Quick test warm-up · about 2 min", testWarmUp)}
+
+    <form class="scores" id="score-form">
+      <p class="scores__title">How did it go? Save your scores</p>
+      <div class="scores__fields">
+        <label for="score-pushups">Push-ups</label>
+        <input id="score-pushups" name="pushups" type="number" min="0" max="300" inputmode="numeric" value="${scores.pushups ?? ""}">
+        <label for="score-curlups">Curl-ups</label>
+        <input id="score-curlups" name="curlups" type="number" min="0" max="300" inputmode="numeric" value="${scores.curlups ?? ""}">
       </div>
-    </div>`;
+      <button class="button button--quiet" type="submit">Save my scores</button>
+    </form>
+
+    ${footHTML(plan, "Mark test day done")}`;
 }
 
 function recipeHTML(label, recipe, showSteps) {
@@ -361,7 +492,7 @@ function renderMeals(plan) {
       <p>${plan.snack.what}</p>
       <p class="recipe__why">${plan.snack.why}</p>
     </div>
-    <p class="water"><strong>Don't forget water!</strong> Keep a bottle with you and sip all day, especially before, during and after workouts.</p>`;
+    <p class="water"><strong>Don't forget water!</strong> Keep a bottle with you and sip all day, especially before, during and after workouts and practice.</p>`;
 }
 
 let lastStats = {};
@@ -404,7 +535,58 @@ function renderStats() {
 }
 
 
-/* 5. BUTTONS ---------------------------------------------------- */
+/* 5. THE GYM TEST PANEL ------------------------------------------
+   Shows up from now until the end of test day.                      */
+
+const testPanel = document.querySelector("#test");
+
+function renderTestPanel() {
+  const untilTest = daysUntilTest(today);
+  if (untilTest === null || untilTest < 0) {
+    testPanel.hidden = true;
+    return;
+  }
+  testPanel.hidden = false;
+
+  let countdown = `${untilTest} days to go`;
+  if (untilTest === 1) countdown = "Tomorrow!";
+  if (untilTest === 0) countdown = "Today! You got this";
+  document.querySelector("#test-countdown").textContent = countdown;
+  document.querySelector("#test-title").textContent = TEST.name;
+  document.querySelector("#test-date").textContent =
+    `${testDate.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}. Here's your plan to get ready:`;
+
+  // The practice plan: practice tests, a rest day, then the test
+  const steps = TEST.practiceDaysBefore.map((daysBefore, i) => ({ daysBefore, label: `Practice test ${i + 1}` }));
+  steps.push({ daysBefore: 1, label: "Rest day" }, { daysBefore: 0, label: "Test day!" });
+
+  document.querySelector("#test-prep").innerHTML = steps.map((step) => {
+    const date = addDays(testDate, -step.daysBefore);
+    const classes = ["prep__item"];
+    if (date < today) classes.push("is-past");
+    if (sameDay(date, today)) classes.push("is-today");
+    return `
+      <li>
+        <button class="${classes.join(" ")}" type="button" data-date="${toKey(date)}">
+          <span class="prep__date">${sameDay(date, today) ? "Today" : shortDate(date)}</span>
+          <span class="prep__label">${step.label}</span>
+        </button>
+      </li>`;
+  }).join("");
+
+  renderBests();
+}
+
+// Tapping a step in the practice plan jumps to that day
+document.querySelector("#test-prep").addEventListener("click", (event) => {
+  const step = event.target.closest("[data-date]");
+  if (!step) return;
+  goTo(fromKey(step.dataset.date));
+  document.querySelector("#workout").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+
+/* 6. BUTTONS ---------------------------------------------------- */
 
 function goTo(date) {
   selected = date < planStart ? planStart : date;
@@ -415,7 +597,7 @@ document.querySelector("#next-day").addEventListener("click", () => goTo(addDays
 document.querySelector("#prev-day").addEventListener("click", () => goTo(addDays(selected, -1)));
 document.querySelector("#back-today").addEventListener("click", () => goTo(today));
 
-// Left and right arrow keys move between days too
+// Left and right arrow keys move between days too (but not while typing)
 document.addEventListener("keydown", (event) => {
   if (event.target.closest && event.target.closest("input, textarea")) return;
   if (event.key === "ArrowRight") goTo(addDays(selected, 1));
@@ -464,6 +646,10 @@ document.querySelector("#workout").addEventListener("click", (event) => {
     document.querySelector("#done-button").focus(); // keep keyboard users in the same spot
   }
 
+  if (button.id === "go-trainer") {
+    testPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   // "Harder" moves the plan's start a week earlier, so you're a week further in
   if (button.id === "harder") {
     planStart = addDays(planStart, -7);
@@ -482,6 +668,21 @@ document.querySelector("#workout").addEventListener("click", (event) => {
   }
 });
 
+// Saving the real test scores
+document.querySelector("#workout").addEventListener("submit", (event) => {
+  event.preventDefault(); // stop the page from reloading
+  const form = event.target;
+  const pushups = form.elements.pushups.value;
+  const curlups = form.elements.curlups.value;
+  testScores[TEST.date] = {
+    pushups: pushups === "" ? null : Number(pushups),
+    curlups: curlups === "" ? null : Number(curlups),
+  };
+  save("levelUp.testScores", JSON.stringify(testScores));
+  showToast("Scores saved. Proud of you!");
+  sounds.done();
+});
+
 let toastTimer = null;
 
 function showToast(message) {
@@ -489,11 +690,11 @@ function showToast(message) {
   toast.textContent = message;
   toast.classList.add("is-visible");
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove("is-visible"), 2200);
+  toastTimer = setTimeout(() => toast.classList.remove("is-visible"), 2400);
 }
 
 
-/* 6. THE WORKOUT TIMER -------------------------------------------
+/* 7. THE WORKOUT TIMER -------------------------------------------
    Instead of counting down by itself, the timer remembers when it
    should end and checks the clock 4 times a second. That way it
    stays accurate even if the browser slows it down.               */
@@ -593,19 +794,141 @@ document.querySelector("#timer-stop").addEventListener("click", stopTimer);
 // Not every browser allows this, and that's OK.
 async function keepScreenOn() {
   try {
-    if (navigator.wakeLock) wakeLock = await navigator.wakeLock.request("screen");
+    if (navigator.wakeLock && !wakeLock) wakeLock = await navigator.wakeLock.request("screen");
   } catch (error) {
     wakeLock = null;
   }
 }
 
 function letScreenSleep() {
+  if (trainer.running) return; // the beat trainer still needs the screen
   if (wakeLock) wakeLock.release().catch(() => {});
   wakeLock = null;
 }
 
 
-/* 7. SOUNDS -------------------------------------------------------
+/* 8. THE BEAT TRAINER ---------------------------------------------
+   Practice for the test at the real speed. Every rep has two halves:
+   a low beep means "go down", a high beep means "come up" (and counts
+   the rep). There's a 3-second countdown before it starts.          */
+
+const trainer = {
+  exercise: "pushups",
+  running: false,
+  startsAt: 0,     // when the first "down" beep happens
+  lastBeat: -1,
+  count: 0,
+  interval: null,
+};
+
+const trainerCount = document.querySelector("#trainer-count");
+const trainerCue = document.querySelector("#trainer-cue");
+const trainerStart = document.querySelector("#trainer-start");
+const EXERCISE_NAMES = { pushups: "push-ups", curlups: "curl-ups" };
+
+function renderBests() {
+  const parts = ["pushups", "curlups"].map((exercise) => {
+    const best = bests[exercise];
+    const name = EXERCISE_NAMES[exercise];
+    return best ? `${name}: <strong>${best.count}</strong> (${shortDate(fromKey(best.date))})` : `${name}: –`;
+  });
+  document.querySelector("#trainer-best").innerHTML = `Best ${parts.join(" · ")}`;
+}
+
+// Picking push-ups or curl-ups
+document.querySelector(".trainer__pick").addEventListener("click", (event) => {
+  const pick = event.target.closest("[data-exercise]");
+  if (!pick || trainer.running) return;
+  trainer.exercise = pick.dataset.exercise;
+  document.querySelectorAll(".pick").forEach((button) => {
+    button.setAttribute("aria-pressed", String(button === pick));
+  });
+  trainerCount.textContent = "0";
+});
+
+trainerStart.addEventListener("click", () => {
+  if (trainer.running) stopTrainer();
+  else startTrainer();
+});
+
+function startTrainer() {
+  startAudio();
+  trainer.running = true;
+  trainer.count = 0;
+  trainer.lastBeat = -1;
+  trainer.lastCountdown = null;
+  trainer.startsAt = Date.now() + 3000;
+  trainer.interval = setInterval(trainerTick, 50);
+  trainerCount.textContent = "0";
+  trainerStart.textContent = "Stop";
+  testPanel.classList.add("is-running");
+  document.querySelectorAll(".pick").forEach((button) => { button.disabled = true; });
+  keepScreenOn();
+}
+
+function trainerTick() {
+  const elapsed = (Date.now() - trainer.startsAt) / 1000;
+
+  // The countdown: 3, 2, 1...
+  if (elapsed < 0) {
+    const number = Math.ceil(-elapsed);
+    if (number !== trainer.lastCountdown) {
+      trainer.lastCountdown = number;
+      trainerCue.textContent = `Get in position... ${number}`;
+      sounds.count();
+    }
+    return;
+  }
+
+  // Each half of a rep is one "beat"
+  const beat = Math.floor(elapsed / (TEST.secondsPerRep / 2));
+  if (beat === trainer.lastBeat) return;
+  trainer.lastBeat = beat;
+
+  if (beat % 2 === 0) {
+    trainerCue.textContent = "Down...";
+    trainerCue.className = "trainer__cue is-down";
+    sounds.down();
+  } else {
+    trainer.count += 1;
+    trainerCount.textContent = trainer.count;
+    trainerCue.textContent = "Up!";
+    trainerCue.className = "trainer__cue is-up";
+    sounds.up();
+  }
+}
+
+function stopTrainer() {
+  clearInterval(trainer.interval);
+  trainer.running = false;
+  trainerStart.textContent = "Start again";
+  testPanel.classList.remove("is-running");
+  document.querySelectorAll(".pick").forEach((button) => { button.disabled = false; });
+  letScreenSleep();
+
+  const name = EXERCISE_NAMES[trainer.exercise];
+  const best = bests[trainer.exercise];
+  trainerCue.className = "trainer__cue";
+
+  if (trainer.count === 0) {
+    trainerCue.textContent = "Stopped. Press Start when you're ready.";
+    return;
+  }
+
+  if (!best || trainer.count > best.count) {
+    bests[trainer.exercise] = { count: trainer.count, date: toKey(today) };
+    save("levelUp.bests", JSON.stringify(bests));
+    trainerCue.textContent = `${trainer.count} ${name}! That's a new best!`;
+    showToast(`New best: ${trainer.count} ${name}!`);
+    sounds.done();
+  } else {
+    trainerCue.textContent = `${trainer.count} ${name}. Your best is ${best.count}. Keep at it!`;
+  }
+  renderBests();
+}
+
+
+/* 9. SOUNDS -------------------------------------------------------
    Same beeps as Bug Bash, made with the Web Audio API.             */
 
 let audio = null;
@@ -635,6 +958,8 @@ function beep(pitch, seconds, delay = 0, volume = 0.14) {
 
 const sounds = {
   count: () => beep(660, 0.15),
+  down: () => beep(392, 0.14, 0, 0.16),
+  up: () => beep(880, 0.14, 0, 0.16),
   finish: () => [784, 988, 1319].forEach((pitch, i) => beep(pitch, 0.18, i * 0.12)),
   done: () => {
     startAudio();
@@ -661,7 +986,7 @@ soundButton.addEventListener("click", () => {
 });
 
 
-/* 8. START! ------------------------------------------------------ */
+/* 10. START! ------------------------------------------------------ */
 
 showSoundSetting();
 render();

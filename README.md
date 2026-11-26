@@ -39,6 +39,11 @@ harder every week for 12 weeks, and the food changes every day.
 
 - `level-up/plan.js` holds all the exercises and recipes. Add your own
   favorite meal or change a workout there.
+- Each day ends with **sport skills** for swimming, soccer or taekwondo.
+- **Gym test prep:** the `TEST` setting in `plan.js` holds the date of my
+  push-up and curl-up test. Until then, the page shows a countdown, a practice
+  plan and a **beat trainer** that beeps one rep every 3 seconds (like the real
+  test) and saves my best scores. For a new test, just change the date.
 - `level-up/app.js` builds each day's page and runs the timer and buttons.
 
 Your progress (which days you marked done, and your week) is saved in your

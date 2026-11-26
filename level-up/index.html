@@ -100,6 +100,36 @@
       <button class="text-button back-today" id="back-today" type="button" hidden>Back to today</button>
     </section>
 
+    <!-- ============ GYM TEST ============
+         Only shows up while a test is coming (see TEST in plan.js). -->
+    <section class="panel test" id="test" aria-labelledby="test-title" hidden>
+      <div class="test__info">
+        <div class="panel__head">
+          <p class="eyebrow">// gym test</p>
+          <span class="countdown" id="test-countdown">7 days to go</span>
+        </div>
+        <h2 class="panel__title" id="test-title">Push-up &amp; curl-up test</h2>
+        <p class="panel__lead" id="test-date"></p>
+        <!-- The practice plan, filled in by app.js. Tap a day to jump to it. -->
+        <ol class="prep" id="test-prep" aria-label="Test practice plan"></ol>
+      </div>
+
+      <!-- The beat trainer: beeps "down... up..." and counts your reps -->
+      <div class="trainer">
+        <div class="trainer__top">
+          <p class="trainer__label">Beat trainer</p>
+          <div class="trainer__pick" role="group" aria-label="Exercise to practice">
+            <button class="pick" type="button" data-exercise="pushups" aria-pressed="true">Push-ups</button>
+            <button class="pick" type="button" data-exercise="curlups" aria-pressed="false">Curl-ups</button>
+          </div>
+        </div>
+        <p class="trainer__count" id="trainer-count">0</p>
+        <p class="trainer__cue" id="trainer-cue" aria-live="polite">Go down on the low beep and up on the high beep. Keep going until you can't keep up, then press Stop.</p>
+        <button class="button" id="trainer-start" type="button">Start</button>
+        <p class="trainer__best" id="trainer-best"></p>
+      </div>
+    </section>
+
     <div class="layout">
       <!-- ============ WORKOUT (filled in by app.js) ============ -->
       <section class="panel workout" id="workout" aria-live="polite"></section>
