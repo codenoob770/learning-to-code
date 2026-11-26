@@ -46,6 +46,8 @@ const XP_RULES = {
   soccerGame: 15,   // each soccer game in your journal
   goal: 5,          // extra for each goal you scored
   custom: 60,       // each workout you built and finished with the coach
+  energy: 5,        // each energy check-in (stats.js)
+  familyWin: 100,   // each week you win the family challenge (family.js)
   quizRight: 10,    // each right answer in the quiz (quiz.js)
   quizPerfect: 25,  // extra for a perfect 10/10 round
   penaltyDone: 5,   // each quiz penalty you do (you still did the work!)
@@ -195,6 +197,11 @@ function trophyStats() {
   const recipesMade = logOf("made").length;
   const snackPerfect = logOf("snack").some((e) => e.r === e.n);
 
+  // Energy check-ins (stats.js) and family challenge wins (family.js)
+  const checkIns = Object.keys(energyLog).length;
+  const familyWon = familyWins();
+  xp += checkIns * XP_RULES.energy + familyWon * XP_RULES.familyWin;
+
   // Sports (sports.js)
   xp += beltData.history.length * XP_RULES.beltUp;
   const swims = logOf("swim").length;
@@ -222,7 +229,7 @@ function trophyStats() {
   return { xp, workouts, bestStreak, comeback, perfectWeek, ratings, pushups, curlups, testDone, waterDays, sleepDays, questStages, questStagesDone, questsComplete,
     missionsDone, missionSweeps, monthlies, bossesBeaten, quizRight,
     fullDeck, bestKicks, spins, smoothies, recipesMade, snackPerfect,
-    belts: beltData.history.length, swims, goals, hatTrick, builtWorkouts, fasterTime, quizPerfect, penaltyReps, expertCount: expertDays.size };
+    belts: beltData.history.length, swims, goals, hatTrick, builtWorkouts, fasterTime, checkIns, familyWon, quizPerfect, penaltyReps, expertCount: expertDays.size };
 }
 
 
@@ -299,6 +306,8 @@ const BADGES = [
   { id: "hatTrick", icon: "🎩", name: "Hat Trick", how: "Score 3 goals in one game", earned: (s) => s.hatTrick },
   { id: "golazo", icon: "🥅", name: "Golazo", how: "Score 10 goals in your journal", earned: (s) => s.goals >= 10 },
   { id: "designer", icon: "🛠️", name: "Workout Designer", how: "Finish a workout you built", earned: (s) => s.builtWorkouts >= 1 },
+  { id: "checkIn", icon: "⚡", name: "Self-Aware", how: "Do 14 energy check-ins", earned: (s) => s.checkIns >= 14 },
+  { id: "family", icon: "👑", name: "Family Champ", how: "Win a weekly family challenge", earned: (s) => s.familyWon >= 1 },
 ];
 
 
@@ -320,15 +329,24 @@ function renderTrophies() {
   document.querySelector("#badge-count").textContent = `${earned.length} of ${BADGES.length} badges`;
   renderPowerUps();
 
-  document.querySelector("#badges").innerHTML = BADGES.map((badge) => {
-    const got = earned.includes(badge);
-    return `
-      <li class="badge ${got ? "is-earned" : ""}">
-        <span class="badge__icon" aria-hidden="true">${badge.icon}</span>
-        <span class="badge__name">${badge.name}</span>
-        <span class="badge__how">${got ? "Unlocked!" : badge.how}</span>
-      </li>`;
-  }).join("");
+  // Badges you have, then the ones still locked (folded up, since there are lots!)
+  const badgeHTML = (badge, got) => `
+    <li class="badge ${got ? "is-earned" : ""}">
+      <span class="badge__icon" aria-hidden="true">${badge.icon}</span>
+      <span class="badge__name">${badge.name}</span>
+      <span class="badge__how">${got ? "Unlocked!" : badge.how}</span>
+    </li>`;
+  const locked = BADGES.filter((badge) => !earned.includes(badge));
+  const lockedBox = document.querySelector("#badges-locked");
+  const wasOpen = lockedBox.open;
+  document.querySelector("#badges").innerHTML = earned.length
+    ? earned.map((badge) => badgeHTML(badge, true)).join("")
+    : `<li class="badges__none">No badges yet. Finish your first workout to get one!</li>`;
+  lockedBox.innerHTML = `
+    <summary>Badges to unlock (${locked.length})</summary>
+    <ul class="badges">${locked.map((badge) => badgeHTML(badge, false)).join("")}</ul>`;
+  lockedBox.open = wasOpen;
+  lockedBox.hidden = locked.length === 0;
 }
 
 // The "How to earn XP" list
@@ -359,6 +377,8 @@ document.querySelector("#xp-rules").innerHTML = [
   ["Log a swim or a swim time", `+${XP_RULES.swim}`],
   ["Log a soccer game", `+${XP_RULES.soccerGame}, +${XP_RULES.goal} per goal`],
   ["Finish a workout you built", `+${XP_RULES.custom}`],
+  ["Energy check-in", `+${XP_RULES.energy}`],
+  ["Win the family challenge", `+${XP_RULES.familyWin}`],
   ["Right quiz answer (5 rounds a day)", `+${XP_RULES.quizRight}`],
   ["Perfect quiz round", `+${XP_RULES.quizPerfect} more`],
   ["Do a quiz penalty", `+${XP_RULES.penaltyDone}`],

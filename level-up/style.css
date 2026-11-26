@@ -2018,6 +2018,15 @@ body.coach-open {
   color: var(--fg);
 }
 
+.badges__none {
+  grid-column: 1 / -1;
+  color: var(--dim);
+}
+
+.badges-locked .badges {
+  margin: 0 0.75rem 0.75rem;
+}
+
 /* --- Celebration pop-up --- */
 .celebrate {
   position: fixed;
@@ -4526,6 +4535,288 @@ label.mission__text {
 
 .builder-saved .button {
   padding: 0.4rem 0.9rem;
+}
+
+/* 9i. STATS TAB, ENERGY CHECK-IN AND FAMILY ------------------------------ */
+
+/* Energy faces (in Water, sleep & energy) */
+.energy-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.energy {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--bg);
+  font-size: 1.4rem;
+  cursor: pointer;
+  filter: grayscale(0.6);
+  opacity: 0.75;
+  transition: transform 0.12s ease;
+}
+
+.energy:hover {
+  opacity: 1;
+  filter: none;
+}
+
+.energy[aria-pressed="true"] {
+  border: 2px solid var(--marker);
+  background: var(--marker-soft);
+  filter: none;
+  opacity: 1;
+  transform: scale(1.12);
+}
+
+/* Personal records */
+.records {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: 0.5rem;
+}
+
+.record {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+}
+
+.record__icon {
+  font-size: 1.3rem;
+}
+
+.record__value {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.record__name {
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.record__note {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.6875rem;
+}
+
+/* The workout calendar */
+.heatmap-box {
+  overflow-x: auto;
+  padding-bottom: 0.4rem;
+}
+
+.heatmap {
+  display: block;
+}
+
+.heat--0 { fill: var(--line); }
+.heat--1 { fill: var(--chart-2); fill-opacity: 0.35; }
+.heat--2 { fill: var(--chart-2); fill-opacity: 0.75; }
+.heat--3 { fill: var(--teal); }
+.heat--future { fill: none; stroke: var(--line); stroke-width: 1; }
+.heat--missed { stroke: var(--bug); stroke-width: 1.5; }
+.heat--today { stroke: var(--fg); stroke-width: 2; }
+
+.heatmap rect[data-day] {
+  cursor: pointer;
+}
+
+.heatmap-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  color: var(--dim);
+  font-size: 0.8125rem;
+}
+
+.heatmap-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.heat-swatch {
+  display: inline-block;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 3px;
+}
+
+.heat-swatch.heat--0 { background: var(--line); }
+.heat-swatch.heat--1 { background: color-mix(in srgb, var(--chart-2) 35%, var(--panel)); }
+.heat-swatch.heat--2 { background: color-mix(in srgb, var(--chart-2) 75%, var(--panel)); }
+.heat-swatch.heat--3 { background: var(--teal); }
+.heat-swatch.heat--missed { box-shadow: inset 0 0 0 1.5px var(--bug); }
+
+.heatmap-day {
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+}
+
+/* Energy patterns */
+.insights {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9375rem;
+}
+
+.share-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Year in review */
+.review-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.review-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  padding: 0.8rem 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+  text-align: center;
+  animation: review-pop 0.4s ease-out backwards;
+}
+
+.review-card:nth-child(2) { animation-delay: 0.05s; }
+.review-card:nth-child(3) { animation-delay: 0.1s; }
+.review-card:nth-child(4) { animation-delay: 0.15s; }
+.review-card:nth-child(5) { animation-delay: 0.2s; }
+.review-card:nth-child(6) { animation-delay: 0.25s; }
+.review-card:nth-child(n + 7) { animation-delay: 0.3s; }
+
+@keyframes review-pop {
+  from { opacity: 0; transform: scale(0.8); }
+}
+
+.review-card > span:first-child {
+  font-size: 1.5rem;
+}
+
+.review-card strong {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  line-height: 1.15;
+}
+
+.review-card > span:last-child {
+  color: var(--dim);
+  font-size: 0.8125rem;
+}
+
+.review-favorite {
+  font-weight: 700;
+}
+
+/* Stats card */
+.card-picture {
+  width: 100%;
+  border-radius: var(--radius-small);
+}
+
+.card-tip {
+  color: var(--dim);
+  font-size: 0.875rem;
+}
+
+/* Family challenge */
+.family-empty {
+  padding: 0.8rem 1rem;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-small);
+  color: var(--dim);
+}
+
+.family-board {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.family-player {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+}
+
+.family-player.is-leader {
+  border-color: var(--marker);
+  background: var(--marker-soft);
+}
+
+.family-player__rank {
+  width: 1.6rem;
+  color: var(--dim);
+  font-family: var(--font-code);
+  text-align: center;
+}
+
+.family-player__emoji {
+  font-size: 1.5rem;
+}
+
+.family-player__name {
+  flex: 1;
+  min-width: 5rem;
+  font-weight: 700;
+}
+
+.family-player__score {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.family-player__auto {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+}
+
+.family-player__buttons {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.family-past-title {
+  margin-top: 0.9rem;
 }
 
 /* 10. SMALL SCREENS AND REDUCED MOTION --------------------------- */

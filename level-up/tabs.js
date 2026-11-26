@@ -46,7 +46,10 @@ function showTab(name, scrollUp = true) {
 
   // Charts measure their box to fit it, and a hidden box has no size,
   // so redraw them when their tab shows up
-  if (name === "stats") renderCharts();
+  if (name === "stats") {
+    renderCharts();
+    renderStatsTab();
+  }
   if (name === "sports") renderSwim();
   document.dispatchEvent(new CustomEvent("tabshown", { detail: name }));
 }

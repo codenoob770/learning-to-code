@@ -557,6 +557,8 @@ function render() {
   renderArcade();   // in arcade.js
   renderKitchen();  // in kitchen.js
   renderSports();   // in sports.js
+  renderStatsTab(); // in stats.js
+  renderFamily();   // in family.js
 }
 
 function renderDay(plan) {

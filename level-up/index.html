@@ -24,6 +24,8 @@
       arcade.js   -> card deck workout, Kick Caller and spin the wheel
       kitchen.js  -> Smoothie Lab, Recipe Book and Snack Swap
       sports.js   -> belt tracker, swim log, soccer journal and workout builder
+      stats.js    -> energy check-in, calendar, records, year in review, stats card
+      family.js   -> the weekly family challenge
       app.js      -> what the buttons do, and building each day's plan
 
     Most of the page is empty here on purpose: app.js fills in the
@@ -63,6 +65,8 @@
   <script src="arcade.js?v=12" defer></script>
   <script src="kitchen.js?v=12" defer></script>
   <script src="sports.js?v=12" defer></script>
+  <script src="stats.js?v=12" defer></script>
+  <script src="family.js?v=12" defer></script>
   <script src="tabs.js?v=12" defer></script>
   <script src="app.js?v=12" defer></script>
 </head>
@@ -134,7 +138,7 @@
         <button class="tab" type="button" data-tab="kitchen"><span aria-hidden="true">🍓</span> Kitchen</button>
         <button class="tab" type="button" data-tab="stats"><span aria-hidden="true">📊</span> Stats</button>
         <button class="tab" type="button" data-tab="pet" hidden><span aria-hidden="true">🐾</span> Pet &amp; Shop</button>
-        <button class="tab" type="button" data-tab="family" hidden><span aria-hidden="true">👪</span> Family</button>
+        <button class="tab" type="button" data-tab="family"><span aria-hidden="true">👪</span> Family</button>
       </div>
     </nav>
   </div>
@@ -209,7 +213,7 @@
           <!-- ============ WATER AND SLEEP (habits.js) ============ -->
           <section class="panel habits" aria-labelledby="habits-title">
             <p class="eyebrow">// daily habits</p>
-            <h2 class="panel__title" id="habits-title">Water &amp; sleep</h2>
+            <h2 class="panel__title" id="habits-title">Water, sleep &amp; energy</h2>
             <div class="habit">
               <p class="habit__label">💧 Glasses of water today</p>
               <div class="glasses" id="water-glasses" role="group" aria-label="Glasses of water"></div>
@@ -219,6 +223,11 @@
               <p class="habit__label">😴 Hours of sleep last night</p>
               <div class="sleep-choices" id="sleep-choices" role="group" aria-label="Hours of sleep"></div>
               <p class="habit__note" id="sleep-note"></p>
+            </div>
+            <div class="habit">
+              <p class="habit__label">⚡ How do you feel today?</p>
+              <div class="energy-choices" id="energy-choices" role="group" aria-label="How do you feel today"></div>
+              <p class="habit__note" id="energy-note"></p>
             </div>
           </section>
 
@@ -632,6 +641,7 @@
         <div class="trophies__badges">
           <p class="trophies__count" id="badge-count">0 of 12 badges</p>
           <ul class="badges" id="badges"></ul>
+          <details class="extra badges-locked" id="badges-locked"></details>
         </div>
       </section>
 
@@ -662,6 +672,57 @@
           </figure>
         </div>
       </section>
+
+      <!-- ============ PERSONAL RECORDS (stats.js) ============ -->
+      <section class="panel" aria-labelledby="records-title">
+        <p class="eyebrow">// personal records</p>
+        <h2 class="panel__title" id="records-title">🏆 My records</h2>
+        <div class="records" id="records"></div>
+      </section>
+
+      <!-- ============ CALENDAR HEAT MAP (stats.js) ============ -->
+      <section class="panel" aria-labelledby="heatmap-title">
+        <p class="eyebrow">// my year</p>
+        <h2 class="panel__title" id="heatmap-title">📅 Workout calendar</h2>
+        <p class="heatmap-legend">
+          <span><i class="heat-swatch heat--0"></i>Nothing</span>
+          <span><i class="heat-swatch heat--1"></i>Rest day</span>
+          <span><i class="heat-swatch heat--2"></i>Workout</span>
+          <span><i class="heat-swatch heat--3"></i>Expert</span>
+          <span><i class="heat-swatch heat--0 heat--missed"></i>Missed</span>
+        </p>
+        <div class="heatmap-box" id="heatmap"></div>
+        <p class="heatmap-day" id="heatmap-day" aria-live="polite">Tap or hover a day to see what you did.</p>
+        <p class="book-count" id="heatmap-summary"></p>
+      </section>
+
+      <div class="duo duo--even">
+        <!-- ============ ENERGY (stats.js) ============ -->
+        <section class="panel" aria-labelledby="energy-title">
+          <p class="eyebrow">// energy check-ins</p>
+          <h2 class="panel__title" id="energy-title">⚡ How I feel</h2>
+          <figure class="chart-card">
+            <figcaption>
+              <h3>The last 30 days</h3>
+              <p class="chart-legend">1 = wiped out, 5 = amazing</p>
+            </figcaption>
+            <div class="chart-box" id="energy-chart"></div>
+            <div id="energy-chart-table"></div>
+          </figure>
+          <ul class="insights" id="energy-insights"></ul>
+        </section>
+
+        <!-- ============ YEAR IN REVIEW AND STATS CARD (stats.js) ============ -->
+        <section class="panel" aria-labelledby="share-title">
+          <p class="eyebrow">// show it off</p>
+          <h2 class="panel__title" id="share-title">✨ My year</h2>
+          <p class="panel__lead">See your whole year in big numbers, or make a picture of your stats to save and show your family.</p>
+          <div class="share-buttons">
+            <button class="button" id="open-review" type="button">📈 Year in review</button>
+            <button class="button button--quiet" id="open-card" type="button">🖼️ Make my stats card</button>
+          </div>
+        </section>
+      </div>
     </div>
 
     <!-- ==================== TAB: PET & SHOP ==================== -->
@@ -670,6 +731,31 @@
 
     <!-- ==================== TAB: FAMILY ==================== -->
     <div class="tab-page" data-page="family" hidden>
+      <!-- ============ FAMILY CHALLENGE (family.js) ============ -->
+      <section class="panel" id="family" aria-labelledby="family-title">
+        <div class="panel__head">
+          <p class="eyebrow">// family challenge · new every Monday</p>
+          <span class="quest-tag">+100 XP if you win the week</span>
+        </div>
+        <h2 class="panel__title" id="family-title"><span id="family-challenge">Family challenge</span></h2>
+        <p class="panel__lead" id="family-goal"></p>
+        <p class="family-empty" id="family-empty">Add your family below (like your sister, mom or dad), and race each other all week!</p>
+        <ol class="family-board" id="family-board"></ol>
+        <div class="duo duo--even">
+          <form class="form swim-box" id="family-form">
+            <label class="field-label" for="family-name">Add someone</label>
+            <input class="input" id="family-name" type="text" maxlength="20" placeholder="Name, like &quot;Sis&quot;" autocomplete="off">
+            <div class="picker picker--wrap" id="family-emojis" role="group" aria-label="Pick an emoji for them"></div>
+            <button class="button" type="submit">Add to the board</button>
+          </form>
+          <div>
+            <p class="field-label">On the board</p>
+            <ul class="recent" id="family-people"></ul>
+            <p class="field-label family-past-title">Past winners</p>
+            <ul class="recent" id="family-past"></ul>
+          </div>
+        </div>
+      </section>
     </div>
 
     <footer class="note">
@@ -732,6 +818,31 @@
       <div class="grocery__list" id="grocery-list"></div>
       <button class="button" id="grocery-copy" type="button">Copy the list</button>
       <textarea class="grocery__text" id="grocery-text" readonly hidden aria-label="Grocery list as text"></textarea>
+    </div>
+  </div>
+
+  <!-- ============ YEAR IN REVIEW (stats.js) ============ -->
+  <div class="modal" id="review-box" role="dialog" aria-modal="true" aria-labelledby="review-title" hidden>
+    <div class="modal__card modal__card--wide">
+      <div class="modal__head">
+        <h2 id="review-title">My year so far</h2>
+        <button class="icon-button" id="review-close" type="button" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <ul class="review-cards" id="review-cards"></ul>
+      <p class="review-favorite" id="review-favorite"></p>
+    </div>
+  </div>
+
+  <!-- ============ STATS CARD (stats.js) ============ -->
+  <div class="modal" id="card-box" role="dialog" aria-modal="true" aria-labelledby="card-title" hidden>
+    <div class="modal__card">
+      <div class="modal__head">
+        <h2 id="card-title">🖼️ My stats card</h2>
+        <button class="icon-button" id="card-close" type="button" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <img class="card-picture" id="card-picture" alt="A picture of my Level Up stats">
+      <p class="card-tip">On an iPad: press and hold the picture, then tap <strong>Save to Photos</strong>.</p>
+      <a class="button" id="card-download" download="level-up-stats.png" href="#">Save the picture</a>
     </div>
   </div>
 
