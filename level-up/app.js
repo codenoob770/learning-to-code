@@ -559,6 +559,7 @@ function render() {
   renderSports();   // in sports.js
   renderStatsTab(); // in stats.js
   renderFamily();   // in family.js
+  renderPetAndShop(); // in shop.js and pet.js
 }
 
 function renderDay(plan) {

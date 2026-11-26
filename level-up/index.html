@@ -26,6 +26,8 @@
       sports.js   -> belt tracker, swim log, soccer journal and workout builder
       stats.js    -> energy check-in, calendar, records, year in review, stats card
       family.js   -> the weekly family challenge
+      pet.js      -> your virtual pet
+      shop.js     -> the coin shop (themes, pet hats and colors)
       app.js      -> what the buttons do, and building each day's plan
 
     Most of the page is empty here on purpose: app.js fills in the
@@ -67,6 +69,8 @@
   <script src="sports.js?v=12" defer></script>
   <script src="stats.js?v=12" defer></script>
   <script src="family.js?v=12" defer></script>
+  <script src="pet.js?v=12" defer></script>
+  <script src="shop.js?v=12" defer></script>
   <script src="tabs.js?v=12" defer></script>
   <script src="app.js?v=12" defer></script>
 </head>
@@ -137,7 +141,7 @@
         <button class="tab" type="button" data-tab="sports"><span aria-hidden="true">🥋</span> Sports</button>
         <button class="tab" type="button" data-tab="kitchen"><span aria-hidden="true">🍓</span> Kitchen</button>
         <button class="tab" type="button" data-tab="stats"><span aria-hidden="true">📊</span> Stats</button>
-        <button class="tab" type="button" data-tab="pet" hidden><span aria-hidden="true">🐾</span> Pet &amp; Shop</button>
+        <button class="tab" type="button" data-tab="pet"><span aria-hidden="true">🐾</span> Pet &amp; Shop</button>
         <button class="tab" type="button" data-tab="family"><span aria-hidden="true">👪</span> Family</button>
       </div>
     </nav>
@@ -727,6 +731,42 @@
 
     <!-- ==================== TAB: PET & SHOP ==================== -->
     <div class="tab-page" data-page="pet" hidden>
+      <!-- ============ MY PET (pet.js) ============ -->
+      <section class="panel pet-panel" aria-labelledby="pet-name-title">
+        <p class="eyebrow">// my pet</p>
+        <div class="pet-home">
+          <div class="pet-stage">
+            <p class="pet-bubble" id="pet-bubble" aria-live="polite" hidden></p>
+            <div class="pet-picture" id="pet-picture"></div>
+            <button class="button" id="pet-high-five" type="button">🖐️ High five!</button>
+          </div>
+          <div class="pet-info">
+            <h2 class="panel__title" id="pet-name-title">Your pet</h2>
+            <p class="pet-mood" id="pet-mood"></p>
+            <div>
+              <p class="quest-progress__text" id="pet-grow"></p>
+              <div class="xpbar" aria-hidden="true"><div class="xpbar__fill" id="pet-grow-fill"></div></div>
+            </div>
+            <p class="panel__lead">Your pet grows when you finish workouts, and it's happiest when you work out, drink water and sleep 9+ hours. Get it hats and colors in the shop!</p>
+            <form class="inline-form" id="pet-name-form">
+              <label class="visually-hidden" for="pet-name">Your pet's name</label>
+              <input class="input" id="pet-name" type="text" maxlength="20" placeholder="Name your pet!" autocomplete="off">
+              <button class="button button--quiet" type="submit">Save name</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ COIN SHOP (shop.js) ============ -->
+      <section class="panel" aria-labelledby="shop-title">
+        <div class="panel__head">
+          <p class="eyebrow">// coin shop</p>
+          <p class="coins"><span aria-hidden="true">🪙</span> <strong id="coin-count">0</strong> coins</p>
+        </div>
+        <h2 class="panel__title" id="shop-title">🛍️ Shop</h2>
+        <p class="panel__lead" id="coin-next"></p>
+        <div class="shop-groups" id="shop-groups"></div>
+      </section>
     </div>
 
     <!-- ==================== TAB: FAMILY ==================== -->

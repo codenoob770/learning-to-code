@@ -2105,18 +2105,18 @@ body.coach-open {
 
 .demo__limb {
   fill: none;
-  stroke: var(--fg);
+  stroke: var(--figure, var(--fg));
   stroke-width: 3.4;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .demo__limb--far {
-  stroke: var(--dim);
+  stroke: var(--figure-far, var(--dim));
 }
 
 .demo__head {
-  fill: var(--fg);
+  fill: var(--figure, var(--fg));
 }
 
 .demo__ground {
@@ -4163,6 +4163,12 @@ label.mission__text {
   width: 100%;
 }
 
+.inline-form .button,
+.inline-form .text-button {
+  flex: none;
+  white-space: nowrap;
+}
+
 /* A - 3 + counter */
 .stepper {
   display: inline-flex;
@@ -4817,6 +4823,285 @@ label.mission__text {
 
 .family-past-title {
   margin-top: 0.9rem;
+}
+
+/* 9j. PET AND SHOP --------------------------------------------------------
+   Page themes from the shop. Each one changes the main tokens, but
+   never in expert mode: expert mode's red always wins.              */
+
+:root[data-skin="ocean"]:not([data-mode="expert"]) {
+  --bg: #071a26; --panel: #0c2333; --panel-glass: rgba(12, 35, 51, 0.94);
+  --line: #16364a; --line-strong: #22506b; --accent: #7cc4ff;
+  --marker: #4fd1ff; --marker-soft: rgba(79, 209, 255, 0.12); --marker-border: rgba(79, 209, 255, 0.4);
+}
+
+:root[data-skin="forest"]:not([data-mode="expert"]) {
+  --bg: #0b1a12; --panel: #11241a; --panel-glass: rgba(17, 36, 26, 0.94);
+  --line: #1e3a2a; --line-strong: #2d5640; --accent: #9fd6a0;
+  --marker: #8be36a; --marker-soft: rgba(139, 227, 106, 0.12); --marker-border: rgba(139, 227, 106, 0.4);
+}
+
+:root[data-skin="galaxy"]:not([data-mode="expert"]) {
+  --bg: #120c24; --panel: #1a1233; --panel-glass: rgba(26, 18, 51, 0.94);
+  --line: #2c2150; --line-strong: #40306f; --accent: #b9a8ff;
+  --marker: #c59bff; --marker-soft: rgba(197, 155, 255, 0.13); --marker-border: rgba(197, 155, 255, 0.4);
+}
+
+:root[data-skin="candy"]:not([data-mode="expert"]) {
+  --bg: #1e0f1c; --panel: #2a1428; --panel-glass: rgba(42, 20, 40, 0.94);
+  --line: #42203e; --line-strong: #5e2d58; --accent: #ffb3e1;
+  --marker: #ff8fd0; --marker-soft: rgba(255, 143, 208, 0.12); --marker-border: rgba(255, 143, 208, 0.4);
+}
+
+:root[data-skin="gold"]:not([data-mode="expert"]) {
+  --bg: #17130a; --panel: #211b0e; --panel-glass: rgba(33, 27, 14, 0.94);
+  --line: #3a3018; --line-strong: #574722; --accent: #ffd97a;
+  --marker: #ffcf40; --marker-soft: rgba(255, 207, 64, 0.12); --marker-border: rgba(255, 207, 64, 0.4);
+}
+
+/* Stick figure colors from the shop */
+:root[data-figure="gold"] { --figure: #ffd34d; --figure-far: #a8892f; }
+:root[data-figure="neon"] { --figure: #7dff8a; --figure-far: #4a9a52; }
+:root[data-figure="fire"] { --figure: #ff7a3d; --figure-far: #a85128; }
+:root[data-figure="ice"] { --figure: #8fe3ff; --figure-far: #5a93a6; }
+
+/* The pet */
+.pet-home {
+  display: grid;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+@media (min-width: 760px) {
+  .pet-home {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+}
+
+.pet-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem 1rem 1.25rem;
+  border-radius: var(--radius);
+  background: radial-gradient(circle at 50% 70%, var(--marker-soft), transparent 70%), var(--bg);
+}
+
+.pet-picture {
+  width: min(15rem, 70vw);
+}
+
+.pet {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+.pet .pet__body {
+  animation: pet-breathe 2.4s ease-in-out infinite;
+  transform-box: fill-box;
+}
+
+.pet--sleepy .pet__body {
+  animation-duration: 4s;
+}
+
+@keyframes pet-breathe {
+  50% { translate: 0 -3px; }
+}
+
+.pet.is-jumping .pet__body {
+  animation: pet-jump 0.6s ease-out;
+}
+
+@keyframes pet-jump {
+  40% { translate: 0 -34px; }
+  70% { translate: 0 2px; }
+}
+
+.pet--egg .pet__wobble {
+  animation: egg-wobble 2.6s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+.pet.is-jumping .pet__wobble {
+  animation: egg-wobble 0.35s ease-in-out 3;
+}
+
+@keyframes egg-wobble {
+  0%, 60%, 100% { rotate: 0deg; }
+  70% { rotate: -6deg; }
+  80% { rotate: 6deg; }
+  90% { rotate: -3deg; }
+}
+
+.pet__shadow {
+  fill: rgba(0, 0, 0, 0.35);
+}
+
+.pet__line {
+  fill: none;
+  stroke: #1c2233;
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.pet__arm {
+  fill: none;
+  stroke-width: 14;
+  stroke-linecap: round;
+}
+
+.pet__strap {
+  fill: none;
+  stroke: #1c2233;
+  stroke-width: 5;
+}
+
+.pet__zzz,
+.pet__star {
+  fill: var(--fg);
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.pet__star {
+  fill: #ffd34d;
+  font-size: 20px;
+}
+
+.pet__glow {
+  fill: var(--marker-soft);
+  stroke: var(--marker-border);
+  stroke-width: 2;
+  stroke-dasharray: 6 10;
+}
+
+.pet-bubble {
+  position: absolute;
+  top: 0.6rem;
+  left: 50%;
+  z-index: 1;
+  max-width: 85%;
+  padding: 0.5rem 0.8rem;
+  border-radius: 14px;
+  background: var(--fg);
+  color: var(--bg);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  text-align: center;
+  transform: translateX(-50%);
+  animation: bubble-pop 0.3s ease-out;
+}
+
+@keyframes bubble-pop {
+  from { opacity: 0; transform: translateX(-50%) scale(0.8); }
+}
+
+.pet-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.pet-mood {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* The shop */
+.coins {
+  padding: 0.3rem 0.8rem;
+  border: 1px solid var(--marker-border);
+  border-radius: 999px;
+  background: var(--marker-soft);
+  font-family: var(--font-code);
+}
+
+.coins strong {
+  color: var(--marker);
+  font-size: 1.1rem;
+}
+
+.shop-groups {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 900px) {
+  .shop-groups {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.shop-group h3 {
+  font-size: 1.25rem;
+}
+
+.shop-group__lead {
+  margin: 0.2rem 0 0.6rem;
+  color: var(--dim);
+  font-size: 0.875rem;
+}
+
+.shop-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shop-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3.4rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+}
+
+.shop-item.is-worn {
+  border-color: var(--teal);
+}
+
+.shop-item__swatch {
+  flex: none;
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 2px solid var(--line-strong);
+  border-radius: 50%;
+}
+
+.shop-item__icon {
+  flex: none;
+  width: 1.8rem;
+  font-size: 1.4rem;
+  text-align: center;
+}
+
+.shop-item__name {
+  flex: 1;
+  font-weight: 700;
+}
+
+.shop-item .button {
+  padding: 0.35rem 0.8rem;
+  font-size: 0.875rem;
+}
+
+.shop-item__worn {
+  color: var(--teal);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+  white-space: nowrap;
 }
 
 /* 10. SMALL SCREENS AND REDUCED MOTION --------------------------- */

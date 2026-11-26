@@ -229,7 +229,8 @@ function trophyStats() {
   return { xp, workouts, bestStreak, comeback, perfectWeek, ratings, pushups, curlups, testDone, waterDays, sleepDays, questStages, questStagesDone, questsComplete,
     missionsDone, missionSweeps, monthlies, bossesBeaten, quizRight,
     fullDeck, bestKicks, spins, smoothies, recipesMade, snackPerfect,
-    belts: beltData.history.length, swims, goals, hatTrick, builtWorkouts, fasterTime, checkIns, familyWon, quizPerfect, penaltyReps, expertCount: expertDays.size };
+    belts: beltData.history.length, swims, goals, hatTrick, builtWorkouts, fasterTime, checkIns, familyWon,
+    bought: shopData.owned.length, spent: shopData.spent || 0, petStage: petStage(), quizPerfect, penaltyReps, expertCount: expertDays.size };
 }
 
 
@@ -308,6 +309,10 @@ const BADGES = [
   { id: "designer", icon: "🛠️", name: "Workout Designer", how: "Finish a workout you built", earned: (s) => s.builtWorkouts >= 1 },
   { id: "checkIn", icon: "⚡", name: "Self-Aware", how: "Do 14 energy check-ins", earned: (s) => s.checkIns >= 14 },
   { id: "family", icon: "👑", name: "Family Champ", how: "Win a weekly family challenge", earned: (s) => s.familyWon >= 1 },
+  { id: "hatched", icon: "🐣", name: "It Hatched!", how: "Hatch your pet's egg", earned: (s) => s.petStage >= 1 },
+  { id: "petPal", icon: "🐾", name: "Pet Pal", how: "Grow your pet into a Teen", earned: (s) => s.petStage >= 3 },
+  { id: "shopper", icon: "🛍️", name: "Shopper", how: "Buy something in the shop", earned: (s) => s.bought >= 1 },
+  { id: "bigSpender", icon: "🪙", name: "Big Spender", how: "Spend 1,000 coins", earned: (s) => s.spent >= 1000 },
 ];
 
 
