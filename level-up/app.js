@@ -88,6 +88,10 @@ const PROGRESS_KEYS = [
   "levelUp.drinkRatings", "levelUp.drinkSkips", "levelUp.repeatAsked",
   "levelUp.seen", "levelUp.practice", "levelUp.habits", "levelUp.trainerLog",
   "levelUp.grocery", "levelUp.quest",
+  // Added with the tabs: arcade, quiz, sports, kitchen, pet, shop and family
+  "levelUp.log", "levelUp.missions", "levelUp.energy", "levelUp.belt",
+  "levelUp.swim", "levelUp.soccer", "levelUp.workouts", "levelUp.recipes",
+  "levelUp.shop", "levelUp.pet", "levelUp.family", "levelUp.spins",
 ];
 
 const memory = {};
@@ -144,7 +148,19 @@ let practiceDays;  // your practice days, like { soccer: [1, 3] } (0 = Monday)
 let habits;        // water and sleep for each day, like { "2026-11-26": { water: 5, sleep: 9 } }
 let trainerLog;    // every beat-trainer result, for the charts
 let groceryChecks; // grocery items you've ticked off, by week
-let questTasks;    // Backflip Quest tasks you've checked off (quest.js)
+let questTasks;    // quest tasks you've checked off (quest.js)
+let activityLog;   // quizzes, arcade games and more, like { d: "2026-11-27", t: "quiz", r: 8, n: 10 } (see logActivity)
+let missionChecks; // daily missions you've done, by day (missions.js)
+let energyLog;     // how you felt each day, 1 to 5 (stats.js)
+let beltData;      // your taekwondo belt and next test (sports.js)
+let swimData;      // swim times and laps (sports.js)
+let soccerGames;   // your soccer game journal (sports.js)
+let myWorkouts;    // workouts you built yourself (builder.js)
+let recipeBook;    // favorite recipes and smoothies you invented (kitchen.js)
+let shopData;      // coins spent, things you bought and what you're wearing (shop.js)
+let petData;       // your pet's name (pet.js)
+let familyData;    // the family scoreboard (family.js)
+let spinData;      // the daily spin-the-wheel, by day (arcade.js)
 
 // Reads all your progress into the variables above. It runs when the page
 // opens, and again whenever another device changes something.
@@ -165,6 +181,18 @@ function loadProgress() {
   trainerLog = loadJSON("levelUp.trainerLog", []);
   groceryChecks = loadJSON("levelUp.grocery", {});
   questTasks = new Set(loadJSON("levelUp.quest", []));
+  activityLog = loadJSON("levelUp.log", []);
+  missionChecks = loadJSON("levelUp.missions", {});
+  energyLog = loadJSON("levelUp.energy", {});
+  beltData = loadJSON("levelUp.belt", { belt: 0, test: "", checks: [], custom: [], history: [] });
+  swimData = loadJSON("levelUp.swim", { unit: "yd", pool: 25, times: [], laps: [] });
+  soccerGames = loadJSON("levelUp.soccer", []);
+  myWorkouts = loadJSON("levelUp.workouts", []);
+  recipeBook = loadJSON("levelUp.recipes", { fav: [], smoothies: [] });
+  shopData = loadJSON("levelUp.shop", { spent: 0, owned: [], wear: {} });
+  petData = loadJSON("levelUp.pet", { name: "" });
+  familyData = loadJSON("levelUp.family", { players: [] });
+  spinData = loadJSON("levelUp.spins", {});
 }
 
 loadProgress();
@@ -198,6 +226,40 @@ function saveDrinkSkips() {
 
 // The day you're looking at right now. It starts on today.
 let selected = today;
+
+
+/* 2b. THE ACTIVITY LOG AND OTHER HELPERS ----------------------------
+   The activity log is a list of things you did outside the daily
+   workout: quiz rounds, arcade games, recipes you made and more.
+   trophies.js turns it into XP, and the weekly boss counts its reps. */
+
+function logActivity(type, details = {}) {
+  const entry = { d: toKey(today), t: type, ...details };
+  activityLog.push(entry);
+  save("levelUp.log", JSON.stringify(activityLog));
+  return entry;
+}
+
+// Every entry of one type, like logOf("quiz")
+function logOf(type) {
+  return activityLog.filter((entry) => entry.t === type);
+}
+
+// Text that someone typed (like a name) can't be put into HTML as-is:
+// a "<" would start a tag! This turns special characters into safe codes.
+function escapeHTML(text) {
+  return String(text).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+}
+
+// A short random id, for things you add (like a swim time)
+function makeId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+// Saves a value that's a list or object
+function saveJSON(key, value) {
+  save(key, JSON.stringify(value));
+}
 
 
 /* 3. WORKING OUT A DAY'S PLAN ------------------------------------- */
@@ -472,6 +534,7 @@ function render() {
   renderHabits();   // in habits.js
   renderCharts();   // in charts.js
   renderQuest();    // in quest.js
+  renderQuiz();     // in quiz.js
 }
 
 function renderDay(plan) {
@@ -933,9 +996,11 @@ document.querySelector("#next-day").addEventListener("click", () => goTo(addDays
 document.querySelector("#prev-day").addEventListener("click", () => goTo(addDays(selected, -1)));
 document.querySelector("#back-today").addEventListener("click", () => goTo(today));
 
-// Left and right arrow keys move between days too (but not while typing)
+// Left and right arrow keys move between days too (but not while typing,
+// and only on the Today tab)
 document.addEventListener("keydown", (event) => {
-  if (event.target.closest && event.target.closest("input, textarea")) return;
+  if (event.target.closest && event.target.closest("input, textarea, select")) return;
+  if (currentTab !== "today") return;
   if (coachIsOpen() || !document.querySelector("#celebrate").hidden) return;
   if (event.key === "ArrowRight") goTo(addDays(selected, 1));
   if (event.key === "ArrowLeft" && selected > planStart) goTo(addDays(selected, -1));
@@ -1637,6 +1702,7 @@ async function connectToCloud() {
 
 showSoundSetting();
 showExpertMode();
+showStartingTab(); // in tabs.js
 render();
 checkAchievements(false);
 connectToCloud();

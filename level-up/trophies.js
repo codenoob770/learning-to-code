@@ -29,8 +29,37 @@ const XP_RULES = {
   water: 5,         // each glass of water (up to 8 a day)
   sleepLogged: 10,  // logging how long you slept
   goodSleep: 10,    // extra for 9 hours or more
-  questTask: 25,    // each Backflip Quest task (quest.js)
+  questTask: 25,    // each quest task (quest.js)
+  quizRight: 10,    // each right answer in the quiz (quiz.js)
+  quizPerfect: 25,  // extra for a perfect 10/10 round
+  penaltyDone: 5,   // each quiz penalty you do (you still did the work!)
 };
+
+// XP for things in the activity log (see logActivity in app.js).
+// Each one is a little function: give it a log entry, get back the XP.
+const LOG_XP = {
+  quiz: (e) => e.r * XP_RULES.quizRight + (e.r === e.n && e.n >= 10 ? XP_RULES.quizPerfect : 0) + (e.p || 0) * XP_RULES.penaltyDone,
+};
+
+// Some things only earn XP a few times a day, so nobody can farm
+// XP (and shop coins) by tapping the same thing all day long
+const LOG_DAILY_LIMIT = {
+  quiz: 5,
+};
+
+function logXP() {
+  let xp = 0;
+  const counts = {};
+  for (const entry of activityLog) {
+    const rule = LOG_XP[entry.t];
+    if (!rule) continue;
+    const dayAndType = `${entry.d} ${entry.t}`;
+    counts[dayAndType] = (counts[dayAndType] || 0) + 1;
+    if (counts[dayAndType] > (LOG_DAILY_LIMIT[entry.t] ?? Infinity)) continue;
+    xp += rule(entry);
+  }
+  return xp;
+}
 
 function isRestDay(date) {
   return WEEK[dayIndex(date)].style === "rest" || daysUntilTest(date) === 1;
@@ -97,6 +126,13 @@ function trophyStats() {
   const firstOpenStage = SIDE_QUEST.stages.findIndex((stage) => !stage.tasks.every((task) => questTasks.has(task.id)));
   const questStages = firstOpenStage === -1 ? SIDE_QUEST.stages.length : firstOpenStage;
 
+  // Everything in the activity log: quizzes, arcade games and more
+  xp += logXP();
+  const quizRounds = logOf("quiz");
+  const quizRight = quizRounds.reduce((sum, e) => sum + e.r, 0);
+  const quizPerfect = quizRounds.some((e) => e.r === e.n && e.n >= 10);
+  const penaltyReps = quizRounds.reduce((sum, e) => sum + (e.reps || 0), 0);
+
   const ratings = Object.keys(drinkRatings).length;
   const pushups = bests.pushups ? bests.pushups.count : 0;
   const curlups = bests.curlups ? bests.curlups.count : 0;
@@ -106,7 +142,8 @@ function trophyStats() {
   xp += (pushups + curlups) * XP_RULES.trainerRep;
   if (testDone) xp += XP_RULES.testScores;
 
-  return { xp, workouts, bestStreak, comeback, perfectWeek, ratings, pushups, curlups, testDone, waterDays, sleepDays, questStages, expertCount: expertDays.size };
+  return { xp, workouts, bestStreak, comeback, perfectWeek, ratings, pushups, curlups, testDone, waterDays, sleepDays, questStages,
+    quizRight, quizPerfect, penaltyReps, expertCount: expertDays.size };
 }
 
 
@@ -157,6 +194,9 @@ const BADGES = [
   { id: "sleep", icon: "😴", name: "Sleep Champ", how: "9+ hours of sleep on 5 nights", earned: (s) => s.sleepDays >= 5 },
   { id: "flipReady", icon: "🦘", name: "Flip Ready", how: "Finish stages 1 to 3 of the Backflip Quest", earned: (s) => s.questStages >= 3 },
   { id: "backflip", icon: "🤸", name: "Backflip Legend", how: "Finish the whole Backflip Quest", earned: (s) => s.questStages >= SIDE_QUEST.stages.length },
+  { id: "quizWhiz", icon: "🧠", name: "Quiz Whiz", how: "Get a perfect 10/10 quiz round", earned: (s) => s.quizPerfect },
+  { id: "brainiac", icon: "🎓", name: "Brainiac", how: "100 right quiz answers", earned: (s) => s.quizRight >= 100 },
+  { id: "noExcuses", icon: "💯", name: "No Excuses", how: "Do 100 reps of quiz penalties", earned: (s) => s.penaltyReps >= 100 },
 ];
 
 
@@ -201,7 +241,10 @@ document.querySelector("#xp-rules").innerHTML = [
   ["Drink a glass of water", `+${XP_RULES.water}`],
   ["Log your sleep", `+${XP_RULES.sleepLogged}`],
   ["Sleep 9 hours or more", `+${XP_RULES.goodSleep} more`],
-  ["Backflip Quest task", `+${XP_RULES.questTask}`],
+  ["Quest task", `+${XP_RULES.questTask}`],
+  ["Right quiz answer (5 rounds a day)", `+${XP_RULES.quizRight}`],
+  ["Perfect quiz round", `+${XP_RULES.quizPerfect} more`],
+  ["Do a quiz penalty", `+${XP_RULES.penaltyDone}`],
 ].map(([what, xp]) => `<li><span>${what}</span><span>${xp} XP</span></li>`).join("");
 
 

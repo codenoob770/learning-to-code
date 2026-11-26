@@ -17,6 +17,8 @@
       grocery.js  -> the week's grocery list
       ai-coach.js -> asking Claude questions (on the Claude version)
       quest.js    -> the Backflip Quest side quest
+      tabs.js     -> the tabs along the top (Today, Quests, Arcade...)
+      quiz.js     -> the Brain + Body Quiz (questions in quiz-questions.js)
       app.js      -> what the buttons do, and building each day's plan
 
     Most of the page is empty here on purpose: app.js fills in the
@@ -36,20 +38,23 @@
   <!-- The "?v=8" is a version number. Browsers keep old copies of files for a
        while; changing the number makes them download the newest version.
        Add 1 to it (on every line below) whenever you change those files. -->
-  <link rel="stylesheet" href="style.css?v=11">
+  <link rel="stylesheet" href="style.css?v=12">
   <!-- These load in order. app.js goes last, because it starts the page
        and uses things from all the others. -->
-  <script src="plan.js?v=11" defer></script>
-  <script src="demos.js?v=11" defer></script>
-  <script src="trophies.js?v=11" defer></script>
-  <script src="coach.js?v=11" defer></script>
-  <script src="practice.js?v=11" defer></script>
-  <script src="habits.js?v=11" defer></script>
-  <script src="charts.js?v=11" defer></script>
-  <script src="grocery.js?v=11" defer></script>
-  <script src="ai-coach.js?v=11" defer></script>
-  <script src="quest.js?v=11" defer></script>
-  <script src="app.js?v=11" defer></script>
+  <script src="plan.js?v=12" defer></script>
+  <script src="demos.js?v=12" defer></script>
+  <script src="trophies.js?v=12" defer></script>
+  <script src="coach.js?v=12" defer></script>
+  <script src="practice.js?v=12" defer></script>
+  <script src="habits.js?v=12" defer></script>
+  <script src="charts.js?v=12" defer></script>
+  <script src="grocery.js?v=12" defer></script>
+  <script src="ai-coach.js?v=12" defer></script>
+  <script src="quest.js?v=12" defer></script>
+  <script src="quiz-questions.js?v=12" defer></script>
+  <script src="quiz.js?v=12" defer></script>
+  <script src="tabs.js?v=12" defer></script>
+  <script src="app.js?v=12" defer></script>
 </head>
 <body>
 
@@ -80,172 +85,138 @@
     <span class="code-line"><span class="tok-func">levelUp</span>(you);</span>
   </div>
 
-  <!-- ============ SCOREBOARD ============ -->
-  <header class="hud">
-    <a class="hud__home" href="../index.html">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
-      <span class="hud__home-text">My website</span>
-    </a>
-    <p class="hud__title">Level <span class="marker">Up</span> <span class="expert-badge">Expert</span></p>
+  <!-- ============ SCOREBOARD AND TABS (they stick to the top together) ============ -->
+  <div class="top">
+    <header class="hud">
+      <a class="hud__home" href="../index.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+        <span class="hud__home-text">My website</span>
+      </a>
+      <p class="hud__title">Level <span class="marker">Up</span> <span class="expert-badge">Expert</span></p>
 
-    <dl class="hud__stats">
-      <div class="stat"><dt>Level</dt><dd id="stat-level">1</dd></div>
-      <div class="stat stat--week"><dt>Week</dt><dd id="stat-week">1</dd></div>
-      <div class="stat"><dt>This week</dt><dd id="stat-this-week">0/7</dd></div>
-      <div class="stat"><dt>Streak</dt><dd id="stat-streak">0</dd></div>
-    </dl>
+      <dl class="hud__stats">
+        <div class="stat"><dt>Level</dt><dd id="stat-level">1</dd></div>
+        <div class="stat stat--week"><dt>Week</dt><dd id="stat-week">1</dd></div>
+        <div class="stat"><dt>This week</dt><dd id="stat-this-week">0/7</dd></div>
+        <div class="stat"><dt>Streak</dt><dd id="stat-streak">0</dd></div>
+      </dl>
 
-    <!-- Expert mode: turns the page red and makes the workouts way harder -->
-    <button class="expert-button" id="expert-button" type="button" aria-pressed="false" aria-label="Expert mode" title="Expert mode: way harder workouts">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1 3.5 4.5 5.5 4.5 10a4.5 4.5 0 0 1-9 0c0-2 1-3.5 2-4.5.3 1.8 1.3 3 2.5 3.5-.5-3 0-6 0-9z"/></svg>
-      <span class="expert-button__text">Expert mode</span>
-    </button>
+      <!-- Expert mode: turns the page red and makes the workouts way harder -->
+      <button class="expert-button" id="expert-button" type="button" aria-pressed="false" aria-label="Expert mode" title="Expert mode: way harder workouts">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1 3.5 4.5 5.5 4.5 10a4.5 4.5 0 0 1-9 0c0-2 1-3.5 2-4.5.3 1.8 1.3 3 2.5 3.5-.5-3 0-6 0-9z"/></svg>
+        <span class="expert-button__text">Expert mode</span>
+      </button>
 
-    <button class="icon-button" id="sound-button" type="button" aria-label="Timer sounds" aria-pressed="true" title="Timer sounds on or off">
-      <svg class="icon-sound-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>
-      <svg class="icon-sound-off" viewBox="0 0 24 24" aria-hidden="true" hidden><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="m23 9-6 6M17 9l6 6"/></svg>
-    </button>
-  </header>
+      <button class="icon-button" id="sound-button" type="button" aria-label="Timer sounds" aria-pressed="true" title="Timer sounds on or off">
+        <svg class="icon-sound-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>
+        <svg class="icon-sound-off" viewBox="0 0 24 24" aria-hidden="true" hidden><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="m23 9-6 6M17 9l6 6"/></svg>
+      </button>
+    </header>
+
+    <!-- ============ TABS ============ (tabs.js) -->
+    <nav class="tabs" aria-label="Sections">
+      <div class="tabs__inner">
+        <button class="tab" type="button" data-tab="today" aria-current="page"><span aria-hidden="true">🏠</span> Today</button>
+        <button class="tab" type="button" data-tab="quests"><span aria-hidden="true">🗺️</span> Quests</button>
+        <button class="tab" type="button" data-tab="arcade" hidden><span aria-hidden="true">🎮</span> Arcade</button>
+        <button class="tab" type="button" data-tab="quiz"><span aria-hidden="true">🧠</span> Quiz</button>
+        <button class="tab" type="button" data-tab="sports"><span aria-hidden="true">🥋</span> Sports</button>
+        <button class="tab" type="button" data-tab="kitchen" hidden><span aria-hidden="true">🍓</span> Kitchen</button>
+        <button class="tab" type="button" data-tab="stats"><span aria-hidden="true">📊</span> Stats</button>
+        <button class="tab" type="button" data-tab="pet" hidden><span aria-hidden="true">🐾</span> Pet &amp; Shop</button>
+        <button class="tab" type="button" data-tab="family" hidden><span aria-hidden="true">👪</span> Family</button>
+      </div>
+    </nav>
+  </div>
 
   <main class="wrap page" id="main">
 
-    <!-- ============ WHICH DAY ============ -->
-    <section class="panel day" aria-labelledby="day-name">
-      <div class="day__top">
-        <div class="day__heading">
-          <p class="eyebrow" id="day-eyebrow">// week 1 · day 1</p>
-          <h1 class="day__name"><span id="day-name">Monday</span> <span class="today-pill" id="today-pill">Today</span></h1>
-          <p class="day__date" id="day-date"></p>
-        </div>
-        <div class="day__nav">
-          <button class="button button--quiet" id="prev-day" type="button">&larr; Previous day</button>
-          <button class="button" id="next-day" type="button">Next day &rarr;</button>
-        </div>
-      </div>
+    <!-- Each "tab page" is one tab. tabs.js shows one and hides the rest. -->
 
-      <!-- Seven buttons, one per day. app.js fills them in. -->
-      <div class="strip" id="day-strip" role="group" aria-label="Days this week"></div>
-      <div class="day__foot">
-        <button class="text-button" id="back-today" type="button" hidden>Back to today</button>
-        <!-- Says whether your progress is synced to your Claude account -->
-        <p class="sync-status" id="sync-status" role="status">Progress is saved on this device.</p>
-      </div>
-    </section>
-
-    <!-- ============ GYM TEST ============
-         Only shows up while a test is coming (see TEST in plan.js). -->
-    <section class="panel test" id="test" aria-labelledby="test-title" hidden>
-      <div class="test__info">
-        <div class="panel__head">
-          <p class="eyebrow">// gym test</p>
-          <span class="countdown" id="test-countdown">7 days to go</span>
-        </div>
-        <h2 class="panel__title" id="test-title">Push-up &amp; curl-up test</h2>
-        <p class="panel__lead" id="test-date"></p>
-        <!-- The practice plan, filled in by app.js. Tap a day to jump to it. -->
-        <ol class="prep" id="test-prep" aria-label="Test practice plan"></ol>
-      </div>
-
-      <!-- The beat trainer: beeps "down... up..." and counts your reps -->
-      <div class="trainer">
-        <div class="trainer__top">
-          <p class="trainer__label">Beat trainer</p>
-          <div class="trainer__pick" role="group" aria-label="Exercise to practice">
-            <button class="pick" type="button" data-exercise="pushups" aria-pressed="true">Push-ups</button>
-            <button class="pick" type="button" data-exercise="curlups" aria-pressed="false">Curl-ups</button>
+    <!-- ==================== TAB: TODAY ==================== -->
+    <div class="tab-page" data-page="today">
+      <!-- ============ WHICH DAY ============ -->
+      <section class="panel day" aria-labelledby="day-name">
+        <div class="day__top">
+          <div class="day__heading">
+            <p class="eyebrow" id="day-eyebrow">// week 1 · day 1</p>
+            <h1 class="day__name"><span id="day-name">Monday</span> <span class="today-pill" id="today-pill">Today</span></h1>
+            <p class="day__date" id="day-date"></p>
+          </div>
+          <div class="day__nav">
+            <button class="button button--quiet" id="prev-day" type="button">&larr; Previous day</button>
+            <button class="button" id="next-day" type="button">Next day &rarr;</button>
           </div>
         </div>
-        <p class="trainer__count" id="trainer-count">0</p>
-        <p class="trainer__cue" id="trainer-cue" aria-live="polite">Go down on the low beep and up on the high beep. Keep going until you can't keep up, then press Stop.</p>
-        <button class="button" id="trainer-start" type="button">Start</button>
-        <p class="trainer__best" id="trainer-best"></p>
-      </div>
-    </section>
 
-    <div class="layout">
-      <!-- ============ WORKOUT (filled in by app.js) ============ -->
-      <section class="panel workout" id="workout" aria-live="polite"></section>
-
-      <!-- ============ FOOD AND DRINK (filled in by app.js) ============ -->
-      <div class="fuel">
-        <section class="panel drink" id="drink"></section>
-
-        <!-- ============ WATER AND SLEEP (habits.js) ============ -->
-        <section class="panel habits" aria-labelledby="habits-title">
-          <p class="eyebrow">// daily habits</p>
-          <h2 class="panel__title" id="habits-title">Water &amp; sleep</h2>
-          <div class="habit">
-            <p class="habit__label">💧 Glasses of water today</p>
-            <div class="glasses" id="water-glasses" role="group" aria-label="Glasses of water"></div>
-            <p class="habit__note" id="water-count">0 of 8 glasses</p>
-          </div>
-          <div class="habit">
-            <p class="habit__label">😴 Hours of sleep last night</p>
-            <div class="sleep-choices" id="sleep-choices" role="group" aria-label="Hours of sleep"></div>
-            <p class="habit__note" id="sleep-note"></p>
-          </div>
-        </section>
-
-        <section class="panel meals" id="meals"></section>
-      </div>
-    </div>
-
-    <!-- ============ PROGRESS CHARTS (charts.js) ============ -->
-    <section class="panel progress" aria-labelledby="progress-title">
-      <p class="eyebrow">// progress</p>
-      <h2 class="panel__title" id="progress-title">Watch yourself get stronger</h2>
-      <div class="charts">
-        <figure class="chart-card">
-          <figcaption>
-            <h3>Push-ups &amp; curl-ups</h3>
-            <p class="chart-legend">
-              <span><i class="swatch series-1"></i>Push-ups</span>
-              <span><i class="swatch series-2"></i>Curl-ups</span>
-              <span><i class="swatch swatch--test"></i>Gym test</span>
-            </p>
-          </figcaption>
-          <div class="chart-box" id="chart-reps"></div>
-          <div id="chart-reps-table"></div>
-        </figure>
-        <figure class="chart-card">
-          <figcaption>
-            <h3>Days finished each week</h3>
-            <p class="chart-legend">Out of 7 days</p>
-          </figcaption>
-          <div class="chart-box" id="chart-weeks"></div>
-          <div id="chart-weeks-table"></div>
-        </figure>
-      </div>
-    </section>
-
-    <!-- ============ SIDE QUEST: BACKFLIP (quest.js) ============ -->
-    <section class="panel quest" aria-labelledby="quest-title">
-      <div class="panel__head">
-        <p class="eyebrow">// side quest</p>
-        <span class="quest-tag">+25 XP per task</span>
-      </div>
-      <h2 class="panel__title" id="quest-title">🤸 Backflip Quest</h2>
-      <p class="panel__lead">Learn every skill a backflip needs, one stage at a time. Check off a task when you can do it, and finish a stage to unlock the next.</p>
-      <p class="quest-safety">
-        <strong>⚠️ Safety first:</strong> never try a backflip alone, on a hard floor, or on a bed or
-        trampoline without a coach. Stages 1 to 3 are safe to practice at home. The real flip happens
-        only in stage 4, with a coach spotting you on mats.
-      </p>
-      <div class="quest-progress">
-        <p class="quest-progress__text" id="quest-progress-text"></p>
-        <div class="xpbar" aria-hidden="true"><div class="xpbar__fill" id="quest-fill"></div></div>
-      </div>
-      <div class="quest-stages" id="quest-stages"></div>
-    </section>
-
-    <div class="duo">
-      <!-- ============ PRACTICE DAYS (practice.js) ============ -->
-      <section class="panel practice-panel" aria-labelledby="practice-title">
-        <p class="eyebrow">// my sports</p>
-        <h2 class="panel__title" id="practice-title">Practice days</h2>
-        <div class="practice-grid" id="practice-grid"></div>
-        <p class="practice-summary" id="practice-summary"></p>
+        <!-- Seven buttons, one per day. app.js fills them in. -->
+        <div class="strip" id="day-strip" role="group" aria-label="Days this week"></div>
+        <div class="day__foot">
+          <button class="text-button" id="back-today" type="button" hidden>Back to today</button>
+          <!-- Says whether your progress is synced to your Claude account -->
+          <p class="sync-status" id="sync-status" role="status">Progress is saved on this device.</p>
+        </div>
       </section>
+
+      <!-- ============ GYM TEST ============
+           Only shows up while a test is coming (see TEST in plan.js). -->
+      <section class="panel test" id="test" aria-labelledby="test-title" hidden>
+        <div class="test__info">
+          <div class="panel__head">
+            <p class="eyebrow">// gym test</p>
+            <span class="countdown" id="test-countdown">7 days to go</span>
+          </div>
+          <h2 class="panel__title" id="test-title">Push-up &amp; curl-up test</h2>
+          <p class="panel__lead" id="test-date"></p>
+          <!-- The practice plan, filled in by app.js. Tap a day to jump to it. -->
+          <ol class="prep" id="test-prep" aria-label="Test practice plan"></ol>
+        </div>
+
+        <!-- The beat trainer: beeps "down... up..." and counts your reps -->
+        <div class="trainer">
+          <div class="trainer__top">
+            <p class="trainer__label">Beat trainer</p>
+            <div class="trainer__pick" role="group" aria-label="Exercise to practice">
+              <button class="pick" type="button" data-exercise="pushups" aria-pressed="true">Push-ups</button>
+              <button class="pick" type="button" data-exercise="curlups" aria-pressed="false">Curl-ups</button>
+            </div>
+          </div>
+          <p class="trainer__count" id="trainer-count">0</p>
+          <p class="trainer__cue" id="trainer-cue" aria-live="polite">Go down on the low beep and up on the high beep. Keep going until you can't keep up, then press Stop.</p>
+          <button class="button" id="trainer-start" type="button">Start</button>
+          <p class="trainer__best" id="trainer-best"></p>
+        </div>
+      </section>
+
+      <div class="layout">
+        <!-- ============ WORKOUT (filled in by app.js) ============ -->
+        <section class="panel workout" id="workout" aria-live="polite"></section>
+
+        <!-- ============ FOOD AND DRINK (filled in by app.js) ============ -->
+        <div class="fuel">
+          <section class="panel drink" id="drink"></section>
+
+          <!-- ============ WATER AND SLEEP (habits.js) ============ -->
+          <section class="panel habits" aria-labelledby="habits-title">
+            <p class="eyebrow">// daily habits</p>
+            <h2 class="panel__title" id="habits-title">Water &amp; sleep</h2>
+            <div class="habit">
+              <p class="habit__label">💧 Glasses of water today</p>
+              <div class="glasses" id="water-glasses" role="group" aria-label="Glasses of water"></div>
+              <p class="habit__note" id="water-count">0 of 8 glasses</p>
+            </div>
+            <div class="habit">
+              <p class="habit__label">😴 Hours of sleep last night</p>
+              <div class="sleep-choices" id="sleep-choices" role="group" aria-label="Hours of sleep"></div>
+              <p class="habit__note" id="sleep-note"></p>
+            </div>
+          </section>
+
+          <section class="panel meals" id="meals"></section>
+        </div>
+      </div>
+
+      <!-- TODAY: missions and boss (batch 2) -->
 
       <!-- ============ AI COACH (ai-coach.js) ============ -->
       <section class="panel ai" aria-labelledby="ai-title">
@@ -270,34 +241,129 @@
       </section>
     </div>
 
-    <!-- ============ TROPHY CASE (filled in by trophies.js) ============ -->
-    <section class="panel trophies" id="trophies" aria-labelledby="trophies-title">
-      <div class="trophies__player">
-        <p class="eyebrow">// trophy case</p>
-        <div class="player">
-          <p class="player__level"><span>Level</span><strong id="player-level">1</strong></p>
-          <div>
-            <h2 class="panel__title" id="trophies-title"><span id="player-rank">Rookie</span></h2>
-            <p class="player__xp" id="player-xp">0 XP</p>
+    <!-- ==================== TAB: QUESTS ==================== -->
+    <div class="tab-page" data-page="quests" hidden>
+      <!-- ============ SIDE QUEST: BACKFLIP (quest.js) ============ -->
+      <section class="panel quest" aria-labelledby="quest-title">
+        <div class="panel__head">
+          <p class="eyebrow">// side quest</p>
+          <span class="quest-tag">+25 XP per task</span>
+        </div>
+        <h2 class="panel__title" id="quest-title">🤸 Backflip Quest</h2>
+        <p class="panel__lead">Learn every skill a backflip needs, one stage at a time. Check off a task when you can do it, and finish a stage to unlock the next.</p>
+        <p class="quest-safety">
+          <strong>⚠️ Safety first:</strong> never try a backflip alone, on a hard floor, or on a bed or
+          trampoline without a coach. Stages 1 to 3 are safe to practice at home. The real flip happens
+          only in stage 4, with a coach spotting you on mats.
+        </p>
+        <div class="quest-progress">
+          <p class="quest-progress__text" id="quest-progress-text"></p>
+          <div class="xpbar" aria-hidden="true"><div class="xpbar__fill" id="quest-fill"></div></div>
+        </div>
+        <div class="quest-stages" id="quest-stages"></div>
+      </section>
+    </div>
+
+    <!-- ==================== TAB: ARCADE ==================== -->
+    <div class="tab-page" data-page="arcade" hidden>
+    </div>
+
+    <!-- ==================== TAB: QUIZ ==================== -->
+    <div class="tab-page" data-page="quiz" hidden>
+      <!-- ============ BRAIN + BODY QUIZ (quiz.js, questions in quiz-questions.js) ============ -->
+      <section class="panel quiz" aria-labelledby="quiz-title">
+        <div class="panel__head">
+          <p class="eyebrow">// school quiz · 5th grade</p>
+          <span class="quest-tag">+10 XP per right answer</span>
+        </div>
+        <h2 class="panel__title" id="quiz-title">🧠 Brain + Body Quiz</h2>
+        <p class="panel__lead">10 questions a round. Get one wrong and you owe some exercise: every question has its own penalty!</p>
+        <div class="quiz-area" id="quiz-area"></div>
+      </section>
+    </div>
+
+    <!-- ==================== TAB: SPORTS ==================== -->
+    <div class="tab-page" data-page="sports" hidden>
+      <!-- ============ PRACTICE DAYS (practice.js) ============ -->
+      <section class="panel practice-panel" aria-labelledby="practice-title">
+        <p class="eyebrow">// my sports</p>
+        <h2 class="panel__title" id="practice-title">Practice days</h2>
+        <div class="practice-grid" id="practice-grid"></div>
+        <p class="practice-summary" id="practice-summary"></p>
+      </section>
+    </div>
+
+    <!-- ==================== TAB: KITCHEN ==================== -->
+    <div class="tab-page" data-page="kitchen" hidden>
+    </div>
+
+    <!-- ==================== TAB: STATS ==================== -->
+    <div class="tab-page" data-page="stats" hidden>
+      <!-- ============ TROPHY CASE (filled in by trophies.js) ============ -->
+      <section class="panel trophies" id="trophies" aria-labelledby="trophies-title">
+        <div class="trophies__player">
+          <p class="eyebrow">// trophy case</p>
+          <div class="player">
+            <p class="player__level"><span>Level</span><strong id="player-level">1</strong></p>
+            <div>
+              <h2 class="panel__title" id="trophies-title"><span id="player-rank">Rookie</span></h2>
+              <p class="player__xp" id="player-xp">0 XP</p>
+            </div>
+          </div>
+          <div class="xpbar" aria-hidden="true"><div class="xpbar__fill" id="xp-fill"></div></div>
+          <p class="xpbar__text" id="xp-next">100 XP to level 2</p>
+          <details class="extra">
+            <summary>How to earn XP</summary>
+            <ul id="xp-rules"></ul>
+          </details>
+          <div class="powerups">
+            <p class="powerups__title">🐛 Bug Bash power-ups</p>
+            <p class="powerups__text" id="powerups-text"></p>
+            <a class="button button--quiet" id="powerups-link" href="../bug-bash/">Play Bug Bash</a>
           </div>
         </div>
-        <div class="xpbar" aria-hidden="true"><div class="xpbar__fill" id="xp-fill"></div></div>
-        <p class="xpbar__text" id="xp-next">100 XP to level 2</p>
-        <details class="extra">
-          <summary>How to earn XP</summary>
-          <ul id="xp-rules"></ul>
-        </details>
-        <div class="powerups">
-          <p class="powerups__title">🐛 Bug Bash power-ups</p>
-          <p class="powerups__text" id="powerups-text"></p>
-          <a class="button button--quiet" id="powerups-link" href="../bug-bash/">Play Bug Bash</a>
+        <div class="trophies__badges">
+          <p class="trophies__count" id="badge-count">0 of 12 badges</p>
+          <ul class="badges" id="badges"></ul>
         </div>
-      </div>
-      <div class="trophies__badges">
-        <p class="trophies__count" id="badge-count">0 of 12 badges</p>
-        <ul class="badges" id="badges"></ul>
-      </div>
-    </section>
+      </section>
+
+      <!-- ============ PROGRESS CHARTS (charts.js) ============ -->
+      <section class="panel progress" aria-labelledby="progress-title">
+        <p class="eyebrow">// progress</p>
+        <h2 class="panel__title" id="progress-title">Watch yourself get stronger</h2>
+        <div class="charts">
+          <figure class="chart-card">
+            <figcaption>
+              <h3>Push-ups &amp; curl-ups</h3>
+              <p class="chart-legend">
+                <span><i class="swatch series-1"></i>Push-ups</span>
+                <span><i class="swatch series-2"></i>Curl-ups</span>
+                <span><i class="swatch swatch--test"></i>Gym test</span>
+              </p>
+            </figcaption>
+            <div class="chart-box" id="chart-reps"></div>
+            <div id="chart-reps-table"></div>
+          </figure>
+          <figure class="chart-card">
+            <figcaption>
+              <h3>Days finished each week</h3>
+              <p class="chart-legend">Out of 7 days</p>
+            </figcaption>
+            <div class="chart-box" id="chart-weeks"></div>
+            <div id="chart-weeks-table"></div>
+          </figure>
+        </div>
+      </section>
+    </div>
+
+    <!-- ==================== TAB: PET & SHOP ==================== -->
+    <div class="tab-page" data-page="pet" hidden>
+    </div>
+
+    <!-- ==================== TAB: FAMILY ==================== -->
+    <div class="tab-page" data-page="family" hidden>
+    </div>
 
     <footer class="note">
       <p>
