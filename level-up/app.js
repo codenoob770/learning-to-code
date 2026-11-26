@@ -131,6 +131,13 @@ function saveDrinkRatings() {
   save("levelUp.drinkRatings", JSON.stringify(drinkRatings));
 }
 
+// Days you did NOT try the drink of the day, like "2026-11-26"
+const drinkSkips = new Set(loadJSON("levelUp.drinkSkips", []));
+
+function saveDrinkSkips() {
+  save("levelUp.drinkSkips", JSON.stringify([...drinkSkips]));
+}
+
 // The day you're looking at right now. It starts on today.
 let selected = today;
 
@@ -315,7 +322,8 @@ function luckyNumber(text) {
 // yesterday's drink was). Gives back a Map: "2026-11-26" -> drink.
 function drinksUntil(lastDate) {
   const drinks = new Map();
-  const lastHad = new Map(); // drink -> the last date you had it
+  const lastHad = new Map();      // drink -> the last date you had it
+  const notTried = new Set();     // drinks you skipped and haven't had since
   let yesterday = null;
 
   for (let date = planStart; date <= lastDate; date = addDays(date, 1)) {
@@ -329,9 +337,11 @@ function drinksUntil(lastDate) {
       if (drink === yesterday) continue;
       let rolls = allRuledOut ? 1 : rollsFor(ratingFor(drink, date));
 
-      // Bonus rolls for drinks you haven't had in a while
+      // Bonus rolls for drinks you haven't had in a while,
+      // and 2 more for drinks you skipped, so they come back sooner
       if (rolls > 0) {
         rolls += lastHad.has(drink) ? Math.floor(daysBetween(lastHad.get(drink), date) / 7) : 1;
+        if (notTried.has(drink)) rolls += 2;
       }
 
       for (let roll = 1; roll <= rolls; roll++) {
@@ -344,7 +354,14 @@ function drinksUntil(lastDate) {
     }
 
     drinks.set(toKey(date), best);
-    lastHad.set(best, date);
+    // If you did NOT try it that day, it doesn't count as having it,
+    // and it gets extra rolls until you do.
+    if (drinkSkips.has(toKey(date))) {
+      notTried.add(best);
+    } else {
+      lastHad.set(best, date);
+      notTried.delete(best);
+    }
     yesterday = best;
   }
   return drinks;
@@ -625,11 +642,20 @@ function renderDrink(drink) {
     buttons += `<button class="rate rate--${group}" type="button" data-score="${i}" aria-pressed="${score === i}" aria-label="${i} out of 10">${i}</button>`;
   }
 
+  // "Did not try it" only makes sense for today and earlier days
+  const skipped = drinkSkips.has(toKey(selected));
+  const skipButton = selected > today ? "" : `
+    <button class="skip-button" type="button" id="skip-drink" aria-pressed="${skipped}">
+      ${skipped ? "✓ Did not try it" : "Did not try it"}
+    </button>`;
+
   // What your rating means for this drink
   let result = "1–3: never again · 4–7: stays in the mix · 8–10: comes back more often";
-  if (score !== null) {
-    const next = nextTimeFor(drink, selected > today ? selected : today);
-    const nextText = next ? ` Next time: <strong>${shortDate(next)}</strong>.` : "";
+  const next = nextTimeFor(drink, selected > today ? selected : today);
+  const nextText = next ? ` Next time: <strong>${shortDate(next)}</strong>.` : "";
+  if (skipped) {
+    result = `<strong>No problem!</strong> It still counts as new, so it'll come back sooner for you to try.${nextText}`;
+  } else if (score !== null) {
     if (score <= 3) result = "<strong>Never again!</strong> You'll get other drinks instead.";
     else if (score <= 7) result = `Got it, it stays in the mix.${nextText}`;
     else if (score <= 9) result = `<strong>A favorite!</strong> It comes back more often.${nextText}`;
@@ -660,6 +686,7 @@ function renderDrink(drink) {
       <p class="rating__title" id="rating-title">How much do you like it?</p>
       <div class="rating__scale">${buttons}</div>
       <div class="rating__ends" aria-hidden="true"><span>1 = don't like it</span><span>10 = love it</span></div>
+      ${skipButton}
       <p class="rating__result" aria-live="polite">${result}</p>
     </div>
     ${ratedList}`;
@@ -884,9 +911,32 @@ document.querySelector("#workout").addEventListener("submit", (event) => {
 document.querySelector("#drink").addEventListener("click", (event) => {
   const rateButton = event.target.closest("[data-score]");
   const resetButton = event.target.closest("[data-unrate]");
-  if (!rateButton && !resetButton) return;
+  const skipButton = event.target.closest("#skip-drink");
+  if (!rateButton && !resetButton && !skipButton) return;
 
   const drinkBefore = planFor(selected).drink.name;
+
+  // "Did not try it" (tap again to undo)
+  if (skipButton) {
+    const key = toKey(selected);
+    if (drinkSkips.has(key)) {
+      drinkSkips.delete(key);
+      showToast("Okay, unmarked!");
+    } else {
+      drinkSkips.add(key);
+      // If you rated this drink today, that was probably a mistake, so it goes
+      const rating = drinkRatings[drinkBefore];
+      if (rating && rating.date === toKey(today)) {
+        delete drinkRatings[drinkBefore];
+        saveDrinkRatings();
+      }
+      showToast("No worries! It'll come back sooner so you can try it.");
+    }
+    saveDrinkSkips();
+    render();
+    document.querySelector("#skip-drink").focus(); // keep keyboard users in place
+    return;
+  }
 
   if (resetButton) {
     delete drinkRatings[resetButton.dataset.unrate];
@@ -899,6 +949,9 @@ document.querySelector("#drink").addEventListener("click", (event) => {
   const score = Number(rateButton.dataset.score);
   drinkRatings[drinkBefore] = { score, date: toKey(today) };
   saveDrinkRatings();
+  // Rating it means you tried it after all
+  drinkSkips.delete(toKey(selected));
+  saveDrinkSkips();
   sounds.rate(score);
   render();
 

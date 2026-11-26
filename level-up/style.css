@@ -1347,6 +1347,30 @@ body.expert-flash::after {
   font-size: 0.75rem;
 }
 
+.skip-button {
+  align-self: flex-start;
+  padding: 0.45rem 0.85rem;
+  border: 1px dashed var(--line-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.skip-button:hover {
+  border-color: var(--dim);
+  color: var(--fg);
+}
+
+.skip-button[aria-pressed="true"] {
+  border-style: solid;
+  border-color: var(--accent);
+  background: var(--line);
+  color: var(--fg);
+}
+
 .rating__result {
   color: var(--dim);
   font-size: 0.9375rem;
