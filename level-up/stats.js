@@ -385,6 +385,41 @@ async function makeStatsCard() {
 }
 
 
+// Saving the picture. On claude.ai, pages can't download files by
+// themselves, so the page asks Claude's "downloads" helper to offer the
+// file (you get a box to say yes). On github.io, the link just works.
+let cardDownloads = null;
+if (window.claude && window.claude.use) {
+  window.claude.use("downloads").then((downloads) => {
+    cardDownloads = downloads;
+  }).catch(() => {});
+}
+
+// "data:image/png;base64,..." -> the picture's bytes
+function pictureBytes(dataUrl) {
+  const text = atob(dataUrl.split(",")[1]);
+  const bytes = new Uint8Array(text.length);
+  for (let i = 0; i < text.length; i++) bytes[i] = text.charCodeAt(i);
+  return bytes;
+}
+
+document.querySelector("#card-download").addEventListener("click", (event) => {
+  if (!window.claude || !window.claude.use) return; // github.io: the normal download link
+  event.preventDefault();
+  if (!cardDownloads) {
+    showToast("Press and hold the picture to save it.");
+    return;
+  }
+  const data = pictureBytes(document.querySelector("#card-picture").src);
+  cardDownloads.save({ filename: "level-up-stats.png", data }).then(() => {
+    showToast("Saved! 🖼️");
+  }).catch((error) => {
+    if (error && error.code === "declined") return; // you said no, and that's fine
+    showToast("Couldn't save it here. Press and hold the picture instead.");
+  });
+});
+
+
 /* BUTTONS AND DRAWING -------------------------------------------------------------- */
 
 document.querySelector("#open-review").addEventListener("click", openYearReview);

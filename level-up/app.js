@@ -96,6 +96,11 @@ const PROGRESS_KEYS = [
 
 const memory = {};
 
+// Goes up by 1 whenever your progress changes. Slow answers (like your
+// XP) get remembered until it changes, instead of being worked out again
+// and again. That's called a "cache", and it keeps the page fast.
+let dataVersion = 0;
+
 // Part 11 fills these in when the page is on claude.ai
 let cloudDoc = null;     // your progress document in your Claude account
 let cloudTimer = null;   // waits a moment before saving
@@ -121,6 +126,7 @@ function save(key, value) {
   } catch (error) {
     // Couldn't save in this browser. The page still works.
   }
+  dataVersion += 1;
   // Progress also goes to your Claude account, if this page is on claude.ai
   if (PROGRESS_KEYS.includes(key)) saveToCloudSoon();
 }
@@ -164,6 +170,7 @@ let spinData;      // the daily spin-the-wheel, by day (arcade.js)
 // Reads all your progress into the variables above. It runs when the page
 // opens, and again whenever another device changes something.
 function loadProgress() {
+  dataVersion += 1;
   // The first time you visit, the plan starts on this week's Monday
   planStart = load("levelUp.start", null) ? fromKey(load("levelUp.start")) : mondayOf(today);
   if (planStart > mondayOf(today)) planStart = mondayOf(today);
@@ -533,6 +540,7 @@ const flameIcon = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1 
 const DAY_SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 function render() {
+  dataVersion += 1; // work everything out fresh once, then reuse it for the whole redraw
   renderMissions(); // in missions.js (first, because it can check missions off)
   const plan = planFor(selected);
   renderDay(plan);

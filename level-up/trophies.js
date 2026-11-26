@@ -103,8 +103,18 @@ function isRestDay(date) {
   return WEEK[dayIndex(date)].style === "rest" || daysUntilTest(date) === 1;
 }
 
-// Facts about your progress that XP and badges are worked out from
+// Facts about your progress that XP and badges are worked out from.
+// They're remembered until your progress changes (see dataVersion in app.js).
+let statsCache = { version: -1, stats: null };
+
 function trophyStats() {
+  if (statsCache.version !== dataVersion) {
+    statsCache = { version: dataVersion, stats: workOutTrophyStats() };
+  }
+  return statsCache.stats;
+}
+
+function workOutTrophyStats() {
   const days = [...doneDays].sort();
   let xp = 0;
   let workouts = 0;

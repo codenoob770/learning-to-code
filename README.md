@@ -13,7 +13,7 @@ every line can be opened, read and changed.
 | `script.js`   | The **behavior**: the theme button, the Run button, the playground   |
 | `favicon.svg` | The little icon in the browser tab                                   |
 | `bug-bash/`   | **Bug Bash**, a little game (see below)                              |
-| `level-up/`   | **Level Up**, my daily workout and healthy food plan (see below)     |
+| `level-up/`   | **Level Up**, my workouts, games, quiz and healthy food (see below)  |
 | `kickoff/`    | **Kickoff**, my sister's soccer version of Level Up (see below)      |
 
 Every file is full of comments that explain what each part does. Reading them
@@ -26,61 +26,75 @@ squash them before they reach production. Golden bugs are worth extra points.
 Don't squash the features! Every 20 seconds a new "version" comes out and
 the bugs get faster.
 
+Every few versions a big purple **boss bug** shows up. Tap it lots! Catch
+**power-ups** as they float down: ❄️ freeze, ⭐ double points and 🛡️ shield.
+The **daily challenge** has a special rule each day, like Golden Day or
+Boss Rush, with its own best score.
+
 The game is drawn on a `<canvas>` by `bug-bash/game.js`. The easiest thing to
 change is the `RULES` list near the top of that file: give yourself more tests,
 make golden bugs worth more, or make new versions come out faster. Save,
 refresh, and see how the game feels.
 
-## Level Up: workouts and healthy food
+## Level Up: workouts, games and healthy food
 
-Open `level-up/index.html`. Every day has a no-equipment workout, a healthy
-drink and meals (breakfast, lunch, dinner and a snack). It opens on today, and
-the **Next day** button moves through the week. The workouts get a little
-harder every week for 12 weeks, and the food changes every day.
+Open `level-up/index.html`. It's split into **tabs** along the top. A link
+like `level-up/#quiz` opens straight to one tab.
 
-- `level-up/plan.js` holds all the exercises and recipes. Add your own
-  favorite meal or change a workout there.
-- Each day ends with **sport skills** for swimming, soccer or taekwondo.
-- **Rate the drink of the day** from 1 to 10. 1–3 means never again, 4–7 keeps
-  it in the mix, and 8–10 makes it come back more often. Each day, every
-  drink "rolls" a lucky number and the highest wins; favorites get extra rolls.
-  Didn't have the drink that day? Tap **Did not try it**: it isn't counted
-  as a rating, and the drink comes back sooner so you can try it.
-- Forgot a workout? Tap **Did not do workout** and the day gets an ✕. Miss 3
-  or more in a week, and the next week offers to repeat last week's level.
-- **Expert mode** (the flame button at the top) turns the whole page red and
-  makes workouts way harder: 5 levels ahead, an extra round and shorter rests.
-  The `EXPERT` setting in `plan.js` controls how much harder it gets.
-- **Gym test prep:** the `TEST` setting in `plan.js` holds the date of my
-  push-up and curl-up test. Until then, the page shows a countdown, a practice
-  plan and a **beat trainer** that beeps one rep every 3 seconds (like the real
-  test) and saves my best scores. For a new test, just change the date.
-- `level-up/app.js` builds each day's page and runs the timer and buttons.
-- `level-up/coach.js` is the **guided workout**: press "Start guided workout"
-  and a voice coach walks through every step with automatic timers.
-- `level-up/trophies.js` gives you **XP, levels and 16 badges**, with confetti
-  when you level up. Change `XP_RULES` there to give more or less XP.
-- `level-up/demos.js` has **animated stick figures** for every move ("Show me"
-  buttons, and in the guided workout). Each one is a list of poses.
-- `level-up/practice.js`: pick your **practice days** for swim, soccer and
-  taekwondo, and those days get a lighter workout.
-- `level-up/habits.js`: tap glasses of **water** and log your **sleep**.
-- `level-up/charts.js`: **progress charts** for push-ups, curl-ups and
-  workouts per week.
-- `level-up/grocery.js`: a **grocery list** for the week, sorted by store
-  section, with check boxes and a copy button.
-- `level-up/ai-coach.js`: **Ask Coach** lets you ask Claude about workouts and
-  food. It only works on the Claude version of the page.
-- `level-up/quest.js`: the **Backflip Quest** side quest. Four stages build
-  every skill a backflip needs (jumping, core, going backward, tucking), with a
-  "Show me" demo for each task and +25 XP per task. Stages 1 to 3 are safe at
-  home. Stage 4, the real flip, is only with a coach spotting you on mats.
-  The stages and tasks are in `SIDE_QUEST` in `plan.js`.
-- **Bug Bash power-ups:** workouts in the last 7 days give extra tests (lives)
-  in Bug Bash, plus bug spray for 3 or more. Press **S** in the game to spray!
+- **🏠 Today:** the day's no-equipment workout (it gets a little harder
+  every week for 12 weeks), a healthy drink and meals, water, sleep and an
+  energy check-in, 3 **daily missions**, the **weekly boss** (every rep you
+  do hits it) and **Ask Coach** (Claude answers, on the Claude version).
+  - **Expert mode** (the flame button) turns the page red and makes
+    workouts way harder. **Did not do workout** and **Did not try it**
+    buttons, drink ratings from 1 to 10, gym test prep with the beat
+    trainer, and a **guided workout** with a voice coach.
+- **🗺️ Quests:** the monthly challenge, and the **Quest Board**: Backflip
+  (the real flip only with a coach!), Splits, Handstand, 100 Push-ups,
+  Juggling and **Code Quest**, which teaches you to change this website.
+- **🎮 Arcade:** card deck workout, Kick Caller (the voice calls out
+  kicks), a daily spin-the-wheel challenge, and Bug Bash power-ups.
+- **🧠 Quiz:** the Brain + Body Quiz: 5th-grade Math, Reading & Writing,
+  Science and Social Studies, plus Sports and Food & Health. Get one
+  wrong and you owe that question's exercise, like "10 squats"!
+- **🥋 Sports:** taekwondo belt tracker (with counting in Korean), swim
+  log with personal bests and a chart, soccer journal, a workout builder
+  the voice coach can run, and your practice days.
+- **🍓 Kitchen:** Smoothie Lab (it invents a name and recipe), a Recipe
+  Book with search and favorites, Snack Swap and the grocery list.
+- **📊 Stats:** XP, levels and 48 badges, progress charts, a year-long
+  workout calendar, personal records, energy patterns, a "year in
+  review" and a stats card picture to save.
+- **🐾 Pet & Shop:** a pet that hatches after your first workout and
+  grows as you train. 10 XP = 1 coin: buy page themes, pet hats, pet
+  colors and stick-figure colors.
+- **👪 Family:** a weekly family challenge. Add your family and race!
 
-Your progress (which days you marked done, and your week) is saved in your
-browser, so it stays on the computer or phone where you use it.
+Each feature has its own file, so they're easy to find:
+
+| File | What it does |
+| --- | --- |
+| `plan.js` | Exercises, the weekly plan, recipes and all the quests (just information) |
+| `quiz-questions.js` | Every quiz question. Add your own! (The right answer goes first.) |
+| `app.js` | Builds each day's page, saving, syncing, the timer and the beat trainer |
+| `tabs.js` | The tabs along the top |
+| `trophies.js` | XP, levels and badges. Change `XP_RULES` to give more or less XP |
+| `coach.js` | The guided workout with the voice coach |
+| `demos.js` | The animated stick figures ("Show me" buttons) |
+| `quest.js` | The Quest Board |
+| `missions.js` | Daily missions and the monthly challenge |
+| `boss.js` | The weekly boss. Add your own boss to `BOSSES`! |
+| `quiz.js` | The Brain + Body Quiz |
+| `arcade.js` | Card deck workout, Kick Caller and spin the wheel |
+| `kitchen.js` | Smoothie Lab, Recipe Book and Snack Swap |
+| `sports.js` | Belt tracker, swim log, soccer journal and workout builder |
+| `stats.js` | Energy check-in, calendar, records, year in review and stats card |
+| `family.js` | The family challenge |
+| `pet.js`, `shop.js` | Your pet and the coin shop |
+| `practice.js`, `habits.js`, `charts.js`, `grocery.js`, `ai-coach.js` | Practice days, water and sleep, charts, the grocery list and Ask Coach |
+
+Your progress is saved in your browser. On the Claude version of the page,
+it's also saved to your Claude account, so it's the same on every device.
 
 ## How to look at the site on your computer
 

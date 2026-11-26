@@ -82,12 +82,16 @@ function bossWeek(monday) {
   return { boss: bossFor(monday), hp, damage, beaten: damage >= hp, from, to };
 }
 
-// Every week since you started, up to this week
+// Every week since you started, up to this week (remembered until your progress changes)
+let bossCache = { version: -1, weeks: [] };
+
 function bossHistory() {
+  if (bossCache.version === dataVersion) return bossCache.weeks;
   const weeks = [];
   for (let monday = mondayOf(planStart); monday <= today; monday = addDays(monday, 7)) {
     weeks.push(bossWeek(monday));
   }
+  bossCache = { version: dataVersion, weeks };
   return weeks;
 }
 
