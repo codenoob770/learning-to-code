@@ -845,9 +845,61 @@ body.expert-flash::after {
   margin-left: auto;
 }
 
-.done-note {
+/* "Did not do workout" */
+.missed-button {
+  padding: 0.75rem 1.1rem;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-small);
+  background: transparent;
   color: var(--dim);
-  font-size: 0.875rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.missed-button:hover {
+  border-color: var(--dim);
+  color: var(--fg);
+}
+
+.missed-button[aria-pressed="true"] {
+  border-style: solid;
+  border-color: var(--bug-border);
+  background: var(--bug-soft);
+  color: var(--bug);
+}
+
+.missed-note {
+  color: var(--dim);
+  font-size: 0.9375rem;
+}
+
+.chip__mark.is-missed {
+  color: var(--dim);
+}
+
+/* "Repeat last week?" after a week with lots of missed workouts */
+.repeat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-small);
+  background: var(--line);
+  font-size: 0.9375rem;
+}
+
+.repeat__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.repeat .button {
+  padding: 0.5rem 0.9rem;
+  font-size: 0.9375rem;
 }
 
 

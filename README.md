@@ -45,6 +45,8 @@ harder every week for 12 weeks, and the food changes every day.
   drink "rolls" a lucky number and the highest wins; favorites get extra rolls.
   Didn't have the drink that day? Tap **Did not try it**: it isn't counted
   as a rating, and the drink comes back sooner so you can try it.
+- Forgot a workout? Tap **Did not do workout** and the day gets an ✕. Miss 3
+  or more in a week, and the next week offers to repeat last week's level.
 - **Expert mode** (the flame button at the top) turns the whole page red and
   makes workouts way harder: 5 levels ahead, an extra round and shorter rests.
   The `EXPERT` setting in `plan.js` controls how much harder it gets.

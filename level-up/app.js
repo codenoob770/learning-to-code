@@ -113,6 +113,23 @@ function saveDoneDays() {
   save("levelUp.done", JSON.stringify([...doneDays]));
 }
 
+// The days you forgot or skipped your workout
+const missedDays = new Set(loadJSON("levelUp.missed", []));
+
+function saveMissedDays() {
+  save("levelUp.missed", JSON.stringify([...missedDays]));
+}
+
+// How many workouts (Monday to Saturday) you missed last week
+function missedLastWeek() {
+  const lastMonday = addDays(mondayOf(today), -7);
+  let count = 0;
+  for (let i = 0; i < 6; i++) {
+    if (missedDays.has(toKey(addDays(lastMonday, i)))) count += 1;
+  }
+  return count;
+}
+
 // Best scores from the beat trainer, like { pushups: { count: 14, date: "2026-11-28" } }
 const bests = loadJSON("levelUp.bests", {});
 
@@ -424,13 +441,17 @@ function renderStrip() {
     if (sameDay(date, today)) classes.push("is-today");
     if (daysUntilTest(date) === 0) classes.push("is-test");
     const done = doneDays.has(toKey(date));
+    const missed = missedDays.has(toKey(date));
     let mark = done ? "✓" : "";
-    if (!done && daysUntilTest(date) === 0) mark = "TEST";
-    const markClass = done && expertDays.has(toKey(date)) ? "chip__mark is-expert" : "chip__mark";
+    if (missed) mark = "✕";
+    if (!done && !missed && daysUntilTest(date) === 0) mark = "TEST";
+    let markClass = "chip__mark";
+    if (done && expertDays.has(toKey(date))) markClass += " is-expert";
+    if (missed) markClass += " is-missed";
     html += `
       <button class="${classes.join(" ")}" type="button" data-date="${toKey(date)}"
         aria-pressed="${sameDay(date, selected)}" ${date < planStart ? "disabled" : ""}
-        aria-label="${WEEK[i].day} ${date.getDate()}${done ? ", done" : ""}${daysUntilTest(date) === 0 ? ", test day" : ""}">
+        aria-label="${WEEK[i].day} ${date.getDate()}${done ? ", done" : ""}${missed ? ", missed" : ""}${daysUntilTest(date) === 0 ? ", test day" : ""}">
         <span class="chip__day">${DAY_SHORT[i]}</span>
         <span class="chip__date">${date.getDate()}</span>
         <span class="${markClass}" aria-hidden="true">${mark}</span>
@@ -467,9 +488,12 @@ function extraHTML(title, items) {
     </details>`;
 }
 
-// The bottom of the workout card: the done button and the harder/easier buttons
-function footHTML(plan, doneLabel) {
+// The bottom of the workout card: the done and missed buttons, and the
+// harder/easier buttons. "missedLabel" is null when there's no missed button.
+function footHTML(plan, doneLabel, missedLabel) {
   const isDone = doneDays.has(toKey(selected));
+  const isMissed = missedDays.has(toKey(selected));
+
   let doneButton;
   if (selected > today) {
     doneButton = `<button class="button" type="button" disabled>Come back on ${plan.day}!</button>`;
@@ -478,12 +502,41 @@ function footHTML(plan, doneLabel) {
   } else {
     doneButton = `<button class="button" id="done-button" type="button">${doneLabel}</button>`;
   }
+
+  // "Did not do workout": only for today and earlier days you haven't done
+  let missedButton = "";
+  if (missedLabel && selected <= today && !isDone) {
+    missedButton = `<button class="missed-button" id="missed-button" type="button" aria-pressed="${isMissed}">${isMissed ? "✕ Missed this one" : missedLabel}</button>`;
+  }
+  const missedNote = isMissed
+    ? `<p class="missed-note">No stress, everybody misses a day sometimes. Tomorrow's a fresh start! Did it after all? Just tap the done button.</p>`
+    : "";
+
   return `
     <div class="workout__foot">
       ${doneButton}
+      ${missedButton}
       <div class="adjust">
         <button class="text-button" id="easier" type="button" ${weekOf(today) <= 1 ? "disabled" : ""}>Too hard? Go back a week</button>
         <button class="text-button" id="harder" type="button">Too easy? Skip ahead a week</button>
+      </div>
+    </div>
+    ${missedNote}`;
+}
+
+// Missed 3 or more workouts last week? Offer to repeat last week's level.
+// It shows on this week's days, until you answer it.
+function repeatHTML() {
+  const missed = missedLastWeek();
+  const thisWeek = toKey(mondayOf(today));
+  if (missed < 3 || weekOf(today) <= 1 || weekOf(selected) !== weekOf(today)) return "";
+  if (load("levelUp.repeatAsked", "") === thisWeek) return "";
+  return `
+    <div class="repeat">
+      <p><strong>You missed ${missed} workouts last week.</strong> Want to repeat last week's level, so the workouts don't jump ahead too fast?</p>
+      <div class="repeat__buttons">
+        <button class="button button--quiet" id="repeat-week" type="button">Repeat last week</button>
+        <button class="text-button" id="keep-going" type="button">No thanks, keep going</button>
       </div>
     </div>`;
 }
@@ -546,6 +599,7 @@ function renderWorkout(plan) {
       <li>No equipment</li>
     </ul>
 
+    ${repeatHTML()}
     ${expertNote}
     ${practice}
     ${isRest ? "" : extraHTML("Warm-up first · about 2 min", WARM_UP)}
@@ -557,7 +611,7 @@ function renderWorkout(plan) {
 
     ${isRest ? "" : extraHTML("Cool-down after · about 2 min", COOL_DOWN)}
     ${practiceTip}
-    ${footHTML(plan, isRest ? "Mark rest day done" : "Mark workout done")}`;
+    ${footHTML(plan, isRest ? "Mark rest day done" : "Mark workout done", isRest ? "Did not stretch" : "Did not do workout")}`;
 }
 
 // Test day gets its own card instead of a workout
@@ -608,7 +662,7 @@ function renderTestDay(plan) {
       <button class="button button--quiet" type="submit">Save my scores</button>
     </form>
 
-    ${footHTML(plan, "Mark test day done")}`;
+    ${footHTML(plan, "Mark test day done", null)}`;
 }
 
 function recipeHTML(label, recipe, showSteps) {
@@ -855,6 +909,8 @@ document.querySelector("#workout").addEventListener("click", (event) => {
       showToast("Unmarked. No worries!");
     } else {
       doneDays.add(key);
+      missedDays.delete(key); // you did it after all!
+      saveMissedDays();
       // Remember days you beat in expert mode (rest days don't count)
       if (planFor(selected).expert) {
         expertDays.add(key);
@@ -868,6 +924,37 @@ document.querySelector("#workout").addEventListener("click", (event) => {
     save("levelUp.expertDays", JSON.stringify([...expertDays]));
     render();
     document.querySelector("#done-button").focus(); // keep keyboard users in the same spot
+  }
+
+  // "Did not do workout" (tap again to undo)
+  if (button.id === "missed-button") {
+    const key = toKey(selected);
+    if (missedDays.has(key)) {
+      missedDays.delete(key);
+      showToast("Okay, unmarked!");
+    } else {
+      missedDays.add(key);
+      showToast("No stress! Tomorrow's a fresh start.");
+    }
+    saveMissedDays();
+    render();
+    document.querySelector("#missed-button").focus(); // keep keyboard users in the same spot
+  }
+
+  // Repeat last week's level after missing a lot (same as "go back a week")
+  if (button.id === "repeat-week" && weekOf(today) > 1) {
+    planStart = addDays(planStart, 7);
+    save("levelUp.start", toKey(planStart));
+    save("levelUp.repeatAsked", toKey(mondayOf(today)));
+    if (selected < planStart) selected = planStart;
+    render();
+    showToast("Repeating last week's level. You got this!");
+  }
+
+  if (button.id === "keep-going") {
+    save("levelUp.repeatAsked", toKey(mondayOf(today)));
+    render();
+    showToast("Let's go! 💪");
   }
 
   if (button.id === "go-trainer") {
