@@ -119,6 +119,10 @@ const bests = loadJSON("levelUp.bests", {});
 // Scores from the real test, saved by test date
 const testScores = loadJSON("levelUp.testScores", {});
 
+// Expert mode: on or off, and which days you finished in expert mode
+let isExpert = load("levelUp.expert", "off") === "on";
+const expertDays = new Set(loadJSON("levelUp.expertDays", []));
+
 // The day you're looking at right now. It starts on today.
 let selected = today;
 
@@ -207,12 +211,23 @@ function planFor(date) {
     };
   }
 
-  const level = levelOf(date);
+  // Expert mode jumps ahead a few levels (but rest days stay restful)
+  const expert = isExpert && template.style !== "rest";
+  const level = expert ? Math.min(MAX_LEVEL, levelOf(date) + EXPERT.levelBoost) : levelOf(date);
+
+  let rounds = template.style === "circuit" ? roundsFor(level) : 1;
+  let rest = template.style === "circuit" ? restFor(level) : 0;
+  if (expert && template.style === "circuit") {
+    rounds = Math.min(EXPERT.maxRounds, rounds + EXPERT.extraRounds);
+    rest = Math.max(EXPERT.minRest, rest - EXPERT.restCut);
+  }
+
   const plan = {
     ...template,
     level,
-    rounds: template.style === "circuit" ? roundsFor(level) : 1,
-    rest: template.style === "circuit" ? restFor(level) : 0,
+    expert,
+    rounds,
+    rest,
     moves: template.moves.map((id) => moveFor(id, level)),
     sportMoves: template.sport ? template.sport.moves.map((id) => moveFor(id, level)) : [],
     isTestDay: untilTest === 0,
@@ -239,6 +254,7 @@ function planFor(date) {
    The `backtick strings` let us mix HTML with ${values}.           */
 
 const playIcon = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg>`;
+const flameIcon = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1 3.5 4.5 5.5 4.5 10a4.5 4.5 0 0 1-9 0c0-2 1-3.5 2-4.5.3 1.8 1.3 3 2.5 3.5-.5-3 0-6 0-9z"/></svg>`;
 const DAY_SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 function render() {
@@ -277,13 +293,14 @@ function renderStrip() {
     const done = doneDays.has(toKey(date));
     let mark = done ? "✓" : "";
     if (!done && daysUntilTest(date) === 0) mark = "TEST";
+    const markClass = done && expertDays.has(toKey(date)) ? "chip__mark is-expert" : "chip__mark";
     html += `
       <button class="${classes.join(" ")}" type="button" data-date="${toKey(date)}"
         aria-pressed="${sameDay(date, selected)}" ${date < planStart ? "disabled" : ""}
         aria-label="${WEEK[i].day} ${date.getDate()}${done ? ", done" : ""}${daysUntilTest(date) === 0 ? ", test day" : ""}">
         <span class="chip__day">${DAY_SHORT[i]}</span>
         <span class="chip__date">${date.getDate()}</span>
-        <span class="chip__mark" aria-hidden="true">${mark}</span>
+        <span class="${markClass}" aria-hidden="true">${mark}</span>
       </button>`;
   }
   document.querySelector("#day-strip").innerHTML = html;
@@ -340,7 +357,15 @@ function footHTML(plan, doneLabel) {
 
 function renderWorkout(plan) {
   const isRest = plan.style === "rest";
-  const levelText = weekOf(selected) > MAX_LEVEL ? "Max level" : `Level ${plan.level} of ${MAX_LEVEL}`;
+  let levelText = weekOf(selected) > MAX_LEVEL ? "Max level" : `Level ${plan.level} of ${MAX_LEVEL}`;
+  if (plan.expert) levelText = `Expert · level ${plan.level}`;
+
+  const expertNote = plan.expert ? `
+    <p class="expert-note">
+      ${flameIcon}
+      <span><strong>Expert mode is on:</strong> ${EXPERT.levelBoost} levels ahead, an extra round and shorter rests.
+      Good form comes first. If your form breaks down, take a breather or switch expert mode off.</span>
+    </p>` : "";
 
   let howItWorks = "Do each move once, top to bottom. Take your time and focus on good form.";
   if (plan.style === "circuit") {
@@ -388,6 +413,7 @@ function renderWorkout(plan) {
       <li>No equipment</li>
     </ul>
 
+    ${expertNote}
     ${practice}
     ${isRest ? "" : extraHTML("Warm-up first · about 2 min", WARM_UP)}
 
@@ -635,13 +661,21 @@ document.querySelector("#workout").addEventListener("click", (event) => {
     const key = toKey(selected);
     if (doneDays.has(key)) {
       doneDays.delete(key);
+      expertDays.delete(key);
       showToast("Unmarked. No worries!");
     } else {
       doneDays.add(key);
-      showToast(CHEERS[Math.floor(Math.random() * CHEERS.length)]);
+      // Remember days you beat in expert mode (rest days don't count)
+      if (planFor(selected).expert) {
+        expertDays.add(key);
+        showToast("Expert workout crushed! 🔥");
+      } else {
+        showToast(CHEERS[Math.floor(Math.random() * CHEERS.length)]);
+      }
       sounds.done();
     }
     saveDoneDays();
+    save("levelUp.expertDays", JSON.stringify([...expertDays]));
     render();
     document.querySelector("#done-button").focus(); // keep keyboard users in the same spot
   }
@@ -681,6 +715,38 @@ document.querySelector("#workout").addEventListener("submit", (event) => {
   save("levelUp.testScores", JSON.stringify(testScores));
   showToast("Scores saved. Proud of you!");
   sounds.done();
+});
+
+// The expert mode button. Turning it on adds data-mode="expert" to the
+// <html> element, which makes style.css switch every color to red.
+const expertButton = document.querySelector("#expert-button");
+
+function showExpertMode() {
+  if (isExpert) {
+    document.documentElement.dataset.mode = "expert";
+  } else {
+    delete document.documentElement.dataset.mode;
+  }
+  expertButton.setAttribute("aria-pressed", String(isExpert));
+}
+
+expertButton.addEventListener("click", () => {
+  isExpert = !isExpert;
+  save("levelUp.expert", isExpert ? "on" : "off");
+  showExpertMode();
+  render();
+
+  if (isExpert) {
+    showToast("Expert mode ON. Way harder. Let's go!");
+    sounds.expertOn();
+    // Restart the red flash animation
+    document.body.classList.remove("expert-flash");
+    void document.body.offsetWidth;
+    document.body.classList.add("expert-flash");
+  } else {
+    showToast("Expert mode off. Back to normal.");
+    sounds.expertOff();
+  }
 });
 
 let toastTimer = null;
@@ -942,12 +1008,12 @@ function startAudio() {
   if (audio && audio.state === "suspended") audio.resume();
 }
 
-function beep(pitch, seconds, delay = 0, volume = 0.14) {
+function beep(pitch, seconds, delay = 0, volume = 0.14, wave = "triangle") {
   if (!soundOn || !audio) return;
   const start = audio.currentTime + delay;
   const oscillator = audio.createOscillator();
   const gain = audio.createGain();
-  oscillator.type = "triangle";
+  oscillator.type = wave;
   oscillator.frequency.setValueAtTime(pitch, start);
   gain.gain.setValueAtTime(volume, start);
   gain.gain.exponentialRampToValueAtTime(0.001, start + seconds);
@@ -964,6 +1030,14 @@ const sounds = {
   done: () => {
     startAudio();
     [523, 659, 784, 1047].forEach((pitch, i) => beep(pitch, 0.12, i * 0.08, 0.1));
+  },
+  expertOn: () => {
+    startAudio();
+    [196, 262, 392, 523].forEach((pitch, i) => beep(pitch, 0.16, i * 0.07, 0.07, "sawtooth"));
+  },
+  expertOff: () => {
+    startAudio();
+    [523, 392, 262].forEach((pitch, i) => beep(pitch, 0.12, i * 0.07, 0.08));
   },
 };
 
@@ -989,4 +1063,5 @@ soundButton.addEventListener("click", () => {
 /* 10. START! ------------------------------------------------------ */
 
 showSoundSetting();
+showExpertMode();
 render();

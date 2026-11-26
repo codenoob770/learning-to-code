@@ -40,6 +40,14 @@
   --teal: #7fdcc8;          /* teal: drinks and "done" */
   --teal-soft: rgba(127, 220, 200, 0.12);
   --shadow: rgba(0, 0, 0, 0.55);
+  --marker-border: rgba(255, 226, 77, 0.35);
+
+  /* Colors for the faint code in the background */
+  --tok-comment: #59658a;
+  --tok-keyword: #6c7bc4;
+  --tok-func: #4f9a8b;
+  --tok-string: #a8963c;
+  --tok-number: #b07c62;
 
   --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --font-body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -49,6 +57,31 @@
   --radius-small: 8px;
 
   color-scheme: dark;
+}
+
+/* EXPERT MODE: the same tokens, but red. app.js adds data-mode="expert"
+   to the <html> element, and every color on the page switches at once.
+   That's the magic of tokens! */
+:root[data-mode="expert"] {
+  --bg: #160a0e;
+  --panel: #210f17;
+  --panel-glass: rgba(33, 15, 23, 0.94);
+  --line: #3b1a26;
+  --line-strong: #5a2739;
+  --dim: #b98d9a;
+  --faint: #6e3447;
+  --accent: #ff9b9b;
+  --marker: #ff3b3b;
+  --marker-soft: rgba(255, 59, 59, 0.13);
+  --marker-border: rgba(255, 59, 59, 0.45);
+  --bug: #ffa24c;
+  --bug-soft: rgba(255, 162, 76, 0.12);
+  --bug-border: rgba(255, 162, 76, 0.45);
+  --tok-comment: #7a4152;
+  --tok-keyword: #a8475e;
+  --tok-func: #b0603f;
+  --tok-string: #a83a3a;
+  --tok-number: #b5704a;
 }
 
 
@@ -163,11 +196,11 @@ button {
   text-align: right;
 }
 
-.tok-comment { color: #59658a; font-style: italic; }
-.tok-keyword { color: #6c7bc4; }
-.tok-func { color: #4f9a8b; }
-.tok-string { color: #a8963c; }
-.tok-number { color: #b07c62; }
+.tok-comment { color: var(--tok-comment); font-style: italic; }
+.tok-keyword { color: var(--tok-keyword); }
+.tok-func { color: var(--tok-func); }
+.tok-string { color: var(--tok-string); }
+.tok-number { color: var(--tok-number); }
 
 
 /* 4. SCOREBOARD ------------------------------------------------ */
@@ -281,6 +314,109 @@ button {
 
 .icon-button:hover {
   background: var(--line);
+}
+
+/* The expert mode button and badge */
+.expert-button {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.4rem;
+  height: 2.25rem;
+  padding: 0 0.75rem;
+  border: 1px solid rgba(255, 59, 59, 0.5);
+  border-radius: 6px;
+  background: transparent;
+  color: #ff6b6b;
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.expert-button:hover {
+  background: rgba(255, 59, 59, 0.12);
+}
+
+.expert-button svg {
+  width: 1rem;
+  height: 1rem;
+  fill: currentColor;
+}
+
+.expert-button[aria-pressed="true"] {
+  border-color: var(--marker);
+  background: var(--marker);
+  color: var(--bg);
+}
+
+.expert-badge {
+  display: none;
+  margin-left: 0.3rem;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--marker);
+  border-radius: 4px;
+  color: var(--marker);
+  font-family: var(--font-code);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+:root[data-mode="expert"] .expert-badge {
+  display: inline-block;
+}
+
+/* A quick red flash when expert mode turns on */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: radial-gradient(ellipse at center, transparent 30%, rgba(255, 40, 40, 0.45));
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.expert-flash::after {
+  animation: expert-flash 0.7s ease-out;
+}
+
+@keyframes expert-flash {
+  15% {
+    opacity: 1;
+  }
+}
+
+/* The expert-mode warning on the workout card */
+.expert-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.8rem 0.95rem;
+  border: 1px solid var(--marker-border);
+  border-radius: var(--radius-small);
+  background: var(--marker-soft);
+  font-size: 0.9375rem;
+}
+
+.expert-note svg {
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-top: 0.15rem;
+  fill: var(--marker);
+}
+
+.expert-note strong {
+  color: var(--marker);
+}
+
+/* Days finished in expert mode get a red check */
+.chip__mark.is-expert {
+  color: #ff5a5a;
 }
 
 
@@ -857,7 +993,7 @@ button {
 .test {
   display: grid;
   gap: 1.25rem;
-  border-color: rgba(255, 226, 77, 0.35);
+  border-color: var(--marker-border);
   scroll-margin-top: 5rem;
 }
 
@@ -1346,14 +1482,30 @@ button {
   transform: translateY(0);
 }
 
+:root[data-mode="expert"] .toast {
+  border-color: var(--marker);
+  color: var(--marker);
+}
+
 
 /* 10. SMALL SCREENS AND REDUCED MOTION --------------------------- */
 
 @media (max-width: 640px) {
   .hud__title,
   .hud__home-text,
-  .stat--total {
+  .stat--total,
+  .expert-button__text {
     display: none;
+  }
+
+  .expert-button {
+    width: 2.25rem;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .hud {
+    gap: 0.5rem 0.75rem;
   }
 
   .hud__stats {

@@ -40,6 +40,9 @@ harder every week for 12 weeks, and the food changes every day.
 - `level-up/plan.js` holds all the exercises and recipes. Add your own
   favorite meal or change a workout there.
 - Each day ends with **sport skills** for swimming, soccer or taekwondo.
+- **Expert mode** (the flame button at the top) turns the whole page red and
+  makes workouts way harder: 5 levels ahead, an extra round and shorter rests.
+  The `EXPERT` setting in `plan.js` controls how much harder it gets.
 - **Gym test prep:** the `TEST` setting in `plan.js` holds the date of my
   push-up and curl-up test. Until then, the page shows a countdown, a practice
   plan and a **beat trainer** that beeps one rep every 3 seconds (like the real

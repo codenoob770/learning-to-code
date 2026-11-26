@@ -10,7 +10,8 @@
    2. The weekly schedule
    3. Warm-up and cool-down
    4. My gym test
-   5. Recipes: drinks, breakfasts, lunches, dinners and snacks
+   5. Expert mode
+   6. Recipes: drinks, breakfasts, lunches, dinners and snacks
    ============================================================= */
 
 
@@ -248,7 +249,21 @@ const TEST = {
 };
 
 
-/* 5. RECIPES -----------------------------------------------------
+/* 5. EXPERT MODE ---------------------------------------------------
+   When expert mode is on, every workout gets way harder. Change these
+   numbers to make expert mode even harder (or a bit easier).
+   Rest days and test days never change.                              */
+
+const EXPERT = {
+  levelBoost: 5,   // jump ahead this many levels (up to the top level)
+  extraRounds: 1,  // one more round than normal...
+  maxRounds: 5,    // ...but never more than this
+  restCut: 10,     // this many fewer seconds of rest between moves...
+  minRest: 10,     // ...but never less than this
+};
+
+
+/* 6. RECIPES -----------------------------------------------------
    Every recipe makes one serving. The plan picks a different mix
    each day, so it takes a while before the same day repeats.
    Allergic to something, or don't like it? Swap it for something
