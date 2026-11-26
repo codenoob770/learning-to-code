@@ -1,10 +1,11 @@
 /* =============================================================
    charts.js: progress charts
    -------------------------------------------------------------
-   Two charts, drawn as SVG (shapes the browser draws for us):
+   Charts, drawn as SVG (shapes the browser draws for us):
    1. Push-ups and curl-ups over time, from the beat trainer
       (and your real test scores, drawn as diamonds)
    2. How many days you finished each week
+   3. A chart with one line, used by the swim log and energy check-in
 
    Hover or tap a chart to see the exact numbers. Each chart also
    has a "Show as a table" view.
@@ -250,5 +251,117 @@ function renderWeeksChart() {
       <summary>Show as a table</summary>
       <table><thead><tr><th>Week</th><th>Days done</th></tr></thead>
       <tbody>${weeks.map((w) => `<tr><td>Week ${w.week}${w.current ? " (this week)" : ""}</td><td>${w.done} of 7</td></tr>`).join("")}</tbody></table>
+    </details>`;
+}
+
+
+/* 3. A CHART WITH ONE LINE ---------------------------------------------
+   Used by the swim log (sports.js) and the energy check-in (stats.js).
+   options:
+     points: [{ date: "2026-11-27", value: 38.5 }], oldest first
+     format: turns a value into text, like 38.5 -> "38.50"
+     valueName: what the values are, like "Time" (for the table)
+     label: what the chart shows, for screen readers
+     empty: what to say when there are no points yet
+     lowerIsBetter: true for times (the best one gets a ring)
+     min, max, ticks: a fixed scale (optional), like 1 to 5          */
+
+function lineChart(box, tableBox, options) {
+  const points = options.points;
+  const format = options.format || String;
+  if (points.length === 0) {
+    box.innerHTML = `<p class="chart-empty">${options.empty}</p>`;
+    tableBox.innerHTML = "";
+    return;
+  }
+
+  const width = box.clientWidth || 600;
+  const height = 200;
+  // Room on the right for the "Latest 43.85" label (about 7 pixels a letter)
+  const lastLabel = `Latest ${format(points[points.length - 1].value)}`;
+  const margin = { top: 16, right: lastLabel.length * 7 + 18, bottom: 28, left: 52 };
+  const plotW = width - margin.left - margin.right;
+  const plotH = height - margin.top - margin.bottom;
+
+  // The scale: fixed, or fitted around the values with tidy steps
+  const values = points.map((p) => p.value);
+  let low = options.min;
+  let high = options.max;
+  let ticks = options.ticks;
+  if (low === undefined) {
+    const spread = Math.max(...values) - Math.min(...values) || Math.max(1, Math.max(...values) * 0.1);
+    const step = [0.5, 1, 2, 5, 10, 15, 30, 60, 120].find((s) => (spread * 1.4) / s <= 4) || 300;
+    low = Math.max(0, Math.floor((Math.min(...values) - spread * 0.2) / step) * step);
+    high = Math.ceil((Math.max(...values) + spread * 0.2) / step) * step;
+    if (high === low) high = low + step;
+    ticks = [];
+    for (let v = low; v <= high + 0.0001; v += step) ticks.push(Math.round(v * 100) / 100);
+  }
+  const y = (value) => margin.top + plotH - ((value - low) / (high - low)) * plotH;
+
+  const dates = points.map((p) => p.date);
+  const first = fromKey(dates[0]);
+  const span = Math.max(1, daysBetween(first, fromKey(dates[dates.length - 1])));
+  const x = (key) => margin.left + (points.length === 1 ? plotW / 2 : (daysBetween(first, fromKey(key)) / span) * plotW);
+
+  let svg = "";
+  for (const value of ticks) {
+    svg += `<line class="chart__grid" x1="${margin.left}" x2="${width - margin.right}" y1="${y(value)}" y2="${y(value)}"/>`;
+    svg += `<text class="chart__tick" x="${margin.left - 8}" y="${y(value) + 4}" text-anchor="end">${format(value)}</text>`;
+  }
+  const uniqueDates = [...new Set(dates)];
+  const shown = uniqueDates.length <= 2 ? uniqueDates : [uniqueDates[0], uniqueDates[Math.floor(uniqueDates.length / 2)], uniqueDates[uniqueDates.length - 1]];
+  for (const key of shown) {
+    svg += `<text class="chart__tick" x="${x(key)}" y="${height - 8}" text-anchor="middle">${chartDate(key)}</text>`;
+  }
+
+  if (points.length > 1) {
+    svg += `<path class="chart__line series-2" d="${points.map((p, i) => `${i ? "L" : "M"}${x(p.date).toFixed(1)},${y(p.value).toFixed(1)}`).join(" ")}"/>`;
+  }
+  for (const p of points) {
+    svg += `<circle class="chart__dot series-2" cx="${x(p.date).toFixed(1)}" cy="${y(p.value).toFixed(1)}" r="4"/>`;
+  }
+
+  // Label the latest value, and ring the best one (for times)
+  const last = points[points.length - 1];
+  svg += `<text class="chart__label" x="${x(last.date) + 12}" y="${y(last.value) + 4}">${lastLabel}</text>`;
+  if (options.lowerIsBetter && points.length > 1) {
+    const best = points.reduce((a, b) => (b.value < a.value ? b : a));
+    svg += `<circle class="chart__best" cx="${x(best.date).toFixed(1)}" cy="${y(best.value).toFixed(1)}" r="8"/>`;
+    if (best !== last) svg += `<text class="chart__label" x="${x(best.date)}" y="${y(best.value) + 22}" text-anchor="middle">Best</text>`;
+  }
+
+  svg += `<line class="chart__crosshair" x1="0" x2="0" y1="${margin.top}" y2="${margin.top + plotH}" visibility="hidden"/>`;
+  svg += `<rect class="chart__hit" x="${margin.left}" y="0" width="${plotW}" height="${height}"/>`;
+  box.innerHTML = `<svg class="chart" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" role="img" aria-label="${options.label}">${svg}</svg><div class="chart__tooltip" hidden></div>`;
+
+  // Hover or tap: show the nearest point
+  const svgEl = box.querySelector("svg");
+  const crosshair = svgEl.querySelector(".chart__crosshair");
+  const tooltip = box.querySelector(".chart__tooltip");
+  function showNearest(event) {
+    const rect = svgEl.getBoundingClientRect();
+    const px = ((event.clientX - rect.left) / rect.width) * width;
+    const nearest = points.reduce((a, b) => (Math.abs(x(b.date) - px) < Math.abs(x(a.date) - px) ? b : a));
+    crosshair.setAttribute("x1", x(nearest.date));
+    crosshair.setAttribute("x2", x(nearest.date));
+    crosshair.setAttribute("visibility", "visible");
+    const sameDay = points.filter((p) => p.date === nearest.date);
+    tooltip.innerHTML = `<b>${chartDate(nearest.date)}</b>${sameDay.map((p) => `<span>${options.valueName}: <strong>${format(p.value)}</strong></span>`).join("")}`;
+    tooltip.hidden = false;
+    tooltip.style.left = `${Math.min(Math.max((x(nearest.date) / width) * rect.width, 70), rect.width - 70)}px`;
+  }
+  svgEl.addEventListener("pointermove", showNearest);
+  svgEl.addEventListener("pointerdown", showNearest);
+  svgEl.addEventListener("pointerleave", () => {
+    crosshair.setAttribute("visibility", "hidden");
+    tooltip.hidden = true;
+  });
+
+  tableBox.innerHTML = `
+    <details class="extra chart-table">
+      <summary>Show as a table</summary>
+      <table><thead><tr><th>Day</th><th>${options.valueName}</th></tr></thead>
+      <tbody>${points.map((p) => `<tr><td>${chartDate(p.date)}</td><td>${format(p.value)}</td></tr>`).join("")}</tbody></table>
     </details>`;
 }

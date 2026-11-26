@@ -23,6 +23,7 @@
       quiz.js     -> the Brain + Body Quiz (questions in quiz-questions.js)
       arcade.js   -> card deck workout, Kick Caller and spin the wheel
       kitchen.js  -> Smoothie Lab, Recipe Book and Snack Swap
+      sports.js   -> belt tracker, swim log, soccer journal and workout builder
       app.js      -> what the buttons do, and building each day's plan
 
     Most of the page is empty here on purpose: app.js fills in the
@@ -61,6 +62,7 @@
   <script src="quiz.js?v=12" defer></script>
   <script src="arcade.js?v=12" defer></script>
   <script src="kitchen.js?v=12" defer></script>
+  <script src="sports.js?v=12" defer></script>
   <script src="tabs.js?v=12" defer></script>
   <script src="app.js?v=12" defer></script>
 </head>
@@ -384,6 +386,180 @@
 
     <!-- ==================== TAB: SPORTS ==================== -->
     <div class="tab-page" data-page="sports" hidden>
+      <div class="duo duo--even">
+        <!-- ============ TAEKWONDO BELT TRACKER (sports.js) ============ -->
+        <section class="panel" aria-labelledby="belt-title">
+          <div class="panel__head">
+            <p class="eyebrow">// taekwondo</p>
+            <span class="quest-tag">+250 XP per new belt</span>
+          </div>
+          <h2 class="panel__title" id="belt-title">🥋 Belt Tracker</h2>
+          <div class="belt-area" id="belt-area"></div>
+        </section>
+
+        <!-- ============ SOCCER JOURNAL (sports.js) ============ -->
+        <section class="panel" id="soccer" aria-labelledby="soccer-title">
+          <div class="panel__head">
+            <p class="eyebrow">// soccer</p>
+            <span class="quest-tag">+15 XP per game</span>
+          </div>
+          <h2 class="panel__title" id="soccer-title">⚽ Soccer Journal</h2>
+          <div class="tiles" id="soccer-stats"></div>
+          <form class="form" id="soccer-form">
+            <div class="form-row">
+              <div class="field">
+                <label class="field-label" for="soccer-date">Date</label>
+                <input class="input" id="soccer-date" type="date">
+              </div>
+              <div class="field">
+                <label class="field-label" for="soccer-opp">Against (optional)</label>
+                <input class="input" id="soccer-opp" type="text" maxlength="40" placeholder="Team name" autocomplete="off">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="field">
+                <p class="field-label">My goals</p>
+                <span class="stepper">
+                  <button type="button" data-soccer-step="g:-1" aria-label="One less goal">−</button>
+                  <span id="soccer-goals" aria-live="polite">0</span>
+                  <button type="button" data-soccer-step="g:1" aria-label="One more goal">+</button>
+                </span>
+              </div>
+              <div class="field">
+                <p class="field-label">My assists</p>
+                <span class="stepper">
+                  <button type="button" data-soccer-step="a:-1" aria-label="One less assist">−</button>
+                  <span id="soccer-assists" aria-live="polite">0</span>
+                  <button type="button" data-soccer-step="a:1" aria-label="One more assist">+</button>
+                </span>
+              </div>
+            </div>
+            <div class="field">
+              <p class="field-label">Result</p>
+              <div class="picker" role="group" aria-label="Result">
+                <button class="pick" type="button" data-soccer-res="W">Won</button>
+                <button class="pick" type="button" data-soccer-res="D">Tied</button>
+                <button class="pick" type="button" data-soccer-res="L">Lost</button>
+              </div>
+            </div>
+            <div class="field">
+              <p class="field-label">How did I play?</p>
+              <div class="stars" role="group" aria-label="How did I play, from 1 to 5 stars">
+                <button type="button" data-soccer-stars="1" aria-label="1 star">★</button>
+                <button type="button" data-soccer-stars="2" aria-label="2 stars">★</button>
+                <button type="button" data-soccer-stars="3" aria-label="3 stars">★</button>
+                <button type="button" data-soccer-stars="4" aria-label="4 stars">★</button>
+                <button type="button" data-soccer-stars="5" aria-label="5 stars">★</button>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label" for="soccer-note">Best moment (optional)</label>
+              <input class="input" id="soccer-note" type="text" maxlength="120" placeholder="Like &quot;scored with my left foot!&quot;" autocomplete="off">
+            </div>
+            <button class="button" type="submit">⚽ Save game</button>
+          </form>
+          <ul class="games" id="soccer-games"></ul>
+        </section>
+      </div>
+
+      <!-- ============ SWIM LOG (sports.js) ============ -->
+      <section class="panel" id="swim" aria-labelledby="swim-title">
+        <div class="panel__head">
+          <p class="eyebrow">// swimming</p>
+          <div class="picker" id="swim-unit" role="group" aria-label="Pool units"></div>
+        </div>
+        <h2 class="panel__title" id="swim-title">🏊 Swim Log</h2>
+        <p class="panel__lead" id="swim-total"></p>
+        <div class="swim-grid">
+          <form class="form swim-box" id="swim-laps-form">
+            <label class="field-label" for="swim-laps">Log a swim: how many laps?</label>
+            <div class="form-row form-row--tight">
+              <button class="text-button" type="button" data-laps="-1" aria-label="One less lap">−1</button>
+              <input class="input input--number" id="swim-laps" type="number" min="1" max="500" inputmode="numeric" placeholder="Laps">
+              <button class="text-button" type="button" data-laps="1" aria-label="One more lap">+1</button>
+              <button class="text-button" type="button" data-laps="10" aria-label="Ten more laps">+10</button>
+            </div>
+            <button class="button" type="submit">Save swim</button>
+          </form>
+          <form class="form swim-box" id="swim-time-form">
+            <p class="field-label">Log a race or practice time</p>
+            <div class="form-row">
+              <select class="select" id="swim-event" aria-label="Event"></select>
+              <input class="input" id="swim-time" type="text" inputmode="decimal" placeholder="Time, like 38.5 or 1:05.2" aria-label="Time" autocomplete="off">
+            </div>
+            <button class="button" type="submit">Save time</button>
+          </form>
+        </div>
+        <div class="swim-grid">
+          <div>
+            <p class="field-label">My personal bests</p>
+            <ul class="swim-bests" id="swim-bests"></ul>
+            <details class="extra">
+              <summary>Recent swims and times</summary>
+              <ul class="recent" id="swim-recent"></ul>
+            </details>
+          </div>
+          <figure class="chart-card">
+            <figcaption>
+              <h3><label for="swim-chart-event">Times for</label> <select class="select select--inline" id="swim-chart-event"></select></h3>
+              <p class="chart-legend">Lower is faster! Your best time has a ring.</p>
+            </figcaption>
+            <div class="chart-box" id="swim-chart"></div>
+            <div id="swim-chart-table"></div>
+          </figure>
+        </div>
+      </section>
+
+      <!-- ============ BUILD YOUR OWN WORKOUT (sports.js) ============ -->
+      <section class="panel" id="builder" aria-labelledby="builder-title">
+        <div class="panel__head">
+          <p class="eyebrow">// workout builder</p>
+          <span class="quest-tag">+60 XP when you finish one</span>
+        </div>
+        <h2 class="panel__title" id="builder-title">🛠️ Build Your Own Workout</h2>
+        <p class="panel__lead">Pick the moves, the reps and the rounds. Then the voice coach runs it for you, with timers and demos!</p>
+        <div class="builder">
+          <form class="form" id="builder-form">
+            <div class="field">
+              <label class="field-label" for="builder-name">Name your workout</label>
+              <input class="input" id="builder-name" type="text" maxlength="40" placeholder="Like &quot;Ninja Legs&quot;" autocomplete="off">
+            </div>
+            <div class="field">
+              <label class="field-label" for="builder-move">Add a move</label>
+              <div class="form-row form-row--tight">
+                <select class="select" id="builder-move"></select>
+                <button class="text-button" type="button" data-builder="add">+ Add</button>
+              </div>
+            </div>
+            <ul class="builder-list" id="builder-list"></ul>
+            <div class="form-row">
+              <div class="field">
+                <p class="field-label">Rounds</p>
+                <span class="stepper">
+                  <button type="button" data-builder-rounds="-1" aria-label="One less round">−</button>
+                  <span id="builder-rounds" aria-live="polite">2</span>
+                  <button type="button" data-builder-rounds="1" aria-label="One more round">+</button>
+                </span>
+              </div>
+              <div class="field">
+                <p class="field-label">Rest between moves</p>
+                <div class="picker" role="group" aria-label="Rest between moves">
+                  <button class="pick" type="button" data-builder-rest="15">15s</button>
+                  <button class="pick" type="button" data-builder-rest="30">30s</button>
+                  <button class="pick" type="button" data-builder-rest="45">45s</button>
+                  <button class="pick" type="button" data-builder-rest="60">60s</button>
+                </div>
+              </div>
+            </div>
+            <button class="button" type="submit">💾 Save workout</button>
+          </form>
+          <div>
+            <p class="field-label">My workouts</p>
+            <ul class="builder-saved-list" id="builder-saved"></ul>
+          </div>
+        </div>
+      </section>
+
       <!-- ============ PRACTICE DAYS (practice.js) ============ -->
       <section class="panel practice-panel" aria-labelledby="practice-title">
         <p class="eyebrow">// my sports</p>

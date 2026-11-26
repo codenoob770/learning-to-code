@@ -40,6 +40,12 @@ const XP_RULES = {
   smoothie: 10,     // each smoothie you invent (kitchen.js)
   made: 15,         // each recipe you make ("I made this!")
   snackRight: 3,    // each right answer in Snack Swap
+  beltUp: 250,      // each new taekwondo belt (sports.js)
+  swim: 10,         // each swim you log
+  swimTime: 10,     // each race or practice time you log
+  soccerGame: 15,   // each soccer game in your journal
+  goal: 5,          // extra for each goal you scored
+  custom: 60,       // each workout you built and finished with the coach
   quizRight: 10,    // each right answer in the quiz (quiz.js)
   quizPerfect: 25,  // extra for a perfect 10/10 round
   penaltyDone: 5,   // each quiz penalty you do (you still did the work!)
@@ -55,6 +61,10 @@ const LOG_XP = {
   smoothie: () => XP_RULES.smoothie,
   made: () => XP_RULES.made,
   snack: (e) => e.r * XP_RULES.snackRight,
+  swim: () => XP_RULES.swim,
+  swimTime: () => XP_RULES.swimTime,
+  soccer: (e) => XP_RULES.soccerGame + e.g * XP_RULES.goal,
+  custom: () => XP_RULES.custom,
 };
 
 // Some things only earn XP a few times a day, so nobody can farm
@@ -67,6 +77,10 @@ const LOG_DAILY_LIMIT = {
   smoothie: 3,
   made: 3,
   snack: 3,
+  swim: 2,
+  swimTime: 3,
+  soccer: 2,
+  custom: 2,
 };
 
 function logXP() {
@@ -181,6 +195,21 @@ function trophyStats() {
   const recipesMade = logOf("made").length;
   const snackPerfect = logOf("snack").some((e) => e.r === e.n);
 
+  // Sports (sports.js)
+  xp += beltData.history.length * XP_RULES.beltUp;
+  const swims = logOf("swim").length;
+  const games = logOf("soccer");
+  const goals = games.reduce((sum, g) => sum + g.g, 0);
+  const hatTrick = games.some((g) => g.g >= 3);
+  const builtWorkouts = logOf("custom").length;
+  // A new personal best: a time faster than every earlier time in that event
+  let fasterTime = false;
+  const firstTimes = {};
+  for (const entry of logOf("swimTime")) {
+    if (entry.event in firstTimes && entry.secs < firstTimes[entry.event]) fasterTime = true;
+    firstTimes[entry.event] = Math.min(entry.secs, firstTimes[entry.event] ?? Infinity);
+  }
+
   const ratings = Object.keys(drinkRatings).length;
   const pushups = bests.pushups ? bests.pushups.count : 0;
   const curlups = bests.curlups ? bests.curlups.count : 0;
@@ -192,7 +221,8 @@ function trophyStats() {
 
   return { xp, workouts, bestStreak, comeback, perfectWeek, ratings, pushups, curlups, testDone, waterDays, sleepDays, questStages, questStagesDone, questsComplete,
     missionsDone, missionSweeps, monthlies, bossesBeaten, quizRight,
-    fullDeck, bestKicks, spins, smoothies, recipesMade, snackPerfect, quizPerfect, penaltyReps, expertCount: expertDays.size };
+    fullDeck, bestKicks, spins, smoothies, recipesMade, snackPerfect,
+    belts: beltData.history.length, swims, goals, hatTrick, builtWorkouts, fasterTime, quizPerfect, penaltyReps, expertCount: expertDays.size };
 }
 
 
@@ -263,6 +293,12 @@ const BADGES = [
   { id: "scientist", icon: "🧪", name: "Smoothie Scientist", how: "Invent 5 smoothies", earned: (s) => s.smoothies >= 5 },
   { id: "chef", icon: "🧑‍🍳", name: "Junior Chef", how: "Make 5 recipes", earned: (s) => s.recipesMade >= 5 },
   { id: "snackPro", icon: "🥕", name: "Snack Pro", how: "Get 10/10 in Snack Swap", earned: (s) => s.snackPerfect },
+  { id: "beltUp", icon: "🎽", name: "Belt Up", how: "Pass a taekwondo belt test", earned: (s) => s.belts >= 1 },
+  { id: "swimTeam", icon: "🏊", name: "Swim Team", how: "Log 10 swims", earned: (s) => s.swims >= 10 },
+  { id: "waterRocket", icon: "🚀", name: "Water Rocket", how: "Beat one of your swim times", earned: (s) => s.fasterTime },
+  { id: "hatTrick", icon: "🎩", name: "Hat Trick", how: "Score 3 goals in one game", earned: (s) => s.hatTrick },
+  { id: "golazo", icon: "🥅", name: "Golazo", how: "Score 10 goals in your journal", earned: (s) => s.goals >= 10 },
+  { id: "designer", icon: "🛠️", name: "Workout Designer", how: "Finish a workout you built", earned: (s) => s.builtWorkouts >= 1 },
 ];
 
 
@@ -319,6 +355,10 @@ document.querySelector("#xp-rules").innerHTML = [
   ["Invent a smoothie (3 a day)", `+${XP_RULES.smoothie}`],
   ["Make a recipe (3 a day)", `+${XP_RULES.made}`],
   ["Snack Swap right answer", `+${XP_RULES.snackRight}`],
+  ["Pass a belt test", `+${XP_RULES.beltUp}`],
+  ["Log a swim or a swim time", `+${XP_RULES.swim}`],
+  ["Log a soccer game", `+${XP_RULES.soccerGame}, +${XP_RULES.goal} per goal`],
+  ["Finish a workout you built", `+${XP_RULES.custom}`],
   ["Right quiz answer (5 rounds a day)", `+${XP_RULES.quizRight}`],
   ["Perfect quiz round", `+${XP_RULES.quizPerfect} more`],
   ["Do a quiz penalty", `+${XP_RULES.penaltyDone}`],

@@ -90,7 +90,7 @@ const PROGRESS_KEYS = [
   "levelUp.grocery", "levelUp.quest",
   // Added with the tabs: arcade, quiz, sports, kitchen, pet, shop and family
   "levelUp.log", "levelUp.missions", "levelUp.energy", "levelUp.belt",
-  "levelUp.swim", "levelUp.soccer", "levelUp.workouts", "levelUp.recipes",
+  "levelUp.swim", "levelUp.workouts", "levelUp.recipes",
   "levelUp.shop", "levelUp.pet", "levelUp.family", "levelUp.spins",
 ];
 
@@ -153,8 +153,7 @@ let activityLog;   // quizzes, arcade games and more, like { d: "2026-11-27", t:
 let missionChecks; // daily missions you've done, by day (missions.js)
 let energyLog;     // how you felt each day, 1 to 5 (stats.js)
 let beltData;      // your taekwondo belt and next test (sports.js)
-let swimData;      // swim times and laps (sports.js)
-let soccerGames;   // your soccer game journal (sports.js)
+let swimData;      // swim settings: yards or meters (swims and times go in the activity log)
 let myWorkouts;    // workouts you built yourself (builder.js)
 let recipeBook;    // favorite recipes and smoothies you invented (kitchen.js)
 let shopData;      // coins spent, things you bought and what you're wearing (shop.js)
@@ -185,8 +184,7 @@ function loadProgress() {
   missionChecks = loadJSON("levelUp.missions", {});
   energyLog = loadJSON("levelUp.energy", {});
   beltData = loadJSON("levelUp.belt", { belt: 0, test: "", checks: [], custom: [], history: [] });
-  swimData = loadJSON("levelUp.swim", { unit: "yd", pool: 25, times: [], laps: [] });
-  soccerGames = loadJSON("levelUp.soccer", []);
+  swimData = loadJSON("levelUp.swim", { unit: "yd", pool: 25 });
   myWorkouts = loadJSON("levelUp.workouts", []);
   recipeBook = loadJSON("levelUp.recipes", { fav: [], smoothies: [] });
   shopData = loadJSON("levelUp.shop", { spent: 0, owned: [], wear: {} });
@@ -558,6 +556,7 @@ function render() {
   renderMonthly();  // in missions.js
   renderArcade();   // in arcade.js
   renderKitchen();  // in kitchen.js
+  renderSports();   // in sports.js
 }
 
 function renderDay(plan) {

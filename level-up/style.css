@@ -4078,6 +4078,456 @@ label.mission__text {
   font-size: 0.8125rem;
 }
 
+/* 9h. SPORTS TAB ------------------------------------------------------- */
+
+/* Shared form pieces */
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.6rem 1rem;
+  width: 100%;
+}
+
+.form-row--tight {
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.field {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 9rem;
+}
+
+.field-label {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+}
+
+.input,
+.select {
+  min-height: 2.6rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+}
+
+.input {
+  width: 100%;
+}
+
+.form-row .input,
+.form-row .select {
+  flex: 1;
+  min-width: 0;
+}
+
+.input--number {
+  max-width: 7rem;
+}
+
+.select--inline {
+  min-height: 2rem;
+  padding: 0.2rem 0.5rem;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.inline-form {
+  display: flex;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+/* A - 3 + counter */
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+}
+
+.stepper button {
+  width: 2.6rem;
+  height: 2.6rem;
+  border: 0;
+  background: transparent;
+  color: var(--fg);
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.stepper button:hover {
+  background: var(--line);
+}
+
+.stepper > span {
+  min-width: 2.4rem;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.stepper--small button {
+  width: 2rem;
+  height: 2rem;
+  font-size: 1rem;
+}
+
+.stepper--small > span {
+  min-width: 5.5rem;
+  padding-inline: 0.3rem;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+/* Number tiles, like "Goals 12" */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.6rem 0.3rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+}
+
+.tile__value {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.tile__name {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+}
+
+/* Belt tracker */
+.belt-area {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.belt-now {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.belt-now > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.belt {
+  width: 9rem;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+.belt path {
+  stroke: rgba(0, 0, 0, 0.35);
+  stroke-width: 1;
+}
+
+.belt-next {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+}
+
+.belt-next .input {
+  max-width: 12rem;
+}
+
+.belt-countdown {
+  font-weight: 700;
+}
+
+.belt-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.belt-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0;
+}
+
+.belt-item input {
+  flex: none;
+  width: 1.2rem;
+  height: 1.2rem;
+  accent-color: var(--teal);
+}
+
+.belt-item label {
+  flex: 1;
+  cursor: pointer;
+}
+
+.belt-item input:checked + label {
+  color: var(--dim);
+  text-decoration: line-through;
+}
+
+.korean {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.korean__numbers {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.korean__number {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.4rem 0.2rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+  color: var(--fg);
+  cursor: pointer;
+}
+
+.korean__number:hover {
+  border-color: var(--accent);
+}
+
+.korean__digit {
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+
+.korean__sound {
+  color: var(--dim);
+  font-size: 0.8125rem;
+}
+
+/* Soccer journal */
+.stars {
+  display: flex;
+  gap: 0.15rem;
+}
+
+.stars button {
+  padding: 0.1rem 0.2rem;
+  border: 0;
+  background: transparent;
+  color: var(--line-strong);
+  font-size: 1.7rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.stars button.is-lit {
+  color: var(--marker);
+}
+
+.games,
+.recent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.game,
+.recent li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--line);
+  font-size: 0.9375rem;
+}
+
+.game__result {
+  flex: none;
+  min-width: 3.2rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  background: var(--line);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.game__result.is-W {
+  background: var(--teal-soft);
+  color: var(--teal);
+}
+
+.game__result.is-L {
+  background: var(--bug-soft);
+  color: var(--bug);
+}
+
+.game__text,
+.recent li span {
+  flex: 1;
+}
+
+.game__text em {
+  color: var(--dim);
+}
+
+/* Swim log */
+.swim-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 860px) {
+  .swim-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    align-items: start;
+  }
+}
+
+.swim-box {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+}
+
+.swim-bests {
+  display: flex;
+  flex-direction: column;
+  margin: 0.4rem 0 0.8rem;
+  padding: 0;
+  list-style: none;
+}
+
+.swim-bests li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  border-bottom: 1px dashed var(--line);
+}
+
+.swim-bests strong {
+  font-family: var(--font-code);
+  color: var(--teal);
+}
+
+.swim-bests__empty {
+  color: var(--dim);
+  font-size: 0.9375rem;
+  border: 0 !important;
+}
+
+.chart__best {
+  fill: none;
+  stroke: var(--fg);
+  stroke-width: 2;
+}
+
+/* Workout builder */
+.builder {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 860px) {
+  .builder {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.builder-list,
+.builder-saved-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.builder-move,
+.builder-saved {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+}
+
+.builder-move__name,
+.builder-saved > span:first-child {
+  flex: 1;
+  min-width: 8rem;
+  font-weight: 700;
+}
+
+.builder-saved > span:first-child {
+  font-weight: 400;
+}
+
+.builder-saved__buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.builder-saved .button {
+  padding: 0.4rem 0.9rem;
+}
+
 /* 10. SMALL SCREENS AND REDUCED MOTION --------------------------- */
 
 @media (max-width: 640px) {

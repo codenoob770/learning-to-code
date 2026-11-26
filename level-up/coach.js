@@ -68,12 +68,15 @@ function coachSteps(plan) {
 
 /* 2. OPENING, CLOSING AND FINISHING -------------------------------- */
 
-function openCoach(date) {
+// "custom" is a workout you built yourself (sports.js). Without it,
+// the coach runs the day's workout.
+function openCoach(date, custom = null) {
   stopTimer(); // the little timer bar isn't needed in here
-  const plan = planFor(date);
+  const plan = custom || planFor(date);
   coach = {
     date,
     plan,
+    custom: Boolean(custom),
     steps: coachSteps(plan),
     index: 0,
     startedAt: Date.now(),
@@ -113,8 +116,12 @@ function finishCoach() {
   const canMark = coach.date <= today;
   const xpBefore = trophyStats().xp;
 
-  // Finishing counts as marking the workout done
-  if (canMark && !doneDays.has(key)) {
+  if (coach.custom) {
+    // A workout you built: it goes in the activity log (XP, and hits on the boss)
+    logActivity("custom", { name: coach.plan.title, reps: coach.plan.reps });
+    render();
+  } else if (canMark && !doneDays.has(key)) {
+    // Finishing counts as marking the workout done
     doneDays.add(key);
     missedDays.delete(key);
     if (coach.plan.expert) expertDays.add(key);
@@ -129,9 +136,10 @@ function finishCoach() {
   document.querySelector("#coach-count").textContent = `${coach.steps.length} of ${coach.steps.length}`;
   document.querySelector("#coach-fill").style.width = "100%";
   document.querySelector("#coach-name").textContent = "Workout complete!";
-  document.querySelector("#coach-how").textContent = canMark
-    ? `${minutes} min of hard work. It's marked as done.`
-    : `${minutes} min of hard work. (It's a future day, so it isn't marked done.)`;
+  let how = `${minutes} min of hard work. It's marked as done.`;
+  if (!canMark) how = `${minutes} min of hard work. (It's a future day, so it isn't marked done.)`;
+  if (coach.custom) how = `${minutes} min of hard work, in a workout YOU designed!`;
+  document.querySelector("#coach-how").textContent = how;
   document.querySelector("#coach-label").textContent = xpGained > 0 ? `+${xpGained} XP` : "";
   coachTime.textContent = "🎉";
   document.querySelector("#coach-demo").replaceChildren();
