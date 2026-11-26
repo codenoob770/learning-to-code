@@ -1,29 +1,64 @@
 /* =============================================================
    training.js: the Training tab
    -------------------------------------------------------------
-   Taekwondo and soccer lessons (they're in training-lessons.js).
-   Pick a lesson to read how to do it, or tap "Teach me" and the
-   voice coach (coach.js) walks you through every step out loud,
-   then runs the practice drill with timers.
+   Taekwondo and soccer lessons (they're in training-lessons.js),
+   on 3 pages per sport that get harder and harder. Pick a lesson
+   to read how to do it, or tap "Teach me" and the voice coach
+   (coach.js) walks you through every step out loud, then runs the
+   practice drill with timers.
 
-   Tap "I learned this!" when you've got it down. Each lesson you
-   learn is worth XP, and so is practicing with the coach.
+   Tap "I learned this!" when you've got a lesson down, or "I
+   already know all of these" to learn a whole page at once. When
+   every lesson on a page is learned, the next page unlocks.
 
    This file loads before app.js, so it only uses app.js's
    functions inside its own functions, never right away.
    ============================================================= */
 
 let trainingSport = "tkd"; // the sport you're looking at (this device only)
+let trainingPage = {};     // the page you're on for each sport, like { tkd: 1 } (0 = page 1)
 let openLessonId = null;   // the lesson that's open
 
 function sportById(id) {
   return TRAINING.find((sport) => sport.id === id);
 }
 
+// A sport's pages: page 1 is "lessons", and the harder pages come after
+function sportPages(sport) {
+  return [{ name: "Basics", lessons: sport.lessons }, ...(sport.harder || [])];
+}
+
+// Every lesson of a sport, on every page
+function sportLessons(sport) {
+  return sportPages(sport).flatMap((page) => page.lessons);
+}
+
+function pageDone(page) {
+  return page.lessons.every((lesson) => trainingLearned.has(lesson.id));
+}
+
+// A page is unlocked when every page before it is done
+function pageUnlocked(sport, index) {
+  return sportPages(sport).slice(0, index).every(pageDone);
+}
+
+// The page to show: the one you picked, or the first unlocked page with something left to learn
+function currentPage(sport) {
+  const pages = sportPages(sport);
+  const picked = trainingPage[sport.id];
+  if (picked !== undefined && pageUnlocked(sport, picked)) return picked;
+  let index = 0;
+  while (index < pages.length - 1 && pageDone(pages[index])) index += 1;
+  return index;
+}
+
 function findLesson(id) {
   for (const sport of TRAINING) {
-    const lesson = sport.lessons.find((l) => l.id === id);
-    if (lesson) return { sport, lesson };
+    const pages = sportPages(sport);
+    for (let index = 0; index < pages.length; index++) {
+      const lesson = pages[index].lessons.find((l) => l.id === id);
+      if (lesson) return { sport, lesson, page: index };
+    }
   }
   return null;
 }
@@ -77,13 +112,17 @@ function lessonPlan(sport, lesson) {
 
 function renderTraining() {
   const sport = sportById(trainingSport);
-  if (!openLessonId || !sport.lessons.some((l) => l.id === openLessonId)) {
-    // Open the first lesson you haven't learned yet
-    openLessonId = (sport.lessons.find((l) => !trainingLearned.has(l.id)) || sport.lessons[0]).id;
+  const pages = sportPages(sport);
+  const pageIndex = currentPage(sport);
+  trainingPage[sport.id] = pageIndex;
+  const page = pages[pageIndex];
+  if (!openLessonId || !page.lessons.some((l) => l.id === openLessonId)) {
+    // Open the first lesson on this page you haven't learned yet
+    openLessonId = (page.lessons.find((l) => !trainingLearned.has(l.id)) || page.lessons[0]).id;
   }
 
   // The coach's tip of the day (a different one every day)
-  const allLessons = TRAINING.flatMap((s) => s.lessons.map((lesson) => ({ sport: s, lesson })));
+  const allLessons = TRAINING.flatMap((s) => sportLessons(s).map((lesson) => ({ sport: s, lesson })));
   const pick = allLessons[Math.floor(luckyNumber(`${toKey(today)} tip`) * allLessons.length)];
   document.querySelector("#tip-of-day").innerHTML = `
     <span class="tip-of-day__label">${pick.sport.icon} Coach's tip of the day</span>
@@ -92,25 +131,48 @@ function renderTraining() {
 
   // Sport picker, with how many lessons you've learned
   document.querySelector("#training-sports").innerHTML = TRAINING.map((s) => {
-    const learned = s.lessons.filter((l) => trainingLearned.has(l.id)).length;
-    return `<button class="pick" type="button" data-training-sport="${s.id}" aria-pressed="${s.id === trainingSport}">${s.icon} ${s.name} <span class="pick__count">${learned}/${s.lessons.length}</span></button>`;
+    const all = sportLessons(s);
+    const learned = all.filter((l) => trainingLearned.has(l.id)).length;
+    return `<button class="pick" type="button" data-training-sport="${s.id}" aria-pressed="${s.id === trainingSport}">${s.icon} ${s.name} <span class="pick__count">${learned}/${all.length}</span></button>`;
   }).join("");
 
-  // The lesson cards, grouped by level
-  const levels = ["Beginner", "Intermediate", "Advanced"];
-  document.querySelector("#lesson-cards").innerHTML = levels.map((level) => {
-    const lessons = sport.lessons.filter((l) => l.level === level);
-    if (!lessons.length) return "";
+  // The pages (locked ones can't be opened yet)
+  document.querySelector("#training-pages").innerHTML = pages.map((p, i) => {
+    const unlocked = pageUnlocked(sport, i);
+    const mark = pageDone(p) ? " ✓" : unlocked ? "" : " 🔒";
     return `
-      <p class="lesson-level lesson-level--${level.toLowerCase()}">${level}</p>
-      <div class="lesson-cards__row">
-        ${lessons.map((lesson) => `
-          <button class="lesson-card ${trainingLearned.has(lesson.id) ? "is-learned" : ""}" type="button" data-lesson-open="${lesson.id}" aria-pressed="${lesson.id === openLessonId}">
-            <span class="lesson-card__title">${lesson.title}</span>
-            <span class="lesson-card__state">${trainingLearned.has(lesson.id) ? "✓ Learned" : lesson.demo ? "▶ Has a demo" : "Read & practice"}</span>
-          </button>`).join("")}
-      </div>`;
+      <button class="page-tab ${pageDone(p) ? "is-done" : ""}" type="button" data-training-page="${i}" aria-pressed="${i === pageIndex}" ${unlocked ? "" : `disabled title="Learn everything on page ${i} to unlock this page"`}>
+        <span class="page-tab__number">Page ${i + 1}${mark}</span>
+        <span class="page-tab__name">${p.name}</span>
+      </button>`;
   }).join("");
+
+  // The lesson cards for this page, grouped by level
+  const levels = [...new Set(page.lessons.map((l) => l.level))];
+  document.querySelector("#lesson-cards").innerHTML = levels.map((level) => `
+    <p class="lesson-level lesson-level--${level.toLowerCase()}">${level}</p>
+    <div class="lesson-cards__row">
+      ${page.lessons.filter((l) => l.level === level).map((lesson) => `
+        <button class="lesson-card ${trainingLearned.has(lesson.id) ? "is-learned" : ""}" type="button" data-lesson-open="${lesson.id}" aria-pressed="${lesson.id === openLessonId}">
+          <span class="lesson-card__title">${lesson.title}</span>
+          <span class="lesson-card__state">${trainingLearned.has(lesson.id) ? "✓ Learned" : lesson.demo ? "▶ Has a demo" : "Read & practice"}</span>
+        </button>`).join("")}
+    </div>`).join("");
+
+  // "I already know all of these", or a button to the next page
+  const next = pages[pageIndex + 1];
+  const box = document.querySelector("#page-actions");
+  if (!pageDone(page)) {
+    box.innerHTML = `
+      <button class="button" type="button" data-learn-page>✅ I already know all of these</button>
+      <span class="page-actions__note">${next ? `Unlocks page ${pageIndex + 2}: ${next.name}` : "Marks every lesson on this page as learned"}</span>`;
+  } else if (next) {
+    box.innerHTML = `
+      <span class="page-actions__done">✓ You know everything on this page!</span>
+      <button class="button" type="button" data-training-page="${pageIndex + 1}">Go to page ${pageIndex + 2}: ${next.name} →</button>`;
+  } else {
+    box.innerHTML = `<span class="page-actions__done">🏆 You know EVERY ${sport.name.toLowerCase()} lesson. That's pro level!</span>`;
+  }
 
   renderLesson();
 }
@@ -166,6 +228,38 @@ function renderLesson() {
   }
 }
 
+// After learning something: say so, and cheer if that unlocked a page
+function afterLearning(sport, pageBefore, message) {
+  save("levelUp.training", JSON.stringify([...trainingLearned]));
+  const pages = sportPages(sport);
+  const unlockedNow = pages.findIndex((p, i) => i > 0 && pageUnlocked(sport, i) && i > pageBefore);
+  if (sportLessons(sport).every((l) => trainingLearned.has(l.id))) {
+    sounds.fanfare();
+    confetti();
+    showToast(`You learned EVERY ${sport.name.toLowerCase()} lesson! ${sport.icon}`);
+  } else if (unlockedNow !== -1) {
+    trainingPage[sport.id] = unlockedNow;
+    openLessonId = null;
+    sounds.fanfare();
+    confetti();
+    showToast(`🔓 Page ${unlockedNow + 1} unlocked: ${pages[unlockedNow].name}!`);
+  } else {
+    sounds.done();
+    showToast(message);
+  }
+  render();
+  checkAchievements(true);
+}
+
+// The last unlocked page (to know when a new one unlocks)
+function lastUnlockedPage(sport) {
+  let last = 0;
+  sportPages(sport).forEach((_, i) => {
+    if (pageUnlocked(sport, i)) last = i;
+  });
+  return last;
+}
+
 document.querySelector("#training").addEventListener("click", (event) => {
   const sportButton = event.target.closest("[data-training-sport]");
   if (sportButton) {
@@ -176,10 +270,31 @@ document.querySelector("#training").addEventListener("click", (event) => {
     return;
   }
 
+  const pageButton = event.target.closest("[data-training-page]");
+  if (pageButton && !pageButton.disabled) {
+    trainingPage[trainingSport] = Number(pageButton.dataset.trainingPage);
+    openLessonId = null;
+    renderTraining();
+    document.querySelector(`.page-tab[data-training-page="${trainingPage[trainingSport]}"]`).focus();
+    return;
+  }
+
+  // "I already know all of these": learn every lesson on this page
+  if (event.target.closest("[data-learn-page]")) {
+    const sport = sportById(trainingSport);
+    const page = sportPages(sport)[currentPage(sport)];
+    const before = lastUnlockedPage(sport);
+    page.lessons.forEach((lesson) => trainingLearned.add(lesson.id));
+    afterLearning(sport, before, `All ${page.lessons.length} lessons learned! ${sport.icon}`);
+    document.querySelector("#training-pages").scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
+
   const open = event.target.closest("[data-lesson-open]");
   if (open) {
     const found = findLesson(open.dataset.lessonOpen);
     trainingSport = found.sport.id;
+    trainingPage[found.sport.id] = found.page;
     openLessonId = found.lesson.id;
     renderTraining();
     document.querySelector("#lesson").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -200,23 +315,15 @@ document.querySelector("#training").addEventListener("click", (event) => {
   if (event.target.closest("[data-lesson-learned]")) {
     if (trainingLearned.has(lesson.id)) {
       trainingLearned.delete(lesson.id);
+      save("levelUp.training", JSON.stringify([...trainingLearned]));
       showToast("Unmarked. Keep practicing!");
+      render();
     } else {
+      const before = lastUnlockedPage(sport);
       trainingLearned.add(lesson.id);
-      const all = sport.lessons.every((l) => trainingLearned.has(l.id));
-      if (all) {
-        sounds.fanfare();
-        confetti();
-        showToast(`You learned EVERY ${sport.name.toLowerCase()} lesson! ${sport.icon}`);
-      } else {
-        sounds.done();
-        showToast(`Skill learned! +${XP_RULES.lessonLearned} XP ${sport.icon}`);
-      }
+      afterLearning(sport, before, `Skill learned! +${XP_RULES.lessonLearned} XP ${sport.icon}`);
     }
-    save("levelUp.training", JSON.stringify([...trainingLearned]));
-    render();
-    checkAchievements(true);
-    document.querySelector("[data-lesson-learned]").focus();
+    document.querySelector("[data-lesson-learned]")?.focus();
   }
 
   // Ask Coach (on the Today tab) a question about this lesson

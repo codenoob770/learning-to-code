@@ -61,10 +61,12 @@ like `level-up/#quiz` opens straight to one tab.
   counting in Korean), Swim School (check off the skills from my swim
   lessons and log each lesson), soccer journal, a workout builder the
   voice coach can run, and your practice days.
-- **🎓 Training:** taekwondo and soccer lessons, from beginner to
-  advanced: step by step, mistakes to watch out for, a practice drill
-  and a pro tip. Tap **Teach me** and the voice coach teaches it out
-  loud, then runs the drill. A new coach's tip every day.
+- **🎓 Training:** 64 taekwondo and soccer lessons on 3 pages per sport
+  that get harder (Basics, then Combos & spins or Skills & moves, then
+  Black belt path or Pro moves). Each has steps, mistakes to watch out
+  for, a practice drill and a pro tip. Tap **Teach me** and the voice
+  coach teaches it out loud. Already know a page? Tap **I already know
+  all of these** to unlock the next one.
 - **🍓 Kitchen:** Smoothie Lab (it invents a name and recipe), a Recipe
   Book with search and favorites, Snack Swap and the grocery list.
 - **📊 Stats:** XP, levels and 51 badges, progress charts, a year-long

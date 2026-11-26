@@ -5231,6 +5231,87 @@ label.mission__text {
 .lesson-level--beginner { background: var(--teal-soft); color: var(--teal); }
 .lesson-level--intermediate { background: var(--marker-soft); color: var(--marker); }
 .lesson-level--advanced { background: var(--bug-soft); color: var(--bug); }
+.lesson-level--expert { background: rgba(124, 196, 255, 0.13); color: #7cc4ff; }
+.lesson-level--pro { background: rgba(197, 155, 255, 0.14); color: #c59bff; }
+
+/* Page 1, 2, 3 */
+.page-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.4rem;
+  scroll-margin-top: 7rem;
+}
+
+.page-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+  color: var(--fg);
+  text-align: left;
+  cursor: pointer;
+}
+
+.page-tab:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.page-tab[aria-pressed="true"] {
+  border: 2px solid var(--marker);
+  background: var(--marker-soft);
+}
+
+.page-tab:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-tab__number {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+}
+
+.page-tab.is-done .page-tab__number {
+  color: var(--teal);
+}
+
+.page-tab__name {
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+@media (max-width: 480px) {
+  .page-tab {
+    padding: 0.5rem 0.55rem;
+  }
+
+  .page-tab__name {
+    font-size: 0.875rem;
+  }
+}
+
+/* "I already know all of these" */
+.page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+
+.page-actions__note {
+  color: var(--dim);
+  font-size: 0.875rem;
+}
+
+.page-actions__done {
+  color: var(--teal);
+  font-weight: 700;
+}
 
 .lesson-card {
   display: flex;

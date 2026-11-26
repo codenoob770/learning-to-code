@@ -48,34 +48,34 @@
   <!-- The "?v=8" is a version number. Browsers keep old copies of files for a
        while; changing the number makes them download the newest version.
        Add 1 to it (on every line below) whenever you change those files. -->
-  <link rel="stylesheet" href="style.css?v=15">
+  <link rel="stylesheet" href="style.css?v=17">
   <!-- These load in order. app.js goes last, because it starts the page
        and uses things from all the others. -->
-  <script src="plan.js?v=15" defer></script>
-  <script src="demos.js?v=15" defer></script>
-  <script src="trophies.js?v=15" defer></script>
-  <script src="coach.js?v=15" defer></script>
-  <script src="practice.js?v=15" defer></script>
-  <script src="habits.js?v=15" defer></script>
-  <script src="charts.js?v=15" defer></script>
-  <script src="grocery.js?v=15" defer></script>
-  <script src="ai-coach.js?v=15" defer></script>
-  <script src="quest.js?v=15" defer></script>
-  <script src="missions.js?v=15" defer></script>
-  <script src="boss.js?v=15" defer></script>
-  <script src="quiz-questions.js?v=15" defer></script>
-  <script src="quiz.js?v=15" defer></script>
-  <script src="arcade.js?v=15" defer></script>
-  <script src="kitchen.js?v=15" defer></script>
-  <script src="sports.js?v=15" defer></script>
-  <script src="stats.js?v=15" defer></script>
-  <script src="family.js?v=15" defer></script>
-  <script src="pet.js?v=15" defer></script>
-  <script src="shop.js?v=15" defer></script>
-  <script src="training-lessons.js?v=15" defer></script>
-  <script src="training.js?v=15" defer></script>
-  <script src="tabs.js?v=15" defer></script>
-  <script src="app.js?v=15" defer></script>
+  <script src="plan.js?v=17" defer></script>
+  <script src="demos.js?v=17" defer></script>
+  <script src="trophies.js?v=17" defer></script>
+  <script src="coach.js?v=17" defer></script>
+  <script src="practice.js?v=17" defer></script>
+  <script src="habits.js?v=17" defer></script>
+  <script src="charts.js?v=17" defer></script>
+  <script src="grocery.js?v=17" defer></script>
+  <script src="ai-coach.js?v=17" defer></script>
+  <script src="quest.js?v=17" defer></script>
+  <script src="missions.js?v=17" defer></script>
+  <script src="boss.js?v=17" defer></script>
+  <script src="quiz-questions.js?v=17" defer></script>
+  <script src="quiz.js?v=17" defer></script>
+  <script src="arcade.js?v=17" defer></script>
+  <script src="kitchen.js?v=17" defer></script>
+  <script src="sports.js?v=17" defer></script>
+  <script src="stats.js?v=17" defer></script>
+  <script src="family.js?v=17" defer></script>
+  <script src="pet.js?v=17" defer></script>
+  <script src="shop.js?v=17" defer></script>
+  <script src="training-lessons.js?v=17" defer></script>
+  <script src="training.js?v=17" defer></script>
+  <script src="tabs.js?v=17" defer></script>
+  <script src="app.js?v=17" defer></script>
 </head>
 <body>
 
@@ -593,7 +593,9 @@
         <p class="panel__lead">Pick a skill to learn how it's done. Tap <strong>Teach me</strong> and the coach walks you through it out loud, then runs a practice drill!</p>
         <p class="tip-of-day" id="tip-of-day"></p>
         <p class="training-safety">Practice in an open space, warm up first, and ask your instructor or coach to check your form.</p>
+        <div class="page-tabs" id="training-pages" role="group" aria-label="Lesson pages"></div>
         <div class="lesson-cards" id="lesson-cards"></div>
+        <div class="page-actions" id="page-actions"></div>
         <div class="lesson" id="lesson"></div>
       </section>
     </div>

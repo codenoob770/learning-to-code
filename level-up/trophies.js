@@ -222,7 +222,7 @@ function workOutTrophyStats() {
 
   // Training lessons you've learned (training.js)
   xp += trainingLearned.size * XP_RULES.lessonLearned;
-  const sportLessonsAll = (id) => TRAINING.find((s) => s.id === id).lessons.every((l) => trainingLearned.has(l.id));
+  const sportLessonsAll = (id) => sportLessons(TRAINING.find((s) => s.id === id)).every((l) => trainingLearned.has(l.id));
 
   // Sports (sports.js)
   xp += beltData.history.length * XP_RULES.beltUp;
@@ -334,8 +334,8 @@ const BADGES = [
   { id: "shopper", icon: "🛍️", name: "Shopper", how: "Buy something in the shop", earned: (s) => s.bought >= 1 },
   { id: "bigSpender", icon: "🪙", name: "Big Spender", how: "Spend 1,000 coins", earned: (s) => s.spent >= 1000 },
   { id: "student", icon: "🎓", name: "Good Student", how: "Learn 5 Training lessons", earned: (s) => s.lessons >= 5 },
-  { id: "tkdScholar", icon: "🥋", name: "Taekwondo Scholar", how: "Learn every taekwondo lesson", earned: (s) => s.tkdAll },
-  { id: "soccerScholar", icon: "🧠", name: "Soccer Genius", how: "Learn every soccer lesson", earned: (s) => s.soccerAll },
+  { id: "tkdScholar", icon: "🥋", name: "Taekwondo Scholar", how: "Learn every taekwondo lesson (all 3 pages)", earned: (s) => s.tkdAll },
+  { id: "soccerScholar", icon: "🧠", name: "Soccer Genius", how: "Learn every soccer lesson (all 3 pages)", earned: (s) => s.soccerAll },
 ];
 
 
