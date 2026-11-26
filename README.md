@@ -14,6 +14,7 @@ every line can be opened, read and changed.
 | `favicon.svg` | The little icon in the browser tab                                   |
 | `bug-bash/`   | **Bug Bash**, a little game (see below)                              |
 | `level-up/`   | **Level Up**, my daily workout and healthy food plan (see below)     |
+| `kickoff/`    | **Kickoff**, my sister's soccer version of Level Up (see below)      |
 
 Every file is full of comments that explain what each part does. Reading them
 from top to bottom is a good way to learn how the site works.
@@ -134,3 +135,17 @@ After that, every change you push to `main` updates the live site automatically.
 - [freeCodeCamp](https://www.freecodecamp.org/learn): interactive lessons right in the browser
 - [The Odin Project](https://www.theodinproject.com/): a full path from beginner to building real projects
 - [web.dev: Learn HTML](https://web.dev/learn/html) and [Learn CSS](https://web.dev/learn/css): short, well-made courses from Google
+
+## Kickoff: my sister's soccer site
+
+Open `kickoff/index.html`. It's a copy of Level Up, made just for soccer:
+
+- Soccer workouts every day, plus skills inspired by Lamine Yamal and Neymar
+  (cut-and-go, step-overs, sole rolls, wall passes, juggling)
+- A soccer-pitch look, soccer badges and ranks, and a player card with her name
+- A push-up and curl-up challenge with the beat trainer
+- `DIFFICULTY` at the top of `kickoff/plan.js` sets how hard it is
+  (0.75 means it starts a bit easier). The "Too easy?" button works too.
+- Her progress is saved separately from Level Up's, even on the same device.
+
+It's a fan-made page, not connected to the players or their teams.

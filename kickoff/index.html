@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    Kickoff: my sister's soccer training site. It's a copy of my Level Up
+    site, with soccer workouts, a soccer-field look, and skills inspired by
+    her favorite players. (A fan page: not connected to the players or teams.)
+
+    It's made of these files:
+      index.html -> the frame of the page (this file)
+      style.css  -> how it looks (a soccer pitch at night)
+      plan.js     -> the workouts and recipes, written as data
+      demos.js    -> the animated stick figures that show each move
+      trophies.js -> XP, levels and soccer badges
+      coach.js    -> the guided workout mode with the voice coach
+      practice.js -> my practice days (lighter workouts on those days)
+      habits.js   -> water and sleep
+      charts.js   -> the progress charts
+      grocery.js  -> the week's grocery list
+      ai-coach.js -> asking Claude questions (on the Claude version)
+      app.js      -> what the buttons do, and building each day's plan
+
+    Most of the page is empty here on purpose: app.js fills in the
+    workout and recipes for whichever day you're looking at.
+  -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Kickoff</title>
+  <meta name="description" content="Soccer training every day: workouts, skills inspired by Lamine Yamal and Neymar, healthy drinks and meals.">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+
+  <!-- Same fonts as my website -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=JetBrains+Mono:wght@400;600&display=swap">
+
+  <!-- The "?v=8" is a version number. Browsers keep old copies of files for a
+       while; changing the number makes them download the newest version.
+       Add 1 to it (on every line below) whenever you change those files. -->
+  <link rel="stylesheet" href="style.css?v=10">
+  <!-- These load in order. app.js goes last, because it starts the page
+       and uses things from all the others. -->
+  <script src="plan.js?v=10" defer></script>
+  <script src="demos.js?v=10" defer></script>
+  <script src="trophies.js?v=10" defer></script>
+  <script src="coach.js?v=10" defer></script>
+  <script src="practice.js?v=10" defer></script>
+  <script src="habits.js?v=10" defer></script>
+  <script src="charts.js?v=10" defer></script>
+  <script src="grocery.js?v=10" defer></script>
+  <script src="ai-coach.js?v=10" defer></script>
+  <script src="app.js?v=10" defer></script>
+</head>
+<body>
+
+  <!-- Faint soccer-field lines in the background, just for looks -->
+  <svg class="pitch" viewBox="0 0 600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <rect x="30" y="30" width="540" height="840" rx="4"/>
+    <line x1="30" y1="450" x2="570" y2="450"/>
+    <circle cx="300" cy="450" r="80"/>
+    <circle class="pitch__spot" cx="300" cy="450" r="4"/>
+    <rect x="150" y="30" width="300" height="130"/>
+    <rect x="225" y="30" width="150" height="50"/>
+    <path d="M240 160 A70 70 0 0 0 360 160"/>
+    <rect x="150" y="740" width="300" height="130"/>
+    <rect x="225" y="820" width="150" height="50"/>
+    <path d="M240 740 A70 70 0 0 1 360 740"/>
+  </svg>
+
+  <!-- ============ SCOREBOARD ============ -->
+  <header class="hud">
+    <a class="hud__home" href="../index.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      <span class="hud__home-text">Home</span>
+    </a>
+    <p class="hud__title">Kick<span class="marker">off</span> <span class="expert-badge">Pro</span></p>
+
+    <dl class="hud__stats">
+      <div class="stat"><dt>Level</dt><dd id="stat-level">1</dd></div>
+      <div class="stat stat--week"><dt>Week</dt><dd id="stat-week">1</dd></div>
+      <div class="stat"><dt>This week</dt><dd id="stat-this-week">0/7</dd></div>
+      <div class="stat"><dt>Streak</dt><dd id="stat-streak">0</dd></div>
+    </dl>
+
+    <!-- Pro mode: turns the page red and makes the workouts harder -->
+    <button class="expert-button" id="expert-button" type="button" aria-pressed="false" aria-label="Pro mode" title="Pro mode: harder workouts">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1 3.5 4.5 5.5 4.5 10a4.5 4.5 0 0 1-9 0c0-2 1-3.5 2-4.5.3 1.8 1.3 3 2.5 3.5-.5-3 0-6 0-9z"/></svg>
+      <span class="expert-button__text">Pro mode</span>
+    </button>
+
+    <button class="icon-button" id="sound-button" type="button" aria-label="Timer sounds" aria-pressed="true" title="Timer sounds on or off">
+      <svg class="icon-sound-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>
+      <svg class="icon-sound-off" viewBox="0 0 24 24" aria-hidden="true" hidden><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="m23 9-6 6M17 9l6 6"/></svg>
+    </button>
+  </header>
+
+  <main class="wrap page" id="main">
+
+    <!-- ============ WHICH DAY ============ -->
+    <section class="panel day" aria-labelledby="day-name">
+      <div class="day__top">
+        <div class="day__heading">
+          <p class="eyebrow" id="day-eyebrow">// week 1 · day 1</p>
+          <h1 class="day__name"><span id="day-name">Monday</span> <span class="today-pill" id="today-pill">Today</span></h1>
+          <p class="day__date" id="day-date"></p>
+        </div>
+        <div class="day__nav">
+          <button class="button button--quiet" id="prev-day" type="button">&larr; Previous day</button>
+          <button class="button" id="next-day" type="button">Next day &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Seven buttons, one per day. app.js fills them in. -->
+      <div class="strip" id="day-strip" role="group" aria-label="Days this week"></div>
+      <div class="day__foot">
+        <button class="text-button" id="back-today" type="button" hidden>Back to today</button>
+        <!-- Says whether your progress is synced to your Claude account -->
+        <p class="sync-status" id="sync-status" role="status">Progress is saved on this device.</p>
+      </div>
+    </section>
+
+    <!-- ============ GYM TEST ============
+         Only shows up while a test is coming (see TEST in plan.js). -->
+    <section class="panel test" id="test" aria-labelledby="test-title" hidden>
+      <div class="test__info">
+        <div class="panel__head">
+          <p class="eyebrow">// challenge</p>
+          <span class="countdown" id="test-countdown">7 days to go</span>
+        </div>
+        <h2 class="panel__title" id="test-title">Push-up &amp; curl-up test</h2>
+        <p class="panel__lead" id="test-date"></p>
+        <!-- The practice plan, filled in by app.js. Tap a day to jump to it. -->
+        <ol class="prep" id="test-prep" aria-label="Test practice plan"></ol>
+      </div>
+
+      <!-- The beat trainer: beeps "down... up..." and counts your reps -->
+      <div class="trainer">
+        <div class="trainer__top">
+          <p class="trainer__label">Beat trainer</p>
+          <div class="trainer__pick" role="group" aria-label="Exercise to practice">
+            <button class="pick" type="button" data-exercise="pushups" aria-pressed="true">Push-ups</button>
+            <button class="pick" type="button" data-exercise="curlups" aria-pressed="false">Curl-ups</button>
+          </div>
+        </div>
+        <p class="trainer__count" id="trainer-count">0</p>
+        <p class="trainer__cue" id="trainer-cue" aria-live="polite">Go down on the low beep and up on the high beep. Keep going until you can't keep up, then press Stop.</p>
+        <button class="button" id="trainer-start" type="button">Start</button>
+        <p class="trainer__best" id="trainer-best"></p>
+      </div>
+    </section>
+
+    <div class="layout">
+      <!-- ============ WORKOUT (filled in by app.js) ============ -->
+      <section class="panel workout" id="workout" aria-live="polite"></section>
+
+      <!-- ============ FOOD AND DRINK (filled in by app.js) ============ -->
+      <div class="fuel">
+        <section class="panel drink" id="drink"></section>
+
+        <!-- ============ WATER AND SLEEP (habits.js) ============ -->
+        <section class="panel habits" aria-labelledby="habits-title">
+          <p class="eyebrow">// daily habits</p>
+          <h2 class="panel__title" id="habits-title">Water &amp; sleep</h2>
+          <div class="habit">
+            <p class="habit__label">💧 Glasses of water today</p>
+            <div class="glasses" id="water-glasses" role="group" aria-label="Glasses of water"></div>
+            <p class="habit__note" id="water-count">0 of 8 glasses</p>
+          </div>
+          <div class="habit">
+            <p class="habit__label">😴 Hours of sleep last night</p>
+            <div class="sleep-choices" id="sleep-choices" role="group" aria-label="Hours of sleep"></div>
+            <p class="habit__note" id="sleep-note"></p>
+          </div>
+        </section>
+
+        <section class="panel meals" id="meals"></section>
+      </div>
+    </div>
+
+    <!-- ============ TRAIN LIKE YOUR IDOLS ============
+         Fan cards about two players' styles. No photos or team logos:
+         those belong to the players and clubs. -->
+    <section class="panel idols" aria-labelledby="idols-title">
+      <p class="eyebrow">// train like your idols</p>
+      <h2 class="panel__title" id="idols-title">Skills that make the stars shine</h2>
+      <div class="idol-cards">
+        <article class="idol-card idol-card--yamal">
+          <p class="idol-card__tag">Speed &amp; cutting inside</p>
+          <h3>Lamine Yamal style</h3>
+          <p>A fast winger who loves to dribble at defenders, cut inside onto his stronger foot and curl a shot or a pass. Quick feet and quick decisions!</p>
+          <ul class="idol-card__drills">
+            <li>⚡ Yamal cut-and-go <span>Thursday</span></li>
+            <li>👣 Toe taps &amp; sole rolls <span>Mon &amp; Wed</span></li>
+            <li>🏃 Sprint, stop and turn <span>Thursday</span></li>
+          </ul>
+        </article>
+        <article class="idol-card idol-card--neymar">
+          <p class="idol-card__tag">Flair &amp; skill moves</p>
+          <h3>Neymar style</h3>
+          <p>Famous for tricks, step-overs and close control that leaves defenders guessing. The secret? Thousands of touches on the ball, every day.</p>
+          <ul class="idol-card__drills">
+            <li>🌀 Neymar step-overs <span>Mon &amp; Sat</span></li>
+            <li>🎯 Juggling practice <span>Wednesday</span></li>
+            <li>🧱 Wall passes <span>Tuesday</span></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ PROGRESS CHARTS (charts.js) ============ -->
+    <section class="panel progress" aria-labelledby="progress-title">
+      <p class="eyebrow">// progress</p>
+      <h2 class="panel__title" id="progress-title">Watch yourself get stronger</h2>
+      <div class="charts">
+        <figure class="chart-card">
+          <figcaption>
+            <h3>Push-ups &amp; curl-ups</h3>
+            <p class="chart-legend">
+              <span><i class="swatch series-1"></i>Push-ups</span>
+              <span><i class="swatch series-2"></i>Curl-ups</span>
+              <span><i class="swatch swatch--test"></i>Gym test</span>
+            </p>
+          </figcaption>
+          <div class="chart-box" id="chart-reps"></div>
+          <div id="chart-reps-table"></div>
+        </figure>
+        <figure class="chart-card">
+          <figcaption>
+            <h3>Days finished each week</h3>
+            <p class="chart-legend">Out of 7 days</p>
+          </figcaption>
+          <div class="chart-box" id="chart-weeks"></div>
+          <div id="chart-weeks-table"></div>
+        </figure>
+      </div>
+    </section>
+
+    <div class="duo">
+      <!-- ============ PRACTICE DAYS (practice.js) ============ -->
+      <section class="panel practice-panel" aria-labelledby="practice-title">
+        <p class="eyebrow">// my sports</p>
+        <h2 class="panel__title" id="practice-title">Practice days</h2>
+        <div class="practice-grid" id="practice-grid"></div>
+        <p class="practice-summary" id="practice-summary"></p>
+      </section>
+
+      <!-- ============ AI COACH (ai-coach.js) ============ -->
+      <section class="panel ai" aria-labelledby="ai-title">
+        <p class="eyebrow">// ai coach</p>
+        <h2 class="panel__title" id="ai-title">Ask Coach</h2>
+        <p class="panel__lead">Questions about soccer training, food or sleep? Ask away, and Claude answers.</p>
+        <p class="ai__offline" id="ai-offline" hidden>The AI coach only works on the Claude version of this page.</p>
+        <form class="ai__form" id="ai-form">
+          <div class="ai__starters" id="ai-starters">
+            <button class="chip-button" type="button" data-question="My legs are sore from yesterday. What should I do?">😣 Sore legs</button>
+            <button class="chip-button" type="button" data-question="Make me a healthy drink with: ">🥤 Invent a drink</button>
+            <button class="chip-button" type="button" data-question="How can I dribble more like Lamine Yamal? Give me 3 drills I can do at home.">⚡ Dribble like Yamal</button>
+            <button class="chip-button" type="button" data-question="What should I eat before a soccer game?">⚽ Pre-game food</button>
+          </div>
+          <label class="visually-hidden" for="ai-question">Your question</label>
+          <div class="ai__row">
+            <input id="ai-question" type="text" maxlength="300" autocomplete="off" placeholder="Ask Coach about soccer or food...">
+            <button class="button" id="ai-ask" type="submit">Ask</button>
+          </div>
+        </form>
+        <p class="ai__answer" id="ai-answer" aria-live="polite" hidden></p>
+      </section>
+    </div>
+
+    <!-- ============ TROPHY CASE (filled in by trophies.js) ============ -->
+    <section class="panel trophies" id="trophies" aria-labelledby="trophies-title">
+      <div class="trophies__player">
+        <p class="eyebrow">// trophy case</p>
+        <div class="player">
+          <p class="player__level"><span>Level</span><strong id="player-level">1</strong></p>
+          <div>
+            <h2 class="panel__title" id="trophies-title"><span id="player-rank">Rookie</span></h2>
+            <p class="player__xp" id="player-xp">0 XP</p>
+          </div>
+        </div>
+        <div class="xpbar" aria-hidden="true"><div class="xpbar__fill" id="xp-fill"></div></div>
+        <p class="xpbar__text" id="xp-next">100 XP to level 2</p>
+        <details class="extra">
+          <summary>How to earn XP</summary>
+          <ul id="xp-rules"></ul>
+        </details>
+        <div class="powerups">
+          <p class="powerups__title" id="player-card-title">Your player card</p>
+          <label class="powerups__text" for="player-name">Your name (it shows on your card):</label>
+          <input class="name-input" id="player-name" type="text" maxlength="20" autocomplete="off" placeholder="Type your name">
+        </div>
+      </div>
+      <div class="trophies__badges">
+        <p class="trophies__count" id="badge-count">0 of 12 badges</p>
+        <ul class="badges" id="badges"></ul>
+      </div>
+    </section>
+
+    <footer class="note">
+      <p>
+        <strong>Play it safe:</strong> always warm up first, and drink water.
+        Feeling the burn is normal, but sharp pain isn't, so stop if something hurts.
+        If you have an injury, asthma or another health condition, check with a doctor
+        or coach before starting.
+      </p>
+      <p>A fan-made page. Not connected to Lamine Yamal, Neymar or their teams.</p>
+      <p><a href="../index.html">Home</a></p>
+    </footer>
+  </main>
+
+  <!-- ============ GUIDED WORKOUT (coach.js shows this full screen) ============ -->
+  <div class="coach" id="coach" role="dialog" aria-modal="true" aria-labelledby="coach-name" hidden>
+    <div class="coach__progress"><div class="coach__fill" id="coach-fill"></div></div>
+    <div class="coach__top">
+      <p class="coach__section" id="coach-section">Warm-up</p>
+      <p class="coach__count" id="coach-count">Step 1 of 20</p>
+      <button class="text-button" id="coach-voice" type="button" aria-pressed="true">Voice on</button>
+      <button class="icon-button" id="coach-close" type="button" aria-label="Close guided workout">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="coach__body">
+      <div class="coach__demo" id="coach-demo" hidden></div>
+      <h2 class="coach__name" id="coach-name">Get ready</h2>
+      <p class="coach__time" id="coach-time" aria-live="off">0:00</p>
+      <p class="coach__label" id="coach-label"></p>
+      <p class="coach__how" id="coach-how"></p>
+      <p class="coach__next" id="coach-next"></p>
+    </div>
+    <div class="coach__buttons">
+      <button class="button button--quiet" id="coach-back" type="button">&larr; Back</button>
+      <button class="button coach__main" id="coach-main" type="button">Pause</button>
+      <button class="button button--quiet" id="coach-skip" type="button">Skip &rarr;</button>
+    </div>
+  </div>
+
+  <!-- ============ "SHOW ME" MOVE DEMO (demos.js) ============ -->
+  <div class="modal" id="demo-box" role="dialog" aria-modal="true" aria-labelledby="demo-title" hidden>
+    <div class="modal__card">
+      <div class="modal__head">
+        <h2 id="demo-title">How to do it</h2>
+        <button class="icon-button" id="demo-close" type="button" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <div class="demo-picture" id="demo-picture"></div>
+      <p class="demo-how" id="demo-how"></p>
+    </div>
+  </div>
+
+  <!-- ============ GROCERY LIST (grocery.js) ============ -->
+  <div class="modal" id="grocery-box" role="dialog" aria-modal="true" aria-labelledby="grocery-title" hidden>
+    <div class="modal__card modal__card--wide">
+      <div class="modal__head">
+        <h2 id="grocery-title">🛒 Grocery list</h2>
+        <button class="icon-button" id="grocery-close" type="button" aria-label="Close grocery list"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <p class="grocery__week" id="grocery-week"></p>
+      <div class="grocery__list" id="grocery-list"></div>
+      <button class="button" id="grocery-copy" type="button">Copy the list</button>
+      <textarea class="grocery__text" id="grocery-text" readonly hidden aria-label="Grocery list as text"></textarea>
+    </div>
+  </div>
+
+  <!-- ============ LEVEL UP / BADGE CELEBRATION (trophies.js) ============ -->
+  <div class="celebrate" id="celebrate" role="dialog" aria-modal="true" aria-labelledby="celebrate-title" hidden>
+    <div class="celebrate__card">
+      <p class="eyebrow" id="celebrate-eyebrow">// level up!</p>
+      <h2 class="celebrate__title" id="celebrate-title">Level 2!</h2>
+      <p id="celebrate-text"></p>
+      <ul class="badges badges--new" id="celebrate-badges"></ul>
+      <button class="button" id="celebrate-close" type="button">Awesome!</button>
+    </div>
+  </div>
+  <canvas class="confetti" id="confetti" aria-hidden="true"></canvas>
+
+  <!-- ============ WORKOUT TIMER (shows up at the bottom when you start one) ============ -->
+  <div class="timer" id="timer" hidden>
+    <div class="timer__progress"><div class="timer__fill" id="timer-fill"></div></div>
+    <div class="timer__inner">
+      <div class="timer__text">
+        <p class="timer__label" id="timer-label">Timer</p>
+        <p class="timer__name" id="timer-name"></p>
+      </div>
+      <p class="timer__time" id="timer-time" role="timer" aria-live="off">0:00</p>
+      <button class="icon-button" id="timer-pause" type="button" aria-label="Pause timer">
+        <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5v14M15 5v14"/></svg>
+        <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true" hidden><path d="M7 4.5v15l12-7.5z"/></svg>
+      </button>
+      <button class="icon-button" id="timer-stop" type="button" aria-label="Close timer">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Short messages like "Nice work!" pop up here -->
+  <p class="toast" id="toast" role="status" aria-live="polite"></p>
+
+</body>
+</html>
