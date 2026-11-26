@@ -13,6 +13,7 @@
    7. Workout
    8. Food and drink
    9. Timer, buttons and messages
+   9b. Guided workout, trophy case and celebrations
    10. Small screens and reduced motion
    ============================================================= */
 
@@ -1663,12 +1664,353 @@ body.expert-flash::after {
 }
 
 
+/* 9b. GUIDED WORKOUT, TROPHY CASE AND CELEBRATIONS ---------------- */
+
+/* The "Start guided workout" button */
+.button--start {
+  align-self: stretch;
+  padding-block: 0.95rem;
+  font-size: 1.1rem;
+}
+
+.button--start svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  fill: currentColor;
+}
+
+/* --- Guided workout: a full-screen coach --- */
+body.coach-open {
+  overflow: hidden; /* stop the page behind from scrolling */
+}
+
+.coach {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  display: flex;
+  flex-direction: column;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: var(--bg);
+}
+
+.coach__progress {
+  height: 6px;
+  margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  background: var(--line);
+}
+
+.coach__fill {
+  width: 0;
+  height: 100%;
+  background: var(--marker);
+  transition: width 0.3s ease;
+}
+
+.coach__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding-block: 0.8rem;
+}
+
+.coach__section {
+  color: var(--bug);
+  font-family: var(--font-code);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.coach__count {
+  margin-right: auto;
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+}
+
+.coach__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 0;
+  text-align: center;
+}
+
+.coach__name {
+  max-width: 20ch;
+  font-size: clamp(2.2rem, 1.5rem + 4vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.coach__time {
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 3rem + 12vw, 10rem);
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--marker);
+}
+
+.coach__label {
+  color: var(--fg);
+  font-family: var(--font-code);
+  font-size: clamp(1rem, 0.9rem + 0.6vw, 1.3rem);
+  font-weight: 600;
+}
+
+.coach__how {
+  max-width: 34rem;
+  color: var(--dim);
+  font-size: clamp(1rem, 0.95rem + 0.3vw, 1.15rem);
+}
+
+.coach__next {
+  margin-top: 0.6rem;
+  padding: 0.35rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+}
+
+.coach__next:empty {
+  display: none;
+}
+
+/* Rests are calm teal; "get ready" counts down in blue */
+.coach.is-rest .coach__time { color: var(--teal); }
+.coach.is-rest .coach__section { color: var(--teal); }
+.coach.is-ready .coach__time { color: var(--accent); }
+
+.coach__buttons {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr 1fr;
+  gap: 0.6rem;
+  width: 100%;
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
+.coach__buttons .button {
+  min-height: 3.6rem;
+  padding-inline: 0.5rem;
+}
+
+.coach__main {
+  font-size: 1.25rem;
+}
+
+/* --- Trophy case --- */
+.trophies {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 860px) {
+  .trophies {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+    align-items: start;
+  }
+}
+
+.trophies .eyebrow {
+  color: var(--marker);
+}
+
+.trophies__player {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.player {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.player__level {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 5.2rem;
+  height: 5.2rem;
+  border: 3px solid var(--marker);
+  border-radius: 50%;
+  background: var(--marker-soft);
+}
+
+.player__level span {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.player__level strong {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.player__xp,
+.xpbar__text,
+.trophies__count {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+}
+
+.xpbar {
+  height: 0.7rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.xpbar__fill {
+  width: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--marker), var(--bug));
+  transition: width 0.6s ease;
+}
+
+.trophies__badges {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.badges {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.8rem 0.5rem;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-small);
+  text-align: center;
+}
+
+.badge__icon {
+  font-size: 1.9rem;
+  line-height: 1.2;
+  filter: grayscale(1);
+  opacity: 0.35;
+}
+
+.badge__name {
+  color: var(--dim);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.badge__how {
+  color: var(--dim);
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+.badge.is-earned {
+  border-style: solid;
+  border-color: var(--marker-border);
+  background: var(--marker-soft);
+}
+
+.badge.is-earned .badge__icon {
+  filter: none;
+  opacity: 1;
+}
+
+.badge.is-earned .badge__name {
+  color: var(--fg);
+}
+
+/* --- Celebration pop-up --- */
+.celebrate {
+  position: fixed;
+  inset: 0;
+  z-index: 65;
+  display: grid;
+  place-items: center;
+  padding: 1rem max(16px, env(safe-area-inset-right, 0px)) 1rem max(16px, env(safe-area-inset-left, 0px));
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.celebrate__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  width: min(100%, 26rem);
+  padding: 1.75rem 1.5rem;
+  border: 2px solid var(--marker);
+  border-radius: var(--radius);
+  background: var(--panel);
+  text-align: center;
+  animation: pop-in 0.35s cubic-bezier(0.3, 1.6, 0.6, 1);
+}
+
+.celebrate__card .eyebrow {
+  color: var(--marker);
+}
+
+.celebrate__title {
+  font-size: clamp(2.2rem, 1.8rem + 2vw, 3rem);
+  font-weight: 800;
+}
+
+.badges--new {
+  width: 100%;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+}
+
+.confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+
 /* 10. SMALL SCREENS AND REDUCED MOTION --------------------------- */
 
 @media (max-width: 640px) {
   .hud__title,
   .hud__home-text,
-  .stat--total,
+  .stat--week,
   .expert-button__text {
     display: none;
   }

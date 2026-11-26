@@ -86,6 +86,7 @@ const PROGRESS_KEYS = [
   "levelUp.start", "levelUp.done", "levelUp.missed", "levelUp.expert",
   "levelUp.expertDays", "levelUp.bests", "levelUp.testScores",
   "levelUp.drinkRatings", "levelUp.drinkSkips", "levelUp.repeatAsked",
+  "levelUp.seen",
 ];
 
 const memory = {};
@@ -449,6 +450,7 @@ function render() {
   renderMeals(plan);
   renderStats();
   renderTestPanel();
+  renderTrophies(); // in trophies.js
 }
 
 function renderDay(plan) {
@@ -631,6 +633,7 @@ function renderWorkout(plan) {
     ${repeatHTML()}
     ${expertNote}
     ${practice}
+    <button class="button button--start" id="start-coach" type="button">${playIcon} Start guided workout</button>
     ${isRest ? "" : extraHTML("Warm-up first · about 2 min", WARM_UP)}
 
     <p class="how-it-works">${howItWorks}</p>
@@ -817,7 +820,7 @@ function renderStats() {
     "#stat-week": String(weekOf(today)),
     "#stat-this-week": `${thisWeek}/7`,
     "#stat-streak": streak === 1 ? "1 day" : `${streak} days`,
-    "#stat-total": String(doneDays.size),
+    "#stat-level": String(levelFor(trophyStats().xp)),
   };
 
   for (const [selector, value] of Object.entries(stats)) {
@@ -899,6 +902,7 @@ document.querySelector("#back-today").addEventListener("click", () => goTo(today
 // Left and right arrow keys move between days too (but not while typing)
 document.addEventListener("keydown", (event) => {
   if (event.target.closest && event.target.closest("input, textarea")) return;
+  if (coachIsOpen() || !document.querySelector("#celebrate").hidden) return;
   if (event.key === "ArrowRight") goTo(addDays(selected, 1));
   if (event.key === "ArrowLeft" && selected > planStart) goTo(addDays(selected, -1));
 });
@@ -953,6 +957,7 @@ document.querySelector("#workout").addEventListener("click", (event) => {
     save("levelUp.expertDays", JSON.stringify([...expertDays]));
     render();
     document.querySelector("#done-button").focus(); // keep keyboard users in the same spot
+    checkAchievements(true); // new level or badge? Celebrate! (trophies.js)
   }
 
   // "Did not do workout" (tap again to undo)
@@ -984,6 +989,10 @@ document.querySelector("#workout").addEventListener("click", (event) => {
     save("levelUp.repeatAsked", toKey(mondayOf(today)));
     render();
     showToast("Let's go! 💪");
+  }
+
+  if (button.id === "start-coach") {
+    openCoach(selected); // in coach.js
   }
 
   if (button.id === "go-trainer") {
@@ -1021,6 +1030,8 @@ document.querySelector("#workout").addEventListener("submit", (event) => {
   save("levelUp.testScores", JSON.stringify(testScores));
   showToast("Scores saved. Proud of you!");
   sounds.done();
+  render();
+  checkAchievements(true);
 });
 
 // Rating the drink of the day (and resetting old ratings)
@@ -1070,6 +1081,7 @@ document.querySelector("#drink").addEventListener("click", (event) => {
   saveDrinkSkips();
   sounds.rate(score);
   render();
+  checkAchievements(true);
 
   // On a future day, a "never again" drink gets swapped out right away
   if (score <= 3 && planFor(selected).drink.name !== drinkBefore) {
@@ -1232,7 +1244,7 @@ async function keepScreenOn() {
 }
 
 function letScreenSleep() {
-  if (trainer.running) return; // the beat trainer still needs the screen
+  if (trainer.running || coachIsOpen()) return; // still needs the screen
   if (wakeLock) wakeLock.release().catch(() => {});
   wakeLock = null;
 }
@@ -1352,6 +1364,8 @@ function stopTrainer() {
     trainerCue.textContent = `${trainer.count} ${name}! That's a new best!`;
     showToast(`New best: ${trainer.count} ${name}!`);
     sounds.done();
+    render();
+    checkAchievements(true);
   } else {
     trainerCue.textContent = `${trainer.count} ${name}. Your best is ${best.count}. Keep at it!`;
   }
@@ -1395,6 +1409,10 @@ const sounds = {
   done: () => {
     startAudio();
     [523, 659, 784, 1047].forEach((pitch, i) => beep(pitch, 0.12, i * 0.08, 0.1));
+  },
+  fanfare: () => {
+    startAudio();
+    [523, 659, 784, 1047, 784, 1047].forEach((pitch, i) => beep(pitch, i === 5 ? 0.4 : 0.13, i * 0.11, 0.11));
   },
   // Higher rating, higher note!
   rate: (score) => {
@@ -1514,6 +1532,7 @@ function useCloudProgress(data) {
   if (selected < planStart) selected = planStart;
   showExpertMode();
   render();
+  checkAchievements(false);
 }
 
 async function connectToCloud() {
@@ -1568,4 +1587,5 @@ async function connectToCloud() {
 showSoundSetting();
 showExpertMode();
 render();
+checkAchievements(false);
 connectToCloud();

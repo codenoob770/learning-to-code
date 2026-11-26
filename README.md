@@ -55,6 +55,10 @@ harder every week for 12 weeks, and the food changes every day.
   plan and a **beat trainer** that beeps one rep every 3 seconds (like the real
   test) and saves my best scores. For a new test, just change the date.
 - `level-up/app.js` builds each day's page and runs the timer and buttons.
+- `level-up/coach.js` is the **guided workout**: press "Start guided workout"
+  and a voice coach walks through every step with automatic timers.
+- `level-up/trophies.js` gives you **XP, levels and 12 badges**, with confetti
+  when you level up. Change `XP_RULES` there to give more or less XP.
 
 Your progress (which days you marked done, and your week) is saved in your
 browser, so it stays on the computer or phone where you use it.
