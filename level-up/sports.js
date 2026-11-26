@@ -2,11 +2,11 @@
    sports.js: the Sports tab
    -------------------------------------------------------------
    1. Taekwondo belt tracker (and counting in Korean)
-   2. Swim log: laps, race times and personal bests
+   2. Swim School: the skills you learn in lessons, and a lesson log
    3. Soccer journal: your games, goals and assists
    4. Build your own workout (the voice coach runs it)
 
-   Swims, race times, soccer games and your own workouts go in the
+   Swim lessons, soccer games and your own workouts go in the
    activity log (app.js), so they earn XP and hit the weekly boss.
 
    This file loads before app.js, so it only uses app.js's
@@ -15,21 +15,40 @@
 
 
 /* 1. TAEKWONDO BELT TRACKER ------------------------------------------
-   Belt colors are different at every school. Pick the one closest
-   to yours! "colors" can have two colors for a striped belt.      */
+   The belts in the same order as MY school. "colors" has two colors
+   for a striped belt (the second color is the stripe), and "split"
+   means half and half, like the red and black junior black belt.  */
 
 const BELTS = [
   { name: "White", colors: ["#f4f4f4"] },
   { name: "Yellow", colors: ["#f7d531"] },
+  { name: "Purple", colors: ["#8a5cc9"] },
   { name: "Orange", colors: ["#f39a2b"] },
   { name: "Green", colors: ["#3aa655"] },
-  { name: "Purple", colors: ["#8a5cc9"] },
   { name: "Blue", colors: ["#3f7fe0"] },
   { name: "Brown", colors: ["#8a5a32"] },
+  { name: "Brown-white", colors: ["#8a5a32", "#f4f4f4"], hint: "brown with a white stripe" },
   { name: "Red", colors: ["#d93838"] },
-  { name: "Red-black", colors: ["#d93838", "#151515"] },
-  { name: "Black", colors: ["#151515"] },
+  { name: "Red-white", colors: ["#d93838", "#f4f4f4"], hint: "red with a white stripe" },
+  { name: "Junior black belt", colors: ["#d93838", "#151515"], split: true, hint: "red and black" },
 ];
+
+// "Green belt", but "Junior black belt" (it already says belt)
+function beltName(index) {
+  const name = BELTS[index].name;
+  return /belt$/i.test(name) ? name : `${name} belt`;
+}
+
+// The belt list used to be in a different order. This moves an old save
+// to the new list (once), so nobody's belt changes color by accident.
+function upgradeBeltData() {
+  if (beltData.v === 2) return;
+  const oldToNew = [0, 1, 3, 4, 2, 5, 6, 8, 10, 10]; // old White, Yellow, Orange, Green, Purple, Blue, Brown, Red, Red-black, Black
+  beltData.belt = oldToNew[beltData.belt] ?? 0;
+  beltData.history = (beltData.history || []).map((h) => ({ ...h, belt: oldToNew[h.belt] ?? h.belt }));
+  beltData.v = 2;
+  saveJSON("levelUp.belt", beltData);
+}
 
 // What most schools test for. You can add your own too!
 const BELT_CHECKLIST = [
@@ -48,18 +67,25 @@ const KOREAN_NUMBERS = [
 ];
 
 function beltSVG(belt) {
-  const [main, stripe] = belt.colors;
+  const [main, second] = belt.colors;
+  // A split belt is half one color (top) and half the other (bottom).
+  // A striped belt has a stripe of the second color down the middle.
+  const body = belt.split
+    ? `<path d="M8 22 H152 V30 H8 Z" style="fill: ${main}"/><path d="M8 30 H152 V38 H8 Z" style="fill: ${second}"/>`
+    : `<path d="M8 22 H152 V38 H8 Z" style="fill: ${main}"/>${second ? `<path d="M8 28 H152 V32 H8 Z" style="fill: ${second}"/>` : ""}`;
+  const rightTail = belt.split ? second : main;
   return `
     <svg class="belt" viewBox="0 0 160 70" aria-hidden="true">
-      <path d="M8 22 H152 V38 H8 Z" style="fill: ${main}"/>
-      ${stripe ? `<path d="M8 28 H152 V32 H8 Z" style="fill: ${stripe}"/>` : ""}
+      ${body}
       <path d="M70 18 H90 V42 H70 Z" style="fill: ${main}" class="belt__knot"/>
       <path d="M74 40 L62 66 L72 66 L80 44 Z" style="fill: ${main}" class="belt__knot"/>
-      <path d="M86 40 L98 66 L88 66 L80 44 Z" style="fill: ${main}" class="belt__knot"/>
+      <path d="M86 40 L98 66 L88 66 L80 44 Z" style="fill: ${rightTail}" class="belt__knot"/>
+      ${second && !belt.split ? `<path d="M68.5 52 L77.1 52 L75.3 57 L66.2 57 Z M82.9 52 L91.5 52 L93.8 57 L84.7 57 Z" style="fill: ${second}"/>` : ""}
     </svg>`;
 }
 
 function renderBelt() {
+  upgradeBeltData();
   const belt = BELTS[beltData.belt] || BELTS[0];
   const next = BELTS[beltData.belt + 1];
   const area = document.querySelector("#belt-area");
@@ -75,7 +101,7 @@ function renderBelt() {
 
   const items = [...BELT_CHECKLIST, ...beltData.custom];
   const done = items.filter((item) => beltData.checks.includes(item.id)).length;
-  const history = beltData.history.map((h) => `<li>${BELTS[h.belt].name} belt · ${shortDate(fromKey(h.d))}</li>`).join("");
+  const history = beltData.history.map((h) => `<li>${beltName(h.belt)} · ${shortDate(fromKey(h.d))}</li>`).join("");
 
   area.innerHTML = `
     <div class="belt-now">
@@ -83,13 +109,13 @@ function renderBelt() {
       <div>
         <label class="field-label" for="belt-pick">My belt</label>
         <select class="select" id="belt-pick">
-          ${BELTS.map((b, i) => `<option value="${i}" ${i === beltData.belt ? "selected" : ""}>${b.name}</option>`).join("")}
+          ${BELTS.map((b, i) => `<option value="${i}" ${i === beltData.belt ? "selected" : ""}>${b.name}${b.hint ? ` (${b.hint})` : ""}</option>`).join("")}
         </select>
       </div>
     </div>
     ${next ? `
       <div class="belt-next">
-        <p class="belt-next__title">Next: <strong>${next.name} belt</strong></p>
+        <p class="belt-next__title">Next: <strong>${beltName(beltData.belt + 1)}</strong>${next.hint ? ` (${next.hint})` : ""}</p>
         <label class="field-label" for="belt-test">Belt test date</label>
         <input class="input" id="belt-test" type="date" value="${beltData.test}">
         <p class="belt-countdown">${countdown}</p>
@@ -108,8 +134,8 @@ function renderBelt() {
         <input class="input" id="belt-add-text" type="text" maxlength="80" placeholder="Add something your school tests...">
         <button class="text-button" type="submit">Add</button>
       </form>
-      <button class="button" type="button" data-belt="passed">🎉 I passed! I'm a ${next.name.toLowerCase()} belt</button>`
-    : `<p class="belt-countdown">🥋 Black belt! That's amazing. Keep training and teaching others.</p>`}
+      <button class="button" type="button" data-belt="passed">🎉 I passed! I'm a ${beltName(beltData.belt + 1).toLowerCase()}</button>`
+    : `<p class="belt-countdown">🥋 ${beltName(beltData.belt)}! That's amazing. Keep training and helping others learn.</p>`}
     ${history ? `<details class="extra"><summary>My belt history</summary><ul>${history}</ul></details>` : ""}
     <div class="korean">
       <p class="field-label">Count in Korean (tap to hear it)</p>
@@ -135,7 +161,7 @@ beltArea.addEventListener("change", (event) => {
     beltData.checks = [];
     saveBelt();
     render();
-    showToast(`${BELTS[beltData.belt].name} belt! 🥋`);
+    showToast(`${beltName(beltData.belt)}! 🥋`);
   }
   if (event.target.id === "belt-test") {
     beltData.test = event.target.value;
@@ -184,7 +210,7 @@ beltArea.addEventListener("click", (event) => {
     render();
     sounds.fanfare();
     confetti();
-    showToast(`Congratulations, ${BELTS[beltData.belt].name.toLowerCase()} belt! +${XP_RULES.beltUp} XP 🥋`);
+    showToast(`Congratulations, ${beltName(beltData.belt).toLowerCase()}! +${XP_RULES.beltUp} XP 🥋`);
     checkAchievements(true);
   }
 });
@@ -209,127 +235,191 @@ function sayKorean(i) {
 }
 
 
-/* 2. SWIM LOG ---------------------------------------------------------- */
+/* 2. SWIM SCHOOL ------------------------------------------------------
+   For swim lessons: check off each skill when you can do it, and log
+   your lessons ("today we worked on butterfly arms!"). Want to add a
+   skill your swim school teaches? Add a line to a list below. Every
+   id has to be different from all the others.                       */
 
-const SWIM_EVENTS = [
-  "25 free", "50 free", "100 free", "25 back", "50 back",
-  "25 breast", "50 breast", "25 fly", "50 fly", "100 IM",
+const SWIM_SKILLS = [
+  {
+    stroke: "Basics",
+    icon: "💧",
+    skills: [
+      { id: "sw-bubbles", text: "Blow bubbles: breathe out slowly underwater" },
+      { id: "sw-float-back", text: "Float on my back for 10 seconds" },
+      { id: "sw-float-front", text: "Starfish float on my front for 10 seconds" },
+      { id: "sw-streamline", text: "Push off the wall in a tight streamline" },
+      { id: "sw-tread", text: "Tread water for 30 seconds" },
+    ],
+  },
+  {
+    stroke: "Freestyle",
+    icon: "🏊",
+    skills: [
+      { id: "sw-free-kick", text: "Flutter kick with long, straight legs" },
+      { id: "sw-free-arms", text: "Freestyle arms: reach long, pull back to my hip" },
+      { id: "sw-free-breath", text: "Side breathing (one goggle stays in the water)" },
+      { id: "sw-free-both", text: "Breathe on both sides (every 3 strokes)" },
+      { id: "sw-free-full", text: "Swim full freestyle for one length" },
+    ],
+  },
+  {
+    stroke: "Backstroke",
+    icon: "🌊",
+    skills: [
+      { id: "sw-back-kick", text: "Flutter kick on my back, tummy up" },
+      { id: "sw-back-arms", text: "Backstroke arms: pinky finger goes in first" },
+      { id: "sw-back-head", text: "Keep my head still and look straight up" },
+      { id: "sw-back-full", text: "Swim full backstroke for one length" },
+    ],
+  },
+  {
+    stroke: "Breaststroke",
+    icon: "🐸",
+    skills: [
+      { id: "sw-breast-kick", text: "Frog kick: heels to my bottom, then kick out and around" },
+      { id: "sw-breast-arms", text: "Breaststroke arms: pull, breathe, shoot forward" },
+      { id: "sw-breast-timing", text: "Timing: pull, breathe, kick, glide" },
+      { id: "sw-breast-full", text: "Swim full breaststroke for one length" },
+    ],
+  },
+  {
+    stroke: "Butterfly",
+    icon: "🦋",
+    skills: [
+      { id: "sw-fly-kick", text: "Dolphin kick: legs together, kick from the hips" },
+      { id: "sw-fly-arms", text: "Butterfly arms: both arms together, like a keyhole" },
+      { id: "sw-fly-breath", text: "Breathe by pushing my chin forward, not up" },
+      { id: "sw-fly-timing", text: "Two kicks for every arm pull" },
+      { id: "sw-fly-full", text: "Swim full butterfly for one length" },
+    ],
+  },
+  {
+    stroke: "Turns & starts",
+    icon: "🔄",
+    skills: [
+      { id: "sw-open-turn", text: "Open turn: touch with two hands (breaststroke and butterfly)" },
+      { id: "sw-flip-turn", text: "Flip turn on freestyle" },
+      { id: "sw-back-start", text: "Backstroke start from the wall" },
+      { id: "sw-dive", text: "Dive in (only where my instructor says it's deep enough!)" },
+    ],
+  },
 ];
 
-let swimEvent = "50 free"; // the event the chart shows
+let lessonForm = { strokes: [], stars: 3 }; // the "log a lesson" form, before you save it
 
-// "1:05.2" or "38.45" or "38" -> seconds (a number), or null if it can't be read
-function readSwimTime(text) {
-  const match = String(text).trim().match(/^(?:(\d{1,2}):)?(\d{1,2}(?:\.\d{1,2})?)$/);
-  if (!match) return null;
-  const seconds = (Number(match[1]) || 0) * 60 + Number(match[2]);
-  return seconds > 0 ? Math.round(seconds * 100) / 100 : null;
+function swimSkillsLearned() {
+  if (!Array.isArray(swimData.skills)) swimData.skills = [];
+  return swimData.skills;
 }
 
-// 65.2 -> "1:05.20", 38.5 -> "38.50"
-function swimTimeText(seconds) {
-  const minutes = Math.floor(seconds / 60);
-  const rest = (seconds - minutes * 60).toFixed(2).padStart(5, "0");
-  return minutes ? `${minutes}:${rest}` : (seconds).toFixed(2);
-}
-
-function swimBest(event) {
-  const times = logOf("swimTime").filter((e) => e.event === event).map((e) => e.secs);
-  return times.length ? Math.min(...times) : null;
+// Every swim skill, in one list
+function allSwimSkills() {
+  return SWIM_SKILLS.flatMap((group) => group.skills);
 }
 
 function renderSwim() {
-  const unit = swimData.unit;
-  document.querySelector("#swim-unit").innerHTML = ["yd", "m"].map((u) => `
-    <button class="pick" type="button" data-swim-unit="${u}" aria-pressed="${u === unit}">${u === "yd" ? "Yards" : "Meters"}</button>`).join("");
+  const learned = swimSkillsLearned();
+  const lessons = logOf("swimLesson").sort((a, b) => (a.d < b.d ? -1 : 1));
+  const total = allSwimSkills().length;
+  const latest = lessons[lessons.length - 1];
+  const workingOn = latest && latest.strokes.length ? ` · Working on: ${latest.strokes.join(", ")}` : "";
+  document.querySelector("#swim-total").textContent =
+    `${lessons.length} ${lessons.length === 1 ? "lesson" : "lessons"} logged · ${learned.length} of ${total} skills learned${workingOn}`;
 
-  const swims = logOf("swim");
-  const totalLaps = swims.reduce((sum, e) => sum + e.laps, 0);
-  document.querySelector("#swim-total").textContent = swims.length
-    ? `${swims.length} ${swims.length === 1 ? "swim" : "swims"} logged · ${totalLaps} laps · ${(totalLaps * swimData.pool).toLocaleString()} ${unit} in all`
-    : "No swims logged yet.";
-
-  // Personal bests for every event you've timed
-  const bests = SWIM_EVENTS.filter((event) => swimBest(event) !== null);
-  document.querySelector("#swim-bests").innerHTML = bests.length
-    ? bests.map((event) => `<li><span>${event}</span><strong>${swimTimeText(swimBest(event))}</strong></li>`).join("")
-    : `<li class="swim-bests__empty">Log a race or practice time to see your personal bests here.</li>`;
-
-  // The event pickers and the chart
-  const eventOptions = SWIM_EVENTS.map((event) => `<option ${event === swimEvent ? "selected" : ""}>${event}</option>`).join("");
-  document.querySelector("#swim-event").innerHTML = eventOptions;
-  document.querySelector("#swim-chart-event").innerHTML = eventOptions;
-  const points = logOf("swimTime").filter((e) => e.event === swimEvent).sort((a, b) => (a.d < b.d ? -1 : 1))
-    .map((e) => ({ date: e.d, value: e.secs, id: e.id }));
-  lineChart(document.querySelector("#swim-chart"), document.querySelector("#swim-chart-table"), {
-    points,
-    lowerIsBetter: true,
-    format: swimTimeText,
-    valueName: "Time",
-    label: `Line chart of your ${swimEvent} times. Lower is faster.`,
-    empty: `No ${swimEvent} times yet. Log one above and your chart starts here!`,
+  // The "log a lesson" form
+  document.querySelector("#lesson-strokes").innerHTML = SWIM_SKILLS.map((group) => `
+    <button class="lab-chip" type="button" data-lesson-stroke="${group.stroke}" aria-pressed="${lessonForm.strokes.includes(group.stroke)}">
+      <span aria-hidden="true">${group.icon}</span> ${group.stroke}
+    </button>`).join("");
+  document.querySelectorAll("[data-lesson-stars]").forEach((b) => {
+    b.setAttribute("aria-pressed", String(Number(b.dataset.lessonStars) === lessonForm.stars));
+    b.classList.toggle("is-lit", Number(b.dataset.lessonStars) <= lessonForm.stars);
   });
+  const dateInput = document.querySelector("#lesson-date");
+  if (!dateInput.value) dateInput.value = toKey(today);
 
-  // Recent entries, newest first, with delete buttons
-  const recent = activityLog.filter((e) => e.t === "swim" || e.t === "swimTime").slice(-6).reverse();
-  document.querySelector("#swim-recent").innerHTML = recent.map((e) => `
-    <li><span>${shortDate(fromKey(e.d))}: ${e.t === "swim" ? `${e.laps} laps` : `${e.event} in ${swimTimeText(e.secs)}`}</span>
-    <button class="text-button" type="button" data-log-delete="${e.id}" aria-label="Delete this entry">✕</button></li>`).join("");
+  // One card for each stroke, with its skills to check off
+  const box = document.querySelector("#swim-skills");
+  const openCards = [...box.querySelectorAll("details[open]")].map((d) => d.dataset.stroke);
+  box.innerHTML = SWIM_SKILLS.map((group) => {
+    const done = group.skills.filter((skill) => learned.includes(skill.id)).length;
+    const open = openCards.length ? openCards.includes(group.stroke) : (latest ? latest.strokes.includes(group.stroke) : group.stroke === "Butterfly");
+    return `
+      <details class="stroke-card ${done === group.skills.length ? "is-done" : ""}" data-stroke="${group.stroke}" ${open ? "open" : ""}>
+        <summary>
+          <span class="stroke-card__icon" aria-hidden="true">${group.icon}</span>
+          <span class="stroke-card__name">${group.stroke}</span>
+          <span class="stroke-card__count">${done === group.skills.length ? "✓ All done!" : `${done}/${group.skills.length}`}</span>
+        </summary>
+        <ul class="belt-list">
+          ${group.skills.map((skill) => `
+            <li class="belt-item">
+              <input type="checkbox" id="skill-${skill.id}" data-swim-skill="${skill.id}" ${learned.includes(skill.id) ? "checked" : ""}>
+              <label for="skill-${skill.id}">${skill.text}</label>
+            </li>`).join("")}
+        </ul>
+      </details>`;
+  }).join("");
+
+  // Recent lessons, newest first, with delete buttons
+  document.querySelector("#swim-recent").innerHTML = lessons.slice(-6).reverse().map((lesson) => `
+    <li class="game">
+      <span class="game__text">${shortDate(fromKey(lesson.d))}: ${lesson.strokes.length ? lesson.strokes.join(", ") : "Swim lesson"} · ${"⭐".repeat(lesson.stars)}${lesson.note ? `<br><em>${escapeHTML(lesson.note)}</em>` : ""}</span>
+      <button class="text-button" type="button" data-log-delete="${lesson.id}" aria-label="Delete this lesson">✕</button>
+    </li>`).join("") || `<li class="swim-bests__empty">No lessons logged yet. Log your next one!</li>`;
 }
 
 document.querySelector("#swim").addEventListener("click", (event) => {
-  const unitButton = event.target.closest("[data-swim-unit]");
-  if (unitButton) {
-    swimData.unit = unitButton.dataset.swimUnit;
-    saveJSON("levelUp.swim", swimData);
-    render();
+  const stroke = event.target.closest("[data-lesson-stroke]");
+  if (stroke) {
+    const name = stroke.dataset.lessonStroke;
+    lessonForm.strokes = lessonForm.strokes.includes(name) ? lessonForm.strokes.filter((s) => s !== name) : [...lessonForm.strokes, name];
+    renderSwim();
+    document.querySelector(`[data-lesson-stroke="${name}"]`).focus();
   }
-  const lapButton = event.target.closest("[data-laps]");
-  if (lapButton) {
-    const input = document.querySelector("#swim-laps");
-    input.value = Math.max(0, (Number(input.value) || 0) + Number(lapButton.dataset.laps));
+  const stars = event.target.closest("[data-lesson-stars]");
+  if (stars) {
+    lessonForm.stars = Number(stars.dataset.lessonStars);
+    renderSwim();
   }
 });
 
-document.querySelector("#swim-chart-event").addEventListener("change", (event) => {
-  swimEvent = event.target.value;
-  renderSwim();
-});
-
-document.querySelector("#swim-laps-form").addEventListener("submit", (event) => {
-  event.preventDefault();
-  const laps = Math.round(Number(document.querySelector("#swim-laps").value));
-  if (!(laps > 0 && laps <= 500)) {
-    showToast("How many laps? Type a number first.");
-    return;
-  }
-  logActivity("swim", { id: makeId(), laps, reps: laps * 5 });
-  document.querySelector("#swim-laps").value = "";
-  sounds.done();
-  showToast(`${laps} laps logged! 🏊`);
+// Checking off a skill
+document.querySelector("#swim-skills").addEventListener("change", (event) => {
+  const box = event.target.closest("[data-swim-skill]");
+  if (!box) return;
+  const id = box.dataset.swimSkill;
+  const learned = swimSkillsLearned();
+  swimData.skills = box.checked ? [...learned, id] : learned.filter((s) => s !== id);
+  saveJSON("levelUp.swim", swimData);
   render();
+  if (box.checked) {
+    const group = SWIM_SKILLS.find((g) => g.skills.some((skill) => skill.id === id));
+    if (group.skills.every((skill) => swimData.skills.includes(skill.id))) {
+      sounds.fanfare();
+      confetti();
+      showToast(`You learned ALL of ${group.stroke}! ${group.icon}`);
+    } else {
+      sounds.done();
+      showToast(`New skill! +${XP_RULES.swimSkill} XP ${group.icon}`);
+    }
+  }
   checkAchievements(true);
+  document.querySelector(`#skill-${id}`)?.focus();
 });
 
-document.querySelector("#swim-time-form").addEventListener("submit", (event) => {
+// Logging a lesson
+document.querySelector("#lesson-form").addEventListener("submit", (event) => {
   event.preventDefault();
-  const eventName = document.querySelector("#swim-event").value;
-  const secs = readSwimTime(document.querySelector("#swim-time").value);
-  if (secs === null) {
-    showToast("Type the time like 38.5 or 1:05.2");
-    return;
-  }
-  const best = swimBest(eventName);
-  logActivity("swimTime", { id: makeId(), event: eventName, secs });
-  swimEvent = eventName;
-  document.querySelector("#swim-time").value = "";
-  if (best !== null && secs < best) {
-    sounds.fanfare();
-    showToast(`NEW PERSONAL BEST! ${(best - secs).toFixed(2)} seconds faster! 🚀`);
-  } else {
-    sounds.done();
-    showToast("Time saved! ⏱️");
-  }
+  const date = document.querySelector("#lesson-date").value || toKey(today);
+  const note = document.querySelector("#lesson-note").value.trim().slice(0, 120);
+  logActivity("swimLesson", { id: makeId(), d: date, strokes: [...lessonForm.strokes], note, stars: lessonForm.stars, reps: 40 });
+  lessonForm = { strokes: [], stars: 3 };
+  document.querySelector("#lesson-note").value = "";
+  sounds.done();
+  showToast(`Lesson saved! +${XP_RULES.swimLesson} XP 🏊`);
   render();
   checkAchievements(true);
 });
@@ -414,7 +504,7 @@ document.querySelector("#soccer-form").addEventListener("submit", (event) => {
   checkAchievements(true);
 });
 
-// Deleting a swim, race time or game (they all live in the activity log)
+// Deleting a swim lesson or a game (they live in the activity log)
 document.querySelector("[data-page='sports']").addEventListener("click", (event) => {
   const remove = event.target.closest("[data-log-delete]");
   if (!remove) return;

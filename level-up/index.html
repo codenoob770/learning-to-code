@@ -23,7 +23,7 @@
       quiz.js     -> the Brain + Body Quiz (questions in quiz-questions.js)
       arcade.js   -> card deck workout, Kick Caller and spin the wheel
       kitchen.js  -> Smoothie Lab, Recipe Book and Snack Swap
-      sports.js   -> belt tracker, swim log, soccer journal and workout builder
+      sports.js   -> belt tracker, swim school, soccer journal and workout builder
       stats.js    -> energy check-in, calendar, records, year in review, stats card
       family.js   -> the weekly family challenge
       pet.js      -> your virtual pet
@@ -47,32 +47,32 @@
   <!-- The "?v=8" is a version number. Browsers keep old copies of files for a
        while; changing the number makes them download the newest version.
        Add 1 to it (on every line below) whenever you change those files. -->
-  <link rel="stylesheet" href="style.css?v=13">
+  <link rel="stylesheet" href="style.css?v=14">
   <!-- These load in order. app.js goes last, because it starts the page
        and uses things from all the others. -->
-  <script src="plan.js?v=13" defer></script>
-  <script src="demos.js?v=13" defer></script>
-  <script src="trophies.js?v=13" defer></script>
-  <script src="coach.js?v=13" defer></script>
-  <script src="practice.js?v=13" defer></script>
-  <script src="habits.js?v=13" defer></script>
-  <script src="charts.js?v=13" defer></script>
-  <script src="grocery.js?v=13" defer></script>
-  <script src="ai-coach.js?v=13" defer></script>
-  <script src="quest.js?v=13" defer></script>
-  <script src="missions.js?v=13" defer></script>
-  <script src="boss.js?v=13" defer></script>
-  <script src="quiz-questions.js?v=13" defer></script>
-  <script src="quiz.js?v=13" defer></script>
-  <script src="arcade.js?v=13" defer></script>
-  <script src="kitchen.js?v=13" defer></script>
-  <script src="sports.js?v=13" defer></script>
-  <script src="stats.js?v=13" defer></script>
-  <script src="family.js?v=13" defer></script>
-  <script src="pet.js?v=13" defer></script>
-  <script src="shop.js?v=13" defer></script>
-  <script src="tabs.js?v=13" defer></script>
-  <script src="app.js?v=13" defer></script>
+  <script src="plan.js?v=14" defer></script>
+  <script src="demos.js?v=14" defer></script>
+  <script src="trophies.js?v=14" defer></script>
+  <script src="coach.js?v=14" defer></script>
+  <script src="practice.js?v=14" defer></script>
+  <script src="habits.js?v=14" defer></script>
+  <script src="charts.js?v=14" defer></script>
+  <script src="grocery.js?v=14" defer></script>
+  <script src="ai-coach.js?v=14" defer></script>
+  <script src="quest.js?v=14" defer></script>
+  <script src="missions.js?v=14" defer></script>
+  <script src="boss.js?v=14" defer></script>
+  <script src="quiz-questions.js?v=14" defer></script>
+  <script src="quiz.js?v=14" defer></script>
+  <script src="arcade.js?v=14" defer></script>
+  <script src="kitchen.js?v=14" defer></script>
+  <script src="sports.js?v=14" defer></script>
+  <script src="stats.js?v=14" defer></script>
+  <script src="family.js?v=14" defer></script>
+  <script src="pet.js?v=14" defer></script>
+  <script src="shop.js?v=14" defer></script>
+  <script src="tabs.js?v=14" defer></script>
+  <script src="app.js?v=14" defer></script>
 </head>
 <body>
 
@@ -475,52 +475,47 @@
         </section>
       </div>
 
-      <!-- ============ SWIM LOG (sports.js) ============ -->
+      <!-- ============ SWIM SCHOOL (sports.js) ============ -->
       <section class="panel" id="swim" aria-labelledby="swim-title">
         <div class="panel__head">
-          <p class="eyebrow">// swimming</p>
-          <div class="picker" id="swim-unit" role="group" aria-label="Pool units"></div>
+          <p class="eyebrow">// swim school</p>
+          <span class="quest-tag">+20 XP per new skill</span>
         </div>
-        <h2 class="panel__title" id="swim-title">🏊 Swim Log</h2>
+        <h2 class="panel__title" id="swim-title">🏊 Swim School</h2>
         <p class="panel__lead" id="swim-total"></p>
         <div class="swim-grid">
-          <form class="form swim-box" id="swim-laps-form">
-            <label class="field-label" for="swim-laps">Log a swim: how many laps?</label>
-            <div class="form-row form-row--tight">
-              <button class="text-button" type="button" data-laps="-1" aria-label="One less lap">−1</button>
-              <input class="input input--number" id="swim-laps" type="number" min="1" max="500" inputmode="numeric" placeholder="Laps">
-              <button class="text-button" type="button" data-laps="1" aria-label="One more lap">+1</button>
-              <button class="text-button" type="button" data-laps="10" aria-label="Ten more laps">+10</button>
-            </div>
-            <button class="button" type="submit">Save swim</button>
-          </form>
-          <form class="form swim-box" id="swim-time-form">
-            <p class="field-label">Log a race or practice time</p>
+          <form class="form swim-box" id="lesson-form">
+            <p class="field-label">Log a lesson: what did you work on?</p>
+            <div class="lab-chips" id="lesson-strokes" role="group" aria-label="Strokes you worked on"></div>
             <div class="form-row">
-              <select class="select" id="swim-event" aria-label="Event"></select>
-              <input class="input" id="swim-time" type="text" inputmode="decimal" placeholder="Time, like 38.5 or 1:05.2" aria-label="Time" autocomplete="off">
+              <div class="field">
+                <label class="field-label" for="lesson-note">What did you learn? (optional)</label>
+                <input class="input" id="lesson-note" type="text" maxlength="120" placeholder="Like &quot;butterfly arms!&quot;" autocomplete="off">
+              </div>
+              <div class="field field--small">
+                <label class="field-label" for="lesson-date">Date</label>
+                <input class="input" id="lesson-date" type="date">
+              </div>
             </div>
-            <button class="button" type="submit">Save time</button>
+            <div class="field">
+              <p class="field-label">How did it go?</p>
+              <div class="stars" role="group" aria-label="How did the lesson go, from 1 to 5 stars">
+                <button type="button" data-lesson-stars="1" aria-label="1 star">★</button>
+                <button type="button" data-lesson-stars="2" aria-label="2 stars">★</button>
+                <button type="button" data-lesson-stars="3" aria-label="3 stars">★</button>
+                <button type="button" data-lesson-stars="4" aria-label="4 stars">★</button>
+                <button type="button" data-lesson-stars="5" aria-label="5 stars">★</button>
+              </div>
+            </div>
+            <button class="button" type="submit">🏊 Save lesson</button>
           </form>
-        </div>
-        <div class="swim-grid">
           <div>
-            <p class="field-label">My personal bests</p>
-            <ul class="swim-bests" id="swim-bests"></ul>
-            <details class="extra">
-              <summary>Recent swims and times</summary>
-              <ul class="recent" id="swim-recent"></ul>
-            </details>
+            <p class="field-label">My lessons</p>
+            <ul class="games" id="swim-recent"></ul>
           </div>
-          <figure class="chart-card">
-            <figcaption>
-              <h3><label for="swim-chart-event">Times for</label> <select class="select select--inline" id="swim-chart-event"></select></h3>
-              <p class="chart-legend">Lower is faster! Your best time has a ring.</p>
-            </figcaption>
-            <div class="chart-box" id="swim-chart"></div>
-            <div id="swim-chart-table"></div>
-          </figure>
         </div>
+        <p class="field-label">My skills: check one off when you can do it</p>
+        <div class="stroke-cards" id="swim-skills"></div>
       </section>
 
       <!-- ============ BUILD YOUR OWN WORKOUT (sports.js) ============ -->

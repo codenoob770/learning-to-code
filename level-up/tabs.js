@@ -50,7 +50,6 @@ function showTab(name, scrollUp = true) {
     renderCharts();
     renderStatsTab();
   }
-  if (name === "sports") renderSwim();
   document.dispatchEvent(new CustomEvent("tabshown", { detail: name }));
 }
 

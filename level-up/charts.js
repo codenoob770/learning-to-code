@@ -5,7 +5,7 @@
    1. Push-ups and curl-ups over time, from the beat trainer
       (and your real test scores, drawn as diamonds)
    2. How many days you finished each week
-   3. A chart with one line, used by the swim log and energy check-in
+   3. A chart with one line, used by the energy check-in
 
    Hover or tap a chart to see the exact numbers. Each chart also
    has a "Show as a table" view.
@@ -256,7 +256,7 @@ function renderWeeksChart() {
 
 
 /* 3. A CHART WITH ONE LINE ---------------------------------------------
-   Used by the swim log (sports.js) and the energy check-in (stats.js).
+   Used by the energy check-in (stats.js), and ready for more.
    options:
      points: [{ date: "2026-11-27", value: 38.5 }], oldest first
      format: turns a value into text, like 38.5 -> "38.50"

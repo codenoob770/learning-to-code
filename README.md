@@ -57,9 +57,10 @@ like `level-up/#quiz` opens straight to one tab.
 - **🧠 Quiz:** the Brain + Body Quiz: 5th-grade Math, Reading & Writing,
   Science and Social Studies, plus Sports and Food & Health. Get one
   wrong and you owe that question's exercise, like "10 squats"!
-- **🥋 Sports:** taekwondo belt tracker (with counting in Korean), swim
-  log with personal bests and a chart, soccer journal, a workout builder
-  the voice coach can run, and your practice days.
+- **🥋 Sports:** taekwondo belt tracker in my school's belt order (with
+  counting in Korean), Swim School (check off the skills from my swim
+  lessons and log each lesson), soccer journal, a workout builder the
+  voice coach can run, and your practice days.
 - **🍓 Kitchen:** Smoothie Lab (it invents a name and recipe), a Recipe
   Book with search and favorites, Snack Swap and the grocery list.
 - **📊 Stats:** XP, levels and 48 badges, progress charts, a year-long
@@ -87,7 +88,7 @@ Each feature has its own file, so they're easy to find:
 | `quiz.js` | The Brain + Body Quiz |
 | `arcade.js` | Card deck workout, Kick Caller and spin the wheel |
 | `kitchen.js` | Smoothie Lab, Recipe Book and Snack Swap |
-| `sports.js` | Belt tracker, swim log, soccer journal and workout builder |
+| `sports.js` | Belt tracker, Swim School, soccer journal and workout builder |
 | `stats.js` | Energy check-in, calendar, records, year in review and stats card |
 | `family.js` | The family challenge |
 | `pet.js`, `shop.js` | Your pet and the coin shop |

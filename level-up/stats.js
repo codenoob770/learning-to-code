@@ -196,7 +196,7 @@ function renderRecords() {
   const games = logOf("soccer");
   const mostGoals = Math.max(0, ...games.map((g) => g.g));
   const mostWater = Math.max(0, ...Object.values(habits).map((day) => day.water || 0));
-  const pbEvents = SWIM_EVENTS.filter((event) => swimBest(event) !== null);
+  const skillsLearned = swimSkillsLearned().length;
 
   const records = [
     ["💪", "Most push-ups", stats.pushups || "–", "beat trainer"],
@@ -208,7 +208,7 @@ function renderRecords() {
     ["🃏", "Fastest mini deck", miniDeck ? formatTime(miniDeck) : "–", "card deck"],
     ["⚽", "Most goals", mostGoals || "–", "in one game"],
     ["💧", "Most water", mostWater ? `${mostWater} glasses` : "–", "in one day"],
-    ["🏊", pbEvents.length ? `Best ${pbEvents[0]}` : "Swim best", pbEvents.length ? swimTimeText(swimBest(pbEvents[0])) : "–", pbEvents.length > 1 ? `+${pbEvents.length - 1} more events` : "swim log"],
+    ["🏊", "Swim skills", `${skillsLearned}/${allSwimSkills().length}`, "swim school"],
   ];
   document.querySelector("#records").innerHTML = records.map(([icon, name, value, note]) => `
     <div class="record">
@@ -246,7 +246,7 @@ function yearNumbers() {
     bosses: bossHistory().filter((w) => w.beaten && w.to.startsWith(year)).length,
     missions: Object.entries(missionChecks).filter(([k]) => k.startsWith(year)).reduce((sum, [, ids]) => sum + ids.length, 0),
     goals: thisYear("soccer").reduce((sum, g) => sum + g.g, 0),
-    laps: thisYear("swim").reduce((sum, e) => sum + e.laps, 0),
+    lessons: thisYear("swimLesson").length,
     smoothies: recipeBook.smoothies.length,
     belts: beltData.history.filter((h) => h.d.startsWith(year)).length,
     favorite: favorite ? `${favorite[0]} (${favorite[1].score}/10)` : null,
@@ -265,7 +265,7 @@ function openYearReview() {
     ["⚔️", n.bosses, n.bosses === 1 ? "boss beaten" : "bosses beaten"],
     ["🎯", n.missions, "daily missions"],
     ["⚽", n.goals, n.goals === 1 ? "goal" : "goals"],
-    ["🏊", n.laps, "laps swum"],
+    ["🏊", n.lessons, n.lessons === 1 ? "swim lesson" : "swim lessons"],
     ["🧪", n.smoothies, n.smoothies === 1 ? "smoothie invented" : "smoothies invented"],
     ["🥋", n.belts, n.belts === 1 ? "new belt" : "new belts"],
   ];

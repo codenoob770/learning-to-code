@@ -159,7 +159,7 @@ let activityLog;   // quizzes, arcade games and more, like { d: "2026-11-27", t:
 let missionChecks; // daily missions you've done, by day (missions.js)
 let energyLog;     // how you felt each day, 1 to 5 (stats.js)
 let beltData;      // your taekwondo belt and next test (sports.js)
-let swimData;      // swim settings: yards or meters (swims and times go in the activity log)
+let swimData;      // swim school skills you've learned (lessons go in the activity log)
 let myWorkouts;    // workouts you built yourself (builder.js)
 let recipeBook;    // favorite recipes and smoothies you invented (kitchen.js)
 let shopData;      // coins spent, things you bought and what you're wearing (shop.js)
@@ -191,7 +191,7 @@ function loadProgress() {
   missionChecks = loadJSON("levelUp.missions", {});
   energyLog = loadJSON("levelUp.energy", {});
   beltData = loadJSON("levelUp.belt", { belt: 0, test: "", checks: [], custom: [], history: [] });
-  swimData = loadJSON("levelUp.swim", { unit: "yd", pool: 25 });
+  swimData = loadJSON("levelUp.swim", { skills: [] });
   myWorkouts = loadJSON("levelUp.workouts", []);
   recipeBook = loadJSON("levelUp.recipes", { fav: [], smoothies: [] });
   shopData = loadJSON("levelUp.shop", { spent: 0, owned: [], wear: {} });
@@ -256,7 +256,7 @@ function escapeHTML(text) {
   return String(text).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 }
 
-// A short random id, for things you add (like a swim time)
+// A short random id, for things you add (like a swim lesson)
 function makeId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 }

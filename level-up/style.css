@@ -4480,6 +4480,60 @@ label.mission__text {
   border: 0 !important;
 }
 
+/* Swim School: one card per stroke */
+.stroke-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: 0.5rem;
+  align-items: start;
+}
+
+.stroke-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+}
+
+.stroke-card.is-done {
+  border-color: var(--teal);
+}
+
+.stroke-card summary {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.85rem;
+  cursor: pointer;
+}
+
+.stroke-card__icon {
+  font-size: 1.4rem;
+}
+
+.stroke-card__name {
+  flex: 1;
+  font-weight: 700;
+}
+
+.stroke-card__count {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+}
+
+.stroke-card.is-done .stroke-card__count {
+  color: var(--teal);
+}
+
+.stroke-card .belt-list {
+  padding: 0 0.85rem 0.6rem;
+}
+
+.field--small {
+  flex: 0 1 11rem;
+  min-width: 9rem;
+}
+
 .chart__best {
   fill: none;
   stroke: var(--fg);
