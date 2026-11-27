@@ -12,7 +12,7 @@
    functions inside its own functions, never right away.
    ============================================================= */
 
-const TAB_NAMES = ["today", "extra", "quests", "arcade", "quiz", "sports", "training", "kitchen", "stats", "pet", "family"];
+const TAB_NAMES = ["today", "extra", "quests", "arcade", "quiz", "sports", "training", "kitchen", "stats", "pet", "family", "tools"];
 let currentTab = "today";
 
 function showTab(name, scrollUp = true) {

@@ -33,6 +33,8 @@
                      Muscle Map, Sore Muscle Helper and demo controls
       pet-plus.js -> pet sport forms, tricks, treats and the pet room
       fun.js      -> Sticker Album, My Avatar, seasonal events and secrets
+      tools.js    -> the Tools tab: calendar, packing, bedtime, report card,
+                     backup and the home screen app icon
       arcade.js   -> card deck workout, Kick Caller and spin the wheel
       kitchen.js  -> Smoothie Lab, Recipe Book and Snack Swap
       sports.js   -> belt tracker, swim school, soccer journal and workout builder
@@ -51,6 +53,15 @@
   <meta name="description" content="A daily workout, a healthy drink and meals for sports. It gets a little harder every week.">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 
+  <!-- So Level Up can go on a home screen like a real app (see tools.js) -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="theme-color" content="#141b2f">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Level Up">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
   <!-- Same fonts as my website and Bug Bash -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -59,42 +70,43 @@
   <!-- The "?v=8" is a version number. Browsers keep old copies of files for a
        while; changing the number makes them download the newest version.
        Add 1 to it (on every line below) whenever you change those files. -->
-  <link rel="stylesheet" href="style.css?v=22">
+  <link rel="stylesheet" href="style.css?v=23">
   <!-- These load in order. app.js goes last, because it starts the page
        and uses things from all the others. -->
-  <script src="plan.js?v=22" defer></script>
-  <script src="hooks.js?v=22" defer></script>
-  <script src="demos.js?v=22" defer></script>
-  <script src="trophies.js?v=22" defer></script>
-  <script src="coach.js?v=22" defer></script>
-  <script src="practice.js?v=22" defer></script>
-  <script src="habits.js?v=22" defer></script>
-  <script src="charts.js?v=22" defer></script>
-  <script src="grocery.js?v=22" defer></script>
-  <script src="ai-coach.js?v=22" defer></script>
-  <script src="quest.js?v=22" defer></script>
-  <script src="missions.js?v=22" defer></script>
-  <script src="boss.js?v=22" defer></script>
-  <script src="quiz-questions.js?v=22" defer></script>
-  <script src="quiz.js?v=22" defer></script>
-  <script src="arcade.js?v=22" defer></script>
-  <script src="kitchen.js?v=22" defer></script>
-  <script src="sports.js?v=22" defer></script>
-  <script src="stats.js?v=22" defer></script>
-  <script src="family.js?v=22" defer></script>
-  <script src="pet.js?v=22" defer></script>
-  <script src="shop.js?v=22" defer></script>
-  <script src="training-lessons.js?v=22" defer></script>
-  <script src="training.js?v=22" defer></script>
-  <script src="extra.js?v=22" defer></script>
-  <script src="brain-data.js?v=22" defer></script>
-  <script src="brain.js?v=22" defer></script>
-  <script src="games.js?v=22" defer></script>
-  <script src="training-plus.js?v=22" defer></script>
-  <script src="pet-plus.js?v=22" defer></script>
-  <script src="fun.js?v=22" defer></script>
-  <script src="tabs.js?v=22" defer></script>
-  <script src="app.js?v=22" defer></script>
+  <script src="plan.js?v=23" defer></script>
+  <script src="hooks.js?v=23" defer></script>
+  <script src="demos.js?v=23" defer></script>
+  <script src="trophies.js?v=23" defer></script>
+  <script src="coach.js?v=23" defer></script>
+  <script src="practice.js?v=23" defer></script>
+  <script src="habits.js?v=23" defer></script>
+  <script src="charts.js?v=23" defer></script>
+  <script src="grocery.js?v=23" defer></script>
+  <script src="ai-coach.js?v=23" defer></script>
+  <script src="quest.js?v=23" defer></script>
+  <script src="missions.js?v=23" defer></script>
+  <script src="boss.js?v=23" defer></script>
+  <script src="quiz-questions.js?v=23" defer></script>
+  <script src="quiz.js?v=23" defer></script>
+  <script src="arcade.js?v=23" defer></script>
+  <script src="kitchen.js?v=23" defer></script>
+  <script src="sports.js?v=23" defer></script>
+  <script src="stats.js?v=23" defer></script>
+  <script src="family.js?v=23" defer></script>
+  <script src="pet.js?v=23" defer></script>
+  <script src="shop.js?v=23" defer></script>
+  <script src="training-lessons.js?v=23" defer></script>
+  <script src="training.js?v=23" defer></script>
+  <script src="extra.js?v=23" defer></script>
+  <script src="brain-data.js?v=23" defer></script>
+  <script src="brain.js?v=23" defer></script>
+  <script src="games.js?v=23" defer></script>
+  <script src="training-plus.js?v=23" defer></script>
+  <script src="pet-plus.js?v=23" defer></script>
+  <script src="fun.js?v=23" defer></script>
+  <script src="tools.js?v=23" defer></script>
+  <script src="tabs.js?v=23" defer></script>
+  <script src="app.js?v=23" defer></script>
 </head>
 <body>
 
@@ -175,6 +187,7 @@
         <button class="tab" type="button" data-tab="stats"><span aria-hidden="true">📊</span> Stats</button>
         <button class="tab" type="button" data-tab="pet"><span aria-hidden="true">🐾</span> Pet &amp; Shop</button>
         <button class="tab" type="button" data-tab="family"><span aria-hidden="true">👪</span> Family</button>
+        <button class="tab" type="button" data-tab="tools"><span aria-hidden="true">🧰</span> Tools</button>
       </div>
     </nav>
   </div>
@@ -187,6 +200,9 @@
     <div class="tab-page" data-page="today">
       <!-- ============ SEASONAL EVENT (fun.js) ============ -->
       <section class="panel event-panel" id="event-panel" aria-label="Special event" hidden></section>
+
+      <!-- ============ TODAY'S PLAN, FROM MY CALENDAR (tools.js) ============ -->
+      <div class="today-agenda" id="today-agenda" aria-label="Today's plan" hidden></div>
 
       <!-- ============ WHICH DAY ============ -->
       <section class="panel day" aria-labelledby="day-name">
@@ -1211,6 +1227,90 @@
           </div>
         </div>
       </section>
+    </div>
+
+    <!-- ==================== TAB: TOOLS ==================== -->
+    <div class="tab-page" data-page="tools" hidden>
+      <nav class="brain-jump arcade-jump" aria-label="Jump to a tool">
+        <button class="lab-chip" type="button" data-brain-jump="calendar-panel">📅 Calendar</button>
+        <button class="lab-chip" type="button" data-brain-jump="pack-panel">🎒 Packing</button>
+        <button class="lab-chip" type="button" data-brain-jump="bedtime-panel">🌙 Bedtime</button>
+        <button class="lab-chip" type="button" data-brain-jump="report-panel">📬 Report card</button>
+        <button class="lab-chip" type="button" data-brain-jump="backup-panel">💾 Backup</button>
+        <button class="lab-chip" type="button" data-brain-jump="install-panel">📲 App icon</button>
+      </nav>
+
+      <!-- ============ MY CALENDAR (tools.js) ============ -->
+      <section class="panel brain-panel" id="calendar-panel" aria-labelledby="calendar-title">
+        <div class="panel__head">
+          <p class="eyebrow">// my schedule</p>
+        </div>
+        <h2 class="panel__title" id="calendar-title">📅 My Calendar</h2>
+        <p class="panel__lead">Practices, games, belt tests and school tests, all in one place. Tap a day to add something.</p>
+        <div class="calendar-layout" id="calendar-area"></div>
+      </section>
+
+      <div class="duo duo--even">
+        <!-- ============ PACKING CHECKLIST (tools.js) ============ -->
+        <section class="panel brain-panel" id="pack-panel" aria-labelledby="pack-title">
+          <div class="panel__head">
+            <p class="eyebrow">// don't forget!</p>
+            <span class="quest-tag">+10 XP</span>
+          </div>
+          <h2 class="panel__title" id="pack-title">🎒 Packing Checklist</h2>
+          <div class="brain-area" id="pack-area"></div>
+        </section>
+
+        <!-- ============ BEDTIME ROUTINE (tools.js) ============ -->
+        <section class="panel brain-panel" id="bedtime-panel" aria-labelledby="bedtime-title">
+          <div class="panel__head">
+            <p class="eyebrow">// wind down</p>
+            <span class="quest-tag">+15 XP</span>
+          </div>
+          <h2 class="panel__title" id="bedtime-title">🌙 Bedtime Routine</h2>
+          <div class="brain-area" id="bedtime-area"></div>
+        </section>
+      </div>
+
+      <!-- ============ WEEKLY REPORT CARD (tools.js) ============ -->
+      <section class="panel brain-panel" id="report-panel" aria-labelledby="report-title">
+        <div class="panel__head">
+          <p class="eyebrow">// every sunday</p>
+        </div>
+        <h2 class="panel__title" id="report-title">📬 Weekly Report Card</h2>
+        <div class="brain-area" id="report-area"></div>
+      </section>
+
+      <div class="duo duo--even">
+        <!-- ============ BACKUP (tools.js) ============ -->
+        <section class="panel brain-panel" id="backup-panel" aria-labelledby="backup-title">
+          <div class="panel__head">
+            <p class="eyebrow">// just in case</p>
+          </div>
+          <h2 class="panel__title" id="backup-title">💾 Backup</h2>
+          <p class="panel__lead">Save all your progress into a file. If anything ever happens, you can put it all back!</p>
+          <p class="backup-cloud" id="backup-cloud" hidden>☁️ On claude.ai, your progress is already saved to your Claude account. A backup file is extra safety.</p>
+          <div class="backup-buttons">
+            <button class="button" id="backup-save" type="button">💾 Download a backup</button>
+            <label class="button button--quiet backup-restore">
+              📂 Restore a backup
+              <input class="visually-hidden" id="backup-file" type="file" accept="application/json,.json">
+            </label>
+          </div>
+          <p class="quiz-total" id="backup-last"></p>
+          <p class="form-note" id="backup-note" aria-live="polite"></p>
+        </section>
+
+        <!-- ============ HOME SCREEN APP (tools.js) ============ -->
+        <section class="panel brain-panel" id="install-panel" aria-labelledby="install-title">
+          <div class="panel__head">
+            <p class="eyebrow">// like a real app</p>
+          </div>
+          <h2 class="panel__title" id="install-title">📲 App Icon</h2>
+          <p class="panel__lead">Put Level Up on your iPad's home screen. It opens full screen, with its own icon, just like a real app!</p>
+          <div class="brain-area" id="install-area"></div>
+        </section>
+      </div>
     </div>
 
     <footer class="note">
