@@ -78,6 +78,7 @@ function openCoach(date, custom = null) {
     plan,
     custom: Boolean(custom),
     steps: plan.steps || coachSteps(plan), // a Training lesson brings its own steps
+    started: false, // false while the "get ready" screen is showing
     index: 0,
     startedAt: Date.now(),
     endsAt: 0,
@@ -94,7 +95,70 @@ function openCoach(date, custom = null) {
   coachBox.hidden = false;
   coachBox.classList.toggle("is-lesson", Boolean(plan.steps)); // Training lessons show big instructions
   document.body.classList.add("coach-open");
-  say(`Let's go! ${plan.title}. ${coach.steps.length} steps.`, () => showStep());
+
+  // A lesson starts with its own "tap Done when you're ready" step
+  if (plan.steps && coach.steps[0].seconds === null) {
+    startSteps();
+    return;
+  }
+
+  // Everything else: a "get ready" screen with the workout's name, drawn
+  // RIGHT AWAY. (Before, the screen waited for the voice, so a quiet iPad
+  // kept showing the last workout you had open, like today's workout.)
+  showIntro();
+  const thisWorkout = coach;
+  const readyAt = Date.now() + 2500; // time to read the screen
+  say(`Let's go! ${plan.title}. ${coach.steps.length} steps.`, () => {
+    // Starts by itself when the voice is done, or tap Start to go now
+    setTimeout(() => {
+      if (coach === thisWorkout) startSteps();
+    }, Math.max(0, readyAt - Date.now()));
+  });
+}
+
+function startSteps() {
+  if (!coach || coach.started || coach.finished) return;
+  coach.started = true;
+  showStep();
+}
+
+// What's in the workout, like "Warm-up → 3 rounds of Burpees, Squats → Cool-down"
+function coachSummary(plan) {
+  if (plan.steps) {
+    return [...new Set(plan.steps.filter((step) => !step.isRest).map((step) => step.section))].join(" → ");
+  }
+  const parts = [];
+  if (plan.style !== "rest") parts.push("Warm-up");
+  if (plan.moves.length) parts.push(`${plan.rounds > 1 ? `${plan.rounds} rounds of ` : ""}${plan.moves.map((move) => move.name).join(", ")}`);
+  if (plan.sport && plan.sportMoves.length) parts.push(`${plan.sport.name} skills`);
+  if (plan.style !== "rest") parts.push("Cool-down");
+  return parts.join(" → ");
+}
+
+function coachTitle(plan) {
+  return `${plan.icon ? `${plan.icon} ` : ""}${plan.title}`;
+}
+
+// The "get ready" screen
+function showIntro() {
+  const first = coach.steps.find((step) => !step.isRest);
+  document.querySelector("#coach-title")?.replaceChildren(); // the big name below says it
+  document.querySelector("#coach-section").textContent = "Get ready";
+  document.querySelector("#coach-count").textContent = `${coach.steps.length} steps`;
+  document.querySelector("#coach-fill").style.width = "0%";
+  document.querySelector("#coach-name").textContent = coachTitle(coach.plan);
+  coachTime.textContent = "";
+  document.querySelector("#coach-label").textContent = coach.plan.minutes ? `About ${coach.plan.minutes} min` : "";
+  document.querySelector("#coach-how").textContent = coachSummary(coach.plan);
+  document.querySelector("#coach-next").textContent = first ? `First up: ${first.name}` : "";
+  document.querySelector("#coach-demo").replaceChildren();
+  document.querySelector("#coach-demo").hidden = true;
+  coachBox.classList.remove("is-rest", "is-ready");
+  coachMain.textContent = "Start ▶";
+  document.querySelector("#coach-back").disabled = true;
+  document.querySelector("#coach-skip").disabled = true;
+  const skipWarmUp = document.querySelector("#coach-skip-warmup");
+  if (skipWarmUp) skipWarmUp.hidden = true;
 }
 
 function closeCoach() {
@@ -151,6 +215,8 @@ function finishCoach() {
   coachMain.textContent = "Close";
   document.querySelector("#coach-back").disabled = true;
   document.querySelector("#coach-skip").disabled = true;
+  const skipWarmUp = document.querySelector("#coach-skip-warmup");
+  if (skipWarmUp) skipWarmUp.hidden = true;
   sounds.finish();
   say(`${coach.plan.finishTitle || "Workout complete!"} Awesome job!`);
   checkAchievements(true);
@@ -165,8 +231,13 @@ function showStep() {
   const step = coach.steps[coach.index];
   const next = coach.steps.slice(coach.index + 1).find((s) => !s.isRest);
 
+  const title = document.querySelector("#coach-title");
+  if (title) title.textContent = step.name === coach.plan.title ? "" : coachTitle(coach.plan); // so you always know which workout this is
   document.querySelector("#coach-section").textContent = step.section;
   document.querySelector("#coach-count").textContent = `Step ${coach.index + 1} of ${coach.steps.length}`;
+  // Did an extra workout right after your daily one? You're already warm!
+  const skipWarmUp = document.querySelector("#coach-skip-warmup");
+  if (skipWarmUp) skipWarmUp.hidden = !(coach.custom && step.section === "Warm-up");
   document.querySelector("#coach-fill").style.width = `${(coach.index / coach.steps.length) * 100}%`;
   document.querySelector("#coach-name").textContent = step.name;
   document.querySelector("#coach-how").textContent = step.how;
@@ -266,6 +337,10 @@ coachMain.addEventListener("click", () => {
     closeCoach();
     return;
   }
+  if (!coach.started) {
+    startSteps(); // the "Start ▶" button on the get-ready screen
+    return;
+  }
   const step = coach.steps[coach.index];
   if (step.seconds === null) {
     goToNextStep();
@@ -286,14 +361,23 @@ coachMain.addEventListener("click", () => {
 });
 
 document.querySelector("#coach-skip").addEventListener("click", () => {
-  if (coach && !coach.finished) goToNextStep();
+  if (coach && coach.started && !coach.finished) goToNextStep();
 });
 
 document.querySelector("#coach-back").addEventListener("click", () => {
-  if (coach && !coach.finished && coach.index > 0) {
+  if (coach && coach.started && !coach.finished && coach.index > 0) {
     coach.index -= 1;
     showStep();
   }
+});
+
+// Jumps past the whole warm-up, to the first real move
+document.querySelector("#coach-skip-warmup")?.addEventListener("click", () => {
+  if (!coach || !coach.started || coach.finished) return;
+  const after = coach.steps.findIndex((step, i) => i > coach.index && step.section !== "Warm-up");
+  if (after === -1) return;
+  coach.index = after;
+  showStep();
 });
 
 document.querySelector("#coach-close").addEventListener("click", closeCoach);
@@ -310,7 +394,7 @@ document.addEventListener("keydown", (event) => {
 
 // If the screen turns off or you switch apps, pause the timer
 document.addEventListener("visibilitychange", () => {
-  if (document.hidden && coach && !coach.finished && coach.pausedLeft === null && coach.steps[coach.index].seconds !== null) {
+  if (document.hidden && coach && coach.started && !coach.finished && coach.pausedLeft === null && coach.steps[coach.index].seconds !== null) {
     coachMain.click();
   }
 });

@@ -43,33 +43,33 @@
        while; changing the number makes them download the newest version.
        Add 1 to it (on every line below) whenever you change those files. -->
   <!-- Level Up's styles first (for the new tabs), then Kickoff's own look on top -->
-  <link rel="stylesheet" href="../level-up/style.css?v=25">
+  <link rel="stylesheet" href="../level-up/style.css?v=26">
   <link rel="stylesheet" href="style.css?v=13">
   <!-- These load in order. app.js goes last, because it starts the page
        and uses things from all the others. -->
   <script src="plan.js?v=13" defer></script>
-  <script src="../level-up/hooks.js?v=25" defer></script>
-  <script src="../level-up/demos.js?v=25" defer></script>
+  <script src="../level-up/hooks.js?v=26" defer></script>
+  <script src="../level-up/demos.js?v=26" defer></script>
   <script src="trophies.js?v=13" defer></script>
-  <script src="../level-up/coach.js?v=25" defer></script>
+  <script src="../level-up/coach.js?v=26" defer></script>
   <script src="practice.js?v=13" defer></script>
   <script src="habits.js?v=13" defer></script>
   <script src="charts.js?v=13" defer></script>
   <script src="grocery.js?v=13" defer></script>
   <script src="ai-coach.js?v=13" defer></script>
   <!-- The new tabs, from Level Up -->
-  <script src="../level-up/quiz-questions.js?v=25" defer></script>
-  <script src="../level-up/quiz.js?v=25" defer></script>
-  <script src="../level-up/training-lessons.js?v=25" defer></script>
-  <script src="../level-up/training.js?v=25" defer></script>
-  <script src="../level-up/pet.js?v=25" defer></script>
-  <script src="../level-up/shop.js?v=25" defer></script>
-  <script src="../level-up/brain-data.js?v=25" defer></script>
-  <script src="../level-up/brain.js?v=25" defer></script>
-  <script src="../level-up/games.js?v=25" defer></script>
-  <script src="../level-up/training-plus.js?v=25" defer></script>
-  <script src="../level-up/pet-plus.js?v=25" defer></script>
-  <script src="../level-up/fun.js?v=25" defer></script>
+  <script src="../level-up/quiz-questions.js?v=26" defer></script>
+  <script src="../level-up/quiz.js?v=26" defer></script>
+  <script src="../level-up/training-lessons.js?v=26" defer></script>
+  <script src="../level-up/training.js?v=26" defer></script>
+  <script src="../level-up/pet.js?v=26" defer></script>
+  <script src="../level-up/shop.js?v=26" defer></script>
+  <script src="../level-up/brain-data.js?v=26" defer></script>
+  <script src="../level-up/brain.js?v=26" defer></script>
+  <script src="../level-up/games.js?v=26" defer></script>
+  <script src="../level-up/training-plus.js?v=26" defer></script>
+  <script src="../level-up/pet-plus.js?v=26" defer></script>
+  <script src="../level-up/fun.js?v=26" defer></script>
   <script src="bridge.js?v=13" defer></script>
   <script src="app.js?v=13" defer></script>
 </head>
@@ -790,12 +790,15 @@
       </button>
     </div>
     <div class="coach__body">
+      <!-- The workout's name, so you always know which one you're doing -->
+      <p class="coach__title" id="coach-title"></p>
       <div class="coach__demo" id="coach-demo" hidden></div>
       <h2 class="coach__name" id="coach-name">Get ready</h2>
       <p class="coach__time" id="coach-time" aria-live="off">0:00</p>
       <p class="coach__label" id="coach-label"></p>
       <p class="coach__how" id="coach-how"></p>
       <p class="coach__next" id="coach-next"></p>
+      <button class="text-button coach__skip-warmup" id="coach-skip-warmup" type="button" hidden>Already warmed up? Skip the warm-up →</button>
     </div>
     <div class="coach__buttons">
       <button class="button button--quiet" id="coach-back" type="button">&larr; Back</button>

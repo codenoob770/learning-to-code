@@ -164,7 +164,7 @@ function extraPlan(workout) {
   }
   const moves = workout.moves.map((id) => moveFor(id, level)); // in app.js
   const plan = {
-    title: workout.name, style, level, expert, rounds, rest, moves,
+    title: workout.name, icon: workout.icon, style, level, expert, rounds, rest, moves,
     sportMoves: [], sport: null,
     logType: "extra", logExtra: { workout: workout.id },
     finishTitle: "Extra workout complete!",

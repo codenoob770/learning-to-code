@@ -1855,6 +1855,28 @@ body.coach-open {
   display: none;
 }
 
+/* The workout's name, above each step */
+.coach__title {
+  max-width: 30ch;
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
+  font-weight: 800;
+}
+
+.coach__title:empty {
+  display: none;
+}
+
+.coach__skip-warmup {
+  margin-top: 0.2rem;
+  font-size: 0.9375rem;
+}
+
+.coach__skip-warmup[hidden] {
+  display: none;
+}
+
 /* Rests are calm teal; "get ready" counts down in blue */
 .coach.is-rest .coach__time { color: var(--teal); }
 .coach.is-rest .coach__section { color: var(--teal); }
