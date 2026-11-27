@@ -64,6 +64,10 @@ like `level-up/#quiz` opens straight to one tab.
   every week for 12 weeks), a healthy drink and meals, water, sleep and an
   energy check-in, 3 **daily missions**, the **weekly boss** (every rep you
   do hits it) and **Ask Coach** (Claude answers, on the Claude version).
+  Today's plan from your calendar shows at the top, and so do **seasonal
+  events**: Spring Training (April), Summer Splash (July), Spooky Sprint
+  (October) and the **Winter Games** (December), each with challenges,
+  a badge and something falling down the page.
   - **Expert mode** (the flame button) turns the page red and makes
     workouts way harder. **Did not do workout** and **Did not try it**
     buttons, drink ratings from 1 to 10, gym test prep with the beat
@@ -75,11 +79,19 @@ like `level-up/#quiz` opens straight to one tab.
 - **🗺️ Quests:** the monthly challenge, and the **Quest Board**: Backflip
   (the real flip only with a coach!), Splits, Handstand, 100 Push-ups,
   Juggling and **Code Quest**, which teaches you to change this website.
-- **🎮 Arcade:** card deck workout, Kick Caller (the voice calls out
-  kicks), a daily spin-the-wheel challenge, and Bug Bash power-ups.
+- **🎮 Arcade:** the **Mystery Box** (one surprise a day: coins, XP, a
+  bonus challenge, pet treats or a rare hat), **Penalty Shootout** (aim,
+  time the power, beat the goalie; workouts give bonus shots), **Goalie
+  Reflexes** (your reaction time in milliseconds), **Board Break**, **Memory
+  Match** (match the moves, then do them!), **Sister Duel** (pass-and-play
+  battles on one iPad), card deck workout, Kick Caller, a daily
+  spin-the-wheel challenge, and Bug Bash power-ups.
 - **🧠 Quiz:** the Brain + Body Quiz: 5th-grade Math, Reading & Writing,
   Science and Social Studies, plus Sports and Food & Health. Get one
-  wrong and you owe that question's exercise, like "10 squats"!
+  wrong and you owe that question's exercise, like "10 squats"! Also: a
+  **Spelling Bee** (the voice says the word), a 60-second **Times-Table
+  Sprint**, **Korean Flashcards** for taekwondo words, **Make Your Own
+  Quiz**, a **Homework Timer** with move breaks and a **fact of the day**.
 - **🥋 Sports:** taekwondo belt tracker in my school's belt order (with
   counting in Korean), Swim School (check off the skills from my swim
   lessons and log each lesson), soccer journal, a workout builder the
@@ -89,16 +101,27 @@ like `level-up/#quiz` opens straight to one tab.
   Black belt path or Pro moves). Each has steps, mistakes to watch out
   for, a practice drill and a pro tip. Tap **Teach me** and the voice
   coach teaches it out loud. Already know a page? Tap **I already know
-  all of these** to unlock the next one.
+  all of these** to unlock the next one. Plus a **Game Day Warm-Up**
+  (before a game, swim lesson or belt test), the **Monthly Fitness Test**
+  with a report card, **My Goals**, a **Muscle Map** of what you worked
+  this week, and a **Sore Muscle Helper**. The "Show me" pop-up has
+  **slow motion** and **mirror** buttons.
 - **🍓 Kitchen:** Smoothie Lab (it invents a name and recipe), a Recipe
   Book with search and favorites, Snack Swap and the grocery list.
-- **📊 Stats:** XP, levels and 52 badges, progress charts, a year-long
-  workout calendar, personal records, energy patterns, a "year in
-  review" and a stats card picture to save.
+- **📊 Stats:** XP, levels and 80 badges, a 40-sticker **Sticker Album**,
+  progress charts, a year-long workout calendar, personal records, energy
+  patterns, a "year in review" and a stats card picture to save.
 - **🐾 Pet & Shop:** a pet that hatches after your first workout and
-  grows as you train. 10 XP = 1 coin: buy page themes, pet hats, pet
-  colors and stick-figure colors.
+  grows as you train. It dresses like the sport you do most, learns
+  **tricks** from your streaks, eats Mystery Box treats and has a **room**
+  you can decorate. Make your own **avatar** (it shows at the top of the
+  page). 10 XP = 1 coin: buy page themes, pet hats, pet colors and
+  stick-figure colors. And there are 6 **secret Easter eggs** to find... 🤫
 - **👪 Family:** a weekly family challenge. Add your family and race!
+- **🧰 Tools:** **My Calendar** (practices, games and tests, even ones that
+  repeat every week), a **Packing Checklist**, a **Bedtime Routine**, a
+  **Weekly Report Card**, **Backup** (save your progress to a file) and the
+  **App Icon**: put Level Up on your iPad's home screen like a real app.
 
 Each feature has its own file, so they're easy to find:
 
@@ -115,7 +138,15 @@ Each feature has its own file, so they're easy to find:
 | `quest.js` | The Quest Board |
 | `missions.js` | Daily missions and the monthly challenge |
 | `boss.js` | The weekly boss. Add your own boss to `BOSSES`! |
+| `hooks.js` | How the newer feature files plug into the page (pages, XP, badges, saved data) |
 | `quiz.js` | The Brain + Body Quiz |
+| `brain.js`, `brain-data.js` | Spelling Bee, Times-Table Sprint, Korean Flashcards, Make Your Own Quiz, Homework Timer and the fact of the day (words and facts in `brain-data.js`) |
+| `games.js` | Penalty Shootout, Goalie Reflexes, Board Break, Memory Match, Mystery Box and Sister Duel |
+| `training-plus.js` | Game Day Warm-Up, Monthly Fitness Test, My Goals, Muscle Map, Sore Muscle Helper and demo controls |
+| `pet-plus.js` | Pet sport forms, tricks, treats and the pet room |
+| `fun.js` | Sticker Album, My Avatar, seasonal events and secret Easter eggs |
+| `tools.js` | The Tools tab: calendar, packing, bedtime, report card, backup and the app icon |
+| `manifest.webmanifest`, `icons/` | What makes Level Up work as a home screen app |
 | `training-lessons.js`, `training.js` | The Training lessons (add your own!) and the Training tab |
 | `arcade.js` | Card deck workout, Kick Caller and spin the wheel |
 | `kitchen.js` | Smoothie Lab, Recipe Book and Snack Swap |
