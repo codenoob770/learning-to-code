@@ -19,29 +19,21 @@
 
 /* 1. TALKING OUT LOUD -------------------------------------------------
    Like the coach's voice, but this one always talks: the spelling bee
-   doesn't work without it! Each part can have its own speed.        */
+   doesn't work without it! Each part can have its own speed. It uses
+   speakParts() in coach.js, which handles the iPad's voice quirks.   */
 
 function canTalk() {
-  return "speechSynthesis" in window;
+  return canSpeak(); // in coach.js
 }
 
 function brainSay(parts, lang = "en-US") {
-  if (!canTalk()) return;
+  let korean = null;
   try {
-    window.speechSynthesis.cancel();
-    const korean = lang.startsWith("ko")
-      ? window.speechSynthesis.getVoices().find((voice) => voice.lang.toLowerCase().startsWith("ko"))
-      : null;
-    for (const part of parts) {
-      const words = new SpeechSynthesisUtterance(part.text);
-      words.lang = lang;
-      words.rate = part.rate || 0.95;
-      if (korean) words.voice = korean;
-      window.speechSynthesis.speak(words);
-    }
+    if (lang.startsWith("ko")) korean = window.speechSynthesis.getVoices().find((voice) => voice.lang.toLowerCase().startsWith("ko")) || null;
   } catch (error) {
-    // No voice in this browser. The words are on the screen too.
+    korean = null; // no voices: the words are on the screen too
   }
+  speakParts(parts.map((part) => ({ text: part.text, rate: part.rate || 0.95 })), { lang, voice: korean });
 }
 
 // Korean words: in a Korean voice if this device has one. If it doesn't,
@@ -237,7 +229,10 @@ function beeStartHTML() {
       <p class="brain-start__text">${canTalk()
         ? "🔊 Turn your sound on! The voice says each word, uses it in a sentence, then says it again. Then you type it."
         : "This browser can't talk, so you'll get a sentence and the meaning as clues instead."}</p>
-      <button class="button" type="button" data-bee="start">Start a round (${BEE_LENGTH} words)</button>
+      <div class="brain-start__buttons">
+        <button class="button" type="button" data-bee="start">Start a round (${BEE_LENGTH} words)</button>
+        <button class="text-button" type="button" data-voice-check>🔊 Voice check</button>
+      </div>
       <p class="quiz-total">${rounds.length
         ? `Best: ${best}/${BEE_LENGTH} · ${plural(rounds.length, "round")} played · ${SPELLING_WORDS.length} words to learn`
         : `${SPELLING_WORDS.length} fifth-grade words to learn. Words you miss come back later for practice!`}</p>
@@ -430,7 +425,7 @@ beeArea.addEventListener("click", (event) => {
   if (action === "next") nextBeeWord();
   if (action === "quit") {
     bee = null;
-    window.speechSynthesis?.cancel();
+    stopTalking(); // in coach.js
     drawBee();
     showToast("Spelling Bee stopped. Come back anytime!");
   }

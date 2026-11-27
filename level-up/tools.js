@@ -704,7 +704,8 @@ function drawInstall() {
     <div class="install">
       <img class="install__icon" src="icons/icon-192.png" alt="The Level Up app icon" width="96" height="96">
       <div class="install__steps">${steps}</div>
-    </div>`;
+    </div>
+    <p class="install-note">🔊 Heads up: on some iPads, the voice coach and the Spelling Bee can't talk in the Home Screen app. If you can't hear them there, open Level Up in Safari instead (or try the <button class="text-button" type="button" data-voice-check>Voice check</button>).</p>`;
 }
 
 document.querySelector("#install-area").addEventListener("click", (event) => {

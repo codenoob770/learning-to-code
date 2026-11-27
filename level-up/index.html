@@ -70,43 +70,43 @@
   <!-- The "?v=8" is a version number. Browsers keep old copies of files for a
        while; changing the number makes them download the newest version.
        Add 1 to it (on every line below) whenever you change those files. -->
-  <link rel="stylesheet" href="style.css?v=23">
+  <link rel="stylesheet" href="style.css?v=24">
   <!-- These load in order. app.js goes last, because it starts the page
        and uses things from all the others. -->
-  <script src="plan.js?v=23" defer></script>
-  <script src="hooks.js?v=23" defer></script>
-  <script src="demos.js?v=23" defer></script>
-  <script src="trophies.js?v=23" defer></script>
-  <script src="coach.js?v=23" defer></script>
-  <script src="practice.js?v=23" defer></script>
-  <script src="habits.js?v=23" defer></script>
-  <script src="charts.js?v=23" defer></script>
-  <script src="grocery.js?v=23" defer></script>
-  <script src="ai-coach.js?v=23" defer></script>
-  <script src="quest.js?v=23" defer></script>
-  <script src="missions.js?v=23" defer></script>
-  <script src="boss.js?v=23" defer></script>
-  <script src="quiz-questions.js?v=23" defer></script>
-  <script src="quiz.js?v=23" defer></script>
-  <script src="arcade.js?v=23" defer></script>
-  <script src="kitchen.js?v=23" defer></script>
-  <script src="sports.js?v=23" defer></script>
-  <script src="stats.js?v=23" defer></script>
-  <script src="family.js?v=23" defer></script>
-  <script src="pet.js?v=23" defer></script>
-  <script src="shop.js?v=23" defer></script>
-  <script src="training-lessons.js?v=23" defer></script>
-  <script src="training.js?v=23" defer></script>
-  <script src="extra.js?v=23" defer></script>
-  <script src="brain-data.js?v=23" defer></script>
-  <script src="brain.js?v=23" defer></script>
-  <script src="games.js?v=23" defer></script>
-  <script src="training-plus.js?v=23" defer></script>
-  <script src="pet-plus.js?v=23" defer></script>
-  <script src="fun.js?v=23" defer></script>
-  <script src="tools.js?v=23" defer></script>
-  <script src="tabs.js?v=23" defer></script>
-  <script src="app.js?v=23" defer></script>
+  <script src="plan.js?v=24" defer></script>
+  <script src="hooks.js?v=24" defer></script>
+  <script src="demos.js?v=24" defer></script>
+  <script src="trophies.js?v=24" defer></script>
+  <script src="coach.js?v=24" defer></script>
+  <script src="practice.js?v=24" defer></script>
+  <script src="habits.js?v=24" defer></script>
+  <script src="charts.js?v=24" defer></script>
+  <script src="grocery.js?v=24" defer></script>
+  <script src="ai-coach.js?v=24" defer></script>
+  <script src="quest.js?v=24" defer></script>
+  <script src="missions.js?v=24" defer></script>
+  <script src="boss.js?v=24" defer></script>
+  <script src="quiz-questions.js?v=24" defer></script>
+  <script src="quiz.js?v=24" defer></script>
+  <script src="arcade.js?v=24" defer></script>
+  <script src="kitchen.js?v=24" defer></script>
+  <script src="sports.js?v=24" defer></script>
+  <script src="stats.js?v=24" defer></script>
+  <script src="family.js?v=24" defer></script>
+  <script src="pet.js?v=24" defer></script>
+  <script src="shop.js?v=24" defer></script>
+  <script src="training-lessons.js?v=24" defer></script>
+  <script src="training.js?v=24" defer></script>
+  <script src="extra.js?v=24" defer></script>
+  <script src="brain-data.js?v=24" defer></script>
+  <script src="brain.js?v=24" defer></script>
+  <script src="games.js?v=24" defer></script>
+  <script src="training-plus.js?v=24" defer></script>
+  <script src="pet-plus.js?v=24" defer></script>
+  <script src="fun.js?v=24" defer></script>
+  <script src="tools.js?v=24" defer></script>
+  <script src="tabs.js?v=24" defer></script>
+  <script src="app.js?v=24" defer></script>
 </head>
 <body>
 
@@ -1238,6 +1238,7 @@
         <button class="lab-chip" type="button" data-brain-jump="report-panel">📬 Report card</button>
         <button class="lab-chip" type="button" data-brain-jump="backup-panel">💾 Backup</button>
         <button class="lab-chip" type="button" data-brain-jump="install-panel">📲 App icon</button>
+        <button class="lab-chip" type="button" data-brain-jump="voice-panel">🔊 Voice check</button>
       </nav>
 
       <!-- ============ MY CALENDAR (tools.js) ============ -->
@@ -1311,6 +1312,16 @@
           <div class="brain-area" id="install-area"></div>
         </section>
       </div>
+
+      <!-- ============ VOICE CHECK (the test is in coach.js) ============ -->
+      <section class="panel brain-panel" id="voice-panel" aria-labelledby="voice-panel-title">
+        <div class="panel__head">
+          <p class="eyebrow">// can't hear anything?</p>
+        </div>
+        <h2 class="panel__title" id="voice-panel-title">🔊 Voice Check</h2>
+        <p class="panel__lead">The coach, the Spelling Bee, Korean words and the Homework Timer all talk out loud. If you can't hear them, tap the button: it tests the voice and tells you how to fix it.</p>
+        <button class="button" type="button" data-voice-check>🔊 Test the voice</button>
+      </section>
     </div>
 
     <footer class="note">
@@ -1331,6 +1342,7 @@
       <p class="coach__section" id="coach-section">Warm-up</p>
       <p class="coach__count" id="coach-count">Step 1 of 20</p>
       <button class="text-button" id="coach-voice" type="button" aria-pressed="true">Voice on</button>
+      <button class="text-button" type="button" data-voice-check title="Can't hear the voice? Test it here">🔊 Test</button>
       <button class="icon-button" id="coach-close" type="button" aria-label="Close guided workout">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
       </button>

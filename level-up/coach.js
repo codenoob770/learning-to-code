@@ -317,42 +317,221 @@ document.addEventListener("visibilitychange", () => {
 
 
 /* 5. THE VOICE ---------------------------------------------------------
-   speechSynthesis is built into browsers: it reads text out loud.    */
+   speechSynthesis is built into browsers: it reads text out loud.
+   EVERYTHING on the page that talks goes through speakParts(): the
+   coach, the Spelling Bee, Korean words, the Homework Timer...
+
+   iPads have a few voice quirks, so this part is extra careful:
+   - It "resumes" the voice before talking. If you switch apps while
+     the voice is talking, an iPad can leave it paused, and then
+     nothing on the page ever talks again.
+   - It only stops old talking if something IS talking, and then waits
+     a moment. (Talking right after stopping can get skipped.)
+   - It keeps each sentence in a list until it's done. Otherwise the
+     browser can lose a sentence halfway, and the voice gets stuck.
+   - It notices when the voice doesn't start, and offers the Voice
+     Check (below) to help you fix it.                                  */
 
 let coachVoiceOn = true;
+const sentences = new Set(); // sentences waiting to be spoken or being spoken
+const voiceStatus = { worked: false, error: "", warned: false };
+let voiceTurn = 0; // counts up every time something new starts talking
 
-function say(text, then) {
-  if (!coachVoiceOn || !("speechSynthesis" in window)) {
+function canSpeak() {
+  return "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+}
+
+// parts: a list of { text, rate }. Options:
+//   lang and voice: which language and voice to use
+//   then:    runs when it's done talking (or right away, if it can't talk)
+//   onstart: runs when the voice really starts
+//   onfail:  runs if the voice never starts (instead of the usual warning)
+function speakParts(parts, { lang = "en-US", voice = null, then = null, onstart = null, onfail = null } = {}) {
+  let finished = false;
+  const done = () => {
+    if (finished) return;
+    finished = true;
     if (then) then();
+  };
+  if (!canSpeak() || parts.length === 0) {
+    done();
     return;
   }
-  try {
-    window.speechSynthesis.cancel();
-    const words = new SpeechSynthesisUtterance(text);
-    words.rate = 1.05;
-    let done = false;
-    const next = () => {
-      if (!done && then) {
-        done = true;
-        then();
-      }
-    };
-    words.onend = next;
-    words.onerror = next;
-    setTimeout(next, 4000); // just in case the browser never says it's done
-    window.speechSynthesis.speak(words);
-  } catch (error) {
-    if (then) then();
+  const synth = window.speechSynthesis;
+  const turn = ++voiceTurn;
+  let started = false;
+
+  const talk = () => {
+    if (turn !== voiceTurn) return; // something newer wants to talk
+    try {
+      synth.resume();
+      parts.forEach((part, i) => {
+        const words = new SpeechSynthesisUtterance(part.text);
+        words.lang = lang;
+        words.rate = part.rate || 1;
+        if (voice) words.voice = voice;
+        words.onstart = () => {
+          if (!started && onstart) onstart();
+          started = true;
+          voiceStatus.worked = true;
+        };
+        const end = (event) => {
+          sentences.delete(words);
+          if (event.type === "error" && !["interrupted", "canceled"].includes(event.error)) voiceStatus.error = event.error || "error";
+          if (i === parts.length - 1) done();
+        };
+        words.onend = end;
+        words.onerror = end;
+        sentences.add(words);
+        synth.speak(words);
+      });
+    } catch (error) {
+      voiceStatus.error = error.message;
+      done();
+    }
+    // Didn't start after 3 seconds (and nothing newer started talking)? Something's wrong.
+    setTimeout(() => {
+      if (started || turn !== voiceTurn || synth.speaking) return;
+      if (onfail) onfail();
+      else voiceDidNotStart();
+    }, 3000);
+  };
+
+  // Just in case the browser never says it's done (about half a second a word)
+  const wordCount = parts.reduce((count, part) => count + part.text.split(/\s+/).length, 0);
+  setTimeout(done, Math.max(4000, wordCount * 500));
+
+  if (synth.speaking || synth.pending) {
+    synth.cancel();
+    setTimeout(talk, 120);
+  } else {
+    talk(); // right away, so it counts as part of your tap (iPads need that the first time)
   }
 }
 
+function say(text, then) {
+  if (!coachVoiceOn) {
+    if (then) then();
+    return;
+  }
+  speakParts([{ text, rate: 1.05 }], { then });
+}
+
 function stopTalking() {
+  voiceTurn += 1;
   try {
     window.speechSynthesis.cancel();
   } catch (error) {
     // No voice in this browser. That's fine.
   }
+  sentences.clear();
 }
+
+// Coming back to the page after switching apps: un-pause the voice
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden || !canSpeak()) return;
+  try {
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+      window.speechSynthesis.cancel();
+    }
+  } catch (error) {
+    // That's OK.
+  }
+});
+
+// The voice didn't start: say so (once), and point to the Voice Check
+function voiceDidNotStart() {
+  document.querySelectorAll("[data-voice-check]").forEach((button) => button.classList.add("is-alert"));
+  if (voiceStatus.worked || voiceStatus.warned) return;
+  voiceStatus.warned = true;
+  showToast("🔇 Can't hear the voice? Tap 🔊 Voice check to fix it.");
+}
+
+
+/* THE VOICE CHECK -----------------------------------------------------
+   A little box that tests the voice and explains how to fix it.
+   Any button with data-voice-check opens it.                          */
+
+function voiceHelpHTML(problem) {
+  const inApp = window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches;
+  let voices = 0;
+  try {
+    voices = window.speechSynthesis.getVoices().length;
+  } catch (error) {
+    voices = 0;
+  }
+  const voiceOff = load("levelUp.voice", "on") !== "on";
+  return `
+    <p class="voice-bad">❌ ${problem}</p>
+    <p><strong>Try these, one at a time:</strong></p>
+    <ol class="voice-fixes">
+      ${inApp ? `<li class="is-likely"><strong>Open this page in Safari, not from the Home Screen icon.</strong> On some iPads, Home Screen apps can't talk.</li>` : ""}
+      <li><strong>Turn off Silent Mode.</strong> Swipe down from the top-right corner to open Control Center. If the 🔔 bell is red or crossed out, tap it.</li>
+      <li><strong>Turn the volume up</strong> with the buttons on the side.</li>
+      <li><strong>Close this tab and open the page again.</strong> That un-sticks the voice if it got stuck.</li>
+      ${inApp ? "" : `<li>Opened it from an app icon on your Home Screen? Try it in Safari instead.</li>`}
+      ${voiceOff ? `<li>The coach's voice is switched off. In the guided workout, tap <strong>Voice off</strong> to turn it back on.</li>` : ""}
+    </ol>
+    <p class="voice-details">For a grown-up: speech ${canSpeak() ? "is supported" : "isn't supported"} · ${voices} voices · ${inApp ? "Home Screen app" : "in the browser"}${voiceStatus.error ? ` · last error: ${escapeHTML(voiceStatus.error)}` : ""}</p>`;
+}
+
+function runVoiceCheck() {
+  const result = document.querySelector("#voice-result");
+  if (!canSpeak()) {
+    result.innerHTML = voiceHelpHTML("This browser can't talk at all.");
+    return;
+  }
+  result.innerHTML = `<p class="voice-testing">🔊 Testing... listen!</p>`;
+  speakParts([{ text: "Hi! I'm your coach. Can you hear me?" }], {
+    onstart: () => {
+      document.querySelectorAll("[data-voice-check]").forEach((button) => button.classList.remove("is-alert"));
+      result.innerHTML = `
+        <p class="voice-ok">✅ The voice is talking right now!</p>
+        <p>Can't hear it? Turn the volume up, and make sure Silent Mode is off (the 🔔 bell in Control Center).</p>`;
+    },
+    onfail: () => {
+      result.innerHTML = voiceHelpHTML("The voice didn't start.");
+    },
+  });
+}
+
+function openVoiceCheck() {
+  let box = document.querySelector("#voice-box");
+  if (!box) {
+    box = document.createElement("div");
+    box.className = "modal voice-box";
+    box.id = "voice-box";
+    box.setAttribute("role", "dialog");
+    box.setAttribute("aria-modal", "true");
+    box.setAttribute("aria-labelledby", "voice-title");
+    box.innerHTML = `
+      <div class="modal__card">
+        <div class="modal__head">
+          <h2 id="voice-title">🔊 Voice check</h2>
+          <button class="icon-button" id="voice-close" type="button" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+        </div>
+        <div class="voice-result" id="voice-result" aria-live="polite"></div>
+        <button class="button" id="voice-again" type="button">🔊 Test again</button>
+      </div>`;
+    document.body.append(box);
+    box.querySelector("#voice-close").addEventListener("click", () => { box.hidden = true; });
+    box.querySelector("#voice-again").addEventListener("click", runVoiceCheck);
+    box.addEventListener("click", (event) => {
+      if (event.target === box) box.hidden = true; // tapped outside the card
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !box.hidden) box.hidden = true;
+    });
+  }
+  box.hidden = false;
+  runVoiceCheck(); // right away, while it still counts as your tap
+  box.querySelector("#voice-again").focus();
+}
+
+document.addEventListener("click", (event) => {
+  if (event.target.closest("[data-voice-check]")) openVoiceCheck();
+});
 
 // "45 seconds", "1 minute 30 seconds"
 function formatSpoken(seconds) {

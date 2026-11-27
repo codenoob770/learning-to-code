@@ -8047,6 +8047,73 @@ label.mission__text {
   padding-left: 1.2rem;
 }
 
+/* 9r. THE VOICE CHECK (coach.js) -------------------------------------------- */
+
+.voice-box .modal__card {
+  max-width: 30rem;
+}
+
+.voice-result {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.voice-testing {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.voice-ok {
+  color: var(--teal);
+  font-weight: 800;
+}
+
+.voice-bad {
+  color: var(--bug);
+  font-weight: 800;
+}
+
+.voice-fixes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin: 0;
+  padding-left: 1.3rem;
+}
+
+.voice-fixes .is-likely {
+  color: var(--marker);
+}
+
+.voice-details {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+}
+
+/* A Voice check button glows when the voice didn't start */
+[data-voice-check].is-alert {
+  color: var(--marker);
+  animation: voice-alert 1s ease-in-out 3;
+}
+
+@keyframes voice-alert {
+  50% { transform: scale(1.12); }
+}
+
+.install-note {
+  margin-top: 0.8rem;
+  color: var(--dim);
+  font-size: 0.875rem;
+}
+
+.install-note .text-button {
+  padding: 0;
+  font-size: inherit;
+}
+
 /* 10. SMALL SCREENS AND REDUCED MOTION --------------------------- */
 
 @media (max-width: 640px) {

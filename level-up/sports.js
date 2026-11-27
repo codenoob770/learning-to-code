@@ -216,22 +216,19 @@ beltArea.addEventListener("click", (event) => {
 });
 
 // Says a Korean number out loud, with a Korean voice if this device has one
+// (speakParts is in coach.js)
 function sayKorean(i) {
-  if (!("speechSynthesis" in window)) {
+  if (!canSpeak()) {
     showToast(`${i + 1} is "${KOREAN_NUMBERS[i][1]}"`);
     return;
   }
+  let korean = null;
   try {
-    window.speechSynthesis.cancel();
-    const words = new SpeechSynthesisUtterance(KOREAN_NUMBERS[i][0]);
-    words.lang = "ko-KR";
-    words.rate = 0.85;
-    const korean = window.speechSynthesis.getVoices().find((voice) => voice.lang.startsWith("ko"));
-    if (korean) words.voice = korean;
-    window.speechSynthesis.speak(words);
+    korean = window.speechSynthesis.getVoices().find((voice) => voice.lang.startsWith("ko")) || null;
   } catch (error) {
-    showToast(`${i + 1} is "${KOREAN_NUMBERS[i][1]}"`);
+    korean = null;
   }
+  speakParts([{ text: KOREAN_NUMBERS[i][0], rate: 0.85 }], { lang: "ko-KR", voice: korean });
 }
 
 
