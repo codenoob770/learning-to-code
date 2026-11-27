@@ -20,6 +20,7 @@
       missions.js -> daily missions and the monthly challenge
       boss.js     -> the weekly boss battle
       tabs.js     -> the tabs along the top (Today, Quests, Arcade...)
+      extra.js    -> the Extra tab: bonus workouts for any time
       training.js -> the Training tab (lessons in training-lessons.js)
       quiz.js     -> the Brain + Body Quiz (questions in quiz-questions.js)
       arcade.js   -> card deck workout, Kick Caller and spin the wheel
@@ -48,34 +49,35 @@
   <!-- The "?v=8" is a version number. Browsers keep old copies of files for a
        while; changing the number makes them download the newest version.
        Add 1 to it (on every line below) whenever you change those files. -->
-  <link rel="stylesheet" href="style.css?v=17">
+  <link rel="stylesheet" href="style.css?v=18">
   <!-- These load in order. app.js goes last, because it starts the page
        and uses things from all the others. -->
-  <script src="plan.js?v=17" defer></script>
-  <script src="demos.js?v=17" defer></script>
-  <script src="trophies.js?v=17" defer></script>
-  <script src="coach.js?v=17" defer></script>
-  <script src="practice.js?v=17" defer></script>
-  <script src="habits.js?v=17" defer></script>
-  <script src="charts.js?v=17" defer></script>
-  <script src="grocery.js?v=17" defer></script>
-  <script src="ai-coach.js?v=17" defer></script>
-  <script src="quest.js?v=17" defer></script>
-  <script src="missions.js?v=17" defer></script>
-  <script src="boss.js?v=17" defer></script>
-  <script src="quiz-questions.js?v=17" defer></script>
-  <script src="quiz.js?v=17" defer></script>
-  <script src="arcade.js?v=17" defer></script>
-  <script src="kitchen.js?v=17" defer></script>
-  <script src="sports.js?v=17" defer></script>
-  <script src="stats.js?v=17" defer></script>
-  <script src="family.js?v=17" defer></script>
-  <script src="pet.js?v=17" defer></script>
-  <script src="shop.js?v=17" defer></script>
-  <script src="training-lessons.js?v=17" defer></script>
-  <script src="training.js?v=17" defer></script>
-  <script src="tabs.js?v=17" defer></script>
-  <script src="app.js?v=17" defer></script>
+  <script src="plan.js?v=18" defer></script>
+  <script src="demos.js?v=18" defer></script>
+  <script src="trophies.js?v=18" defer></script>
+  <script src="coach.js?v=18" defer></script>
+  <script src="practice.js?v=18" defer></script>
+  <script src="habits.js?v=18" defer></script>
+  <script src="charts.js?v=18" defer></script>
+  <script src="grocery.js?v=18" defer></script>
+  <script src="ai-coach.js?v=18" defer></script>
+  <script src="quest.js?v=18" defer></script>
+  <script src="missions.js?v=18" defer></script>
+  <script src="boss.js?v=18" defer></script>
+  <script src="quiz-questions.js?v=18" defer></script>
+  <script src="quiz.js?v=18" defer></script>
+  <script src="arcade.js?v=18" defer></script>
+  <script src="kitchen.js?v=18" defer></script>
+  <script src="sports.js?v=18" defer></script>
+  <script src="stats.js?v=18" defer></script>
+  <script src="family.js?v=18" defer></script>
+  <script src="pet.js?v=18" defer></script>
+  <script src="shop.js?v=18" defer></script>
+  <script src="training-lessons.js?v=18" defer></script>
+  <script src="training.js?v=18" defer></script>
+  <script src="extra.js?v=18" defer></script>
+  <script src="tabs.js?v=18" defer></script>
+  <script src="app.js?v=18" defer></script>
 </head>
 <body>
 
@@ -138,6 +140,7 @@
     <nav class="tabs" aria-label="Sections">
       <div class="tabs__inner">
         <button class="tab" type="button" data-tab="today" aria-current="page"><span aria-hidden="true">🏠</span> Today</button>
+        <button class="tab" type="button" data-tab="extra"><span aria-hidden="true">➕</span> Extra</button>
         <button class="tab" type="button" data-tab="quests"><span aria-hidden="true">🗺️</span> Quests</button>
         <button class="tab" type="button" data-tab="arcade"><span aria-hidden="true">🎮</span> Arcade</button>
         <button class="tab" type="button" data-tab="quiz"><span aria-hidden="true">🧠</span> Quiz</button>
@@ -297,6 +300,23 @@
           </div>
         </form>
         <p class="ai__answer" id="ai-answer" aria-live="polite" hidden></p>
+      </section>
+    </div>
+
+    <!-- ==================== TAB: EXTRA ==================== -->
+    <div class="tab-page" data-page="extra" hidden>
+      <!-- ============ EXTRA WORKOUTS (extra.js) ============ -->
+      <section class="panel" id="extra" aria-labelledby="extra-title">
+        <div class="panel__head">
+          <p class="eyebrow">// extra workouts</p>
+          <span class="quest-tag">+50 XP each</span>
+        </div>
+        <h2 class="panel__title" id="extra-title">➕ Extra Workouts</h2>
+        <p class="panel__lead">Want more? Do any of these whenever you like, on top of today's workout. Pick one by what you want to work on.</p>
+        <p class="extra-mode" id="extra-mode"></p>
+        <div class="lab-chips" id="extra-goals" role="group" aria-label="What do you want to work on?"></div>
+        <div class="extra-cards" id="extra-cards"></div>
+        <div class="lesson" id="extra-detail"></div>
       </section>
     </div>
 

@@ -575,6 +575,7 @@ function render() {
   if (currentTab === "kitchen") renderKitchen();   // in kitchen.js
   if (currentTab === "training") renderTraining(); // in training.js
   if (currentTab === "stats") renderStatsTab();    // in stats.js
+  if (currentTab === "extra") renderExtra();       // in extra.js
 }
 
 function renderDay(plan) {

@@ -49,6 +49,10 @@ like `level-up/#quiz` opens straight to one tab.
     workouts way harder. **Did not do workout** and **Did not try it**
     buttons, drink ratings from 1 to 10, gym test prep with the beat
     trainer, and a **guided workout** with a voice coach.
+- **➕ Extra:** 19 bonus workouts for any time, sorted by goal (energy,
+  abs, strength, legs, speed, my sports, test prep, stretching, quick).
+  Each one says what it works. They match your week's level, and in
+  expert mode they get way harder. The voice coach can run any of them.
 - **🗺️ Quests:** the monthly challenge, and the **Quest Board**: Backflip
   (the real flip only with a coach!), Splits, Handstand, 100 Push-ups,
   Juggling and **Code Quest**, which teaches you to change this website.
@@ -69,7 +73,7 @@ like `level-up/#quiz` opens straight to one tab.
   all of these** to unlock the next one.
 - **🍓 Kitchen:** Smoothie Lab (it invents a name and recipe), a Recipe
   Book with search and favorites, Snack Swap and the grocery list.
-- **📊 Stats:** XP, levels and 51 badges, progress charts, a year-long
+- **📊 Stats:** XP, levels and 52 badges, progress charts, a year-long
   workout calendar, personal records, energy patterns, a "year in
   review" and a stats card picture to save.
 - **🐾 Pet & Shop:** a pet that hatches after your first workout and
@@ -88,6 +92,7 @@ Each feature has its own file, so they're easy to find:
 | `trophies.js` | XP, levels and badges. Change `XP_RULES` to give more or less XP |
 | `coach.js` | The guided workout with the voice coach |
 | `demos.js` | The animated stick figures ("Show me" buttons) |
+| `extra.js` | The Extra tab's bonus workouts. Add your own! |
 | `quest.js` | The Quest Board |
 | `missions.js` | Daily missions and the monthly challenge |
 | `boss.js` | The weekly boss. Add your own boss to `BOSSES`! |
