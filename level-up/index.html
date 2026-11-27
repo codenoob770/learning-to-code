@@ -29,6 +29,8 @@
                      (words and facts in brain-data.js)
       games.js    -> Penalty Shootout, Goalie Reflexes, Board Break,
                      Memory Match, Mystery Box and Sister Duel
+      training-plus.js -> Game Day Warm-Up, Monthly Fitness Test, My Goals,
+                     Muscle Map, Sore Muscle Helper and demo controls
       arcade.js   -> card deck workout, Kick Caller and spin the wheel
       kitchen.js  -> Smoothie Lab, Recipe Book and Snack Swap
       sports.js   -> belt tracker, swim school, soccer journal and workout builder
@@ -55,39 +57,40 @@
   <!-- The "?v=8" is a version number. Browsers keep old copies of files for a
        while; changing the number makes them download the newest version.
        Add 1 to it (on every line below) whenever you change those files. -->
-  <link rel="stylesheet" href="style.css?v=20">
+  <link rel="stylesheet" href="style.css?v=21">
   <!-- These load in order. app.js goes last, because it starts the page
        and uses things from all the others. -->
-  <script src="plan.js?v=20" defer></script>
-  <script src="hooks.js?v=20" defer></script>
-  <script src="demos.js?v=20" defer></script>
-  <script src="trophies.js?v=20" defer></script>
-  <script src="coach.js?v=20" defer></script>
-  <script src="practice.js?v=20" defer></script>
-  <script src="habits.js?v=20" defer></script>
-  <script src="charts.js?v=20" defer></script>
-  <script src="grocery.js?v=20" defer></script>
-  <script src="ai-coach.js?v=20" defer></script>
-  <script src="quest.js?v=20" defer></script>
-  <script src="missions.js?v=20" defer></script>
-  <script src="boss.js?v=20" defer></script>
-  <script src="quiz-questions.js?v=20" defer></script>
-  <script src="quiz.js?v=20" defer></script>
-  <script src="arcade.js?v=20" defer></script>
-  <script src="kitchen.js?v=20" defer></script>
-  <script src="sports.js?v=20" defer></script>
-  <script src="stats.js?v=20" defer></script>
-  <script src="family.js?v=20" defer></script>
-  <script src="pet.js?v=20" defer></script>
-  <script src="shop.js?v=20" defer></script>
-  <script src="training-lessons.js?v=20" defer></script>
-  <script src="training.js?v=20" defer></script>
-  <script src="extra.js?v=20" defer></script>
-  <script src="brain-data.js?v=20" defer></script>
-  <script src="brain.js?v=20" defer></script>
-  <script src="games.js?v=20" defer></script>
-  <script src="tabs.js?v=20" defer></script>
-  <script src="app.js?v=20" defer></script>
+  <script src="plan.js?v=21" defer></script>
+  <script src="hooks.js?v=21" defer></script>
+  <script src="demos.js?v=21" defer></script>
+  <script src="trophies.js?v=21" defer></script>
+  <script src="coach.js?v=21" defer></script>
+  <script src="practice.js?v=21" defer></script>
+  <script src="habits.js?v=21" defer></script>
+  <script src="charts.js?v=21" defer></script>
+  <script src="grocery.js?v=21" defer></script>
+  <script src="ai-coach.js?v=21" defer></script>
+  <script src="quest.js?v=21" defer></script>
+  <script src="missions.js?v=21" defer></script>
+  <script src="boss.js?v=21" defer></script>
+  <script src="quiz-questions.js?v=21" defer></script>
+  <script src="quiz.js?v=21" defer></script>
+  <script src="arcade.js?v=21" defer></script>
+  <script src="kitchen.js?v=21" defer></script>
+  <script src="sports.js?v=21" defer></script>
+  <script src="stats.js?v=21" defer></script>
+  <script src="family.js?v=21" defer></script>
+  <script src="pet.js?v=21" defer></script>
+  <script src="shop.js?v=21" defer></script>
+  <script src="training-lessons.js?v=21" defer></script>
+  <script src="training.js?v=21" defer></script>
+  <script src="extra.js?v=21" defer></script>
+  <script src="brain-data.js?v=21" defer></script>
+  <script src="brain.js?v=21" defer></script>
+  <script src="games.js?v=21" defer></script>
+  <script src="training-plus.js?v=21" defer></script>
+  <script src="tabs.js?v=21" defer></script>
+  <script src="app.js?v=21" defer></script>
 </head>
 <body>
 
@@ -811,8 +814,17 @@
 
     <!-- ==================== TAB: TRAINING ==================== -->
     <div class="tab-page" data-page="training" hidden>
+      <nav class="brain-jump arcade-jump" aria-label="Jump to a part of the Training tab">
+        <button class="lab-chip" type="button" data-brain-jump="training">🎓 Lessons</button>
+        <button class="lab-chip" type="button" data-brain-jump="gameday-panel">🏟️ Game Day Warm-Up</button>
+        <button class="lab-chip" type="button" data-brain-jump="goals-panel">🎯 My Goals</button>
+        <button class="lab-chip" type="button" data-brain-jump="fit-panel">📋 Fitness Test</button>
+        <button class="lab-chip" type="button" data-brain-jump="muscle-panel">🗺️ Muscle Map</button>
+        <button class="lab-chip" type="button" data-brain-jump="sore-panel">🩹 Sore Muscles</button>
+      </nav>
+
       <!-- ============ TRAINING CENTER (training.js, lessons in training-lessons.js) ============ -->
-      <section class="panel" id="training" aria-labelledby="training-title">
+      <section class="panel brain-panel" id="training" aria-labelledby="training-title">
         <div class="panel__head">
           <p class="eyebrow">// training center</p>
           <div class="picker" id="training-sports" role="group" aria-label="Sport"></div>
@@ -826,6 +838,91 @@
         <div class="page-actions" id="page-actions"></div>
         <div class="lesson" id="lesson"></div>
       </section>
+
+      <div class="duo duo--even">
+        <!-- ============ GAME DAY WARM-UP (training-plus.js) ============ -->
+        <section class="panel brain-panel" id="gameday-panel" aria-labelledby="gameday-title">
+          <div class="panel__head">
+            <p class="eyebrow">// before the big moment</p>
+            <span class="quest-tag">+30 XP</span>
+          </div>
+          <h2 class="panel__title" id="gameday-title">🏟️ Game Day Warm-Up</h2>
+          <p class="panel__lead">A quick warm-up made for what you're about to do. Warm muscles are faster and less likely to get hurt!</p>
+          <div class="brain-area gameday" id="gameday-area"></div>
+        </section>
+
+        <!-- ============ MY GOALS (training-plus.js) ============ -->
+        <section class="panel brain-panel" id="goals-panel" aria-labelledby="goals-title">
+          <div class="panel__head">
+            <p class="eyebrow">// my goals</p>
+            <span class="quest-tag">+100 XP per goal</span>
+          </div>
+          <h2 class="panel__title" id="goals-title">🎯 My Goals</h2>
+          <form class="form goal-form" id="goal-form" novalidate>
+            <div class="form-row">
+              <div class="field">
+                <label class="field-label" for="goal-kind">I want to do...</label>
+                <select class="select" id="goal-kind"></select>
+              </div>
+              <div class="field goal-form__number">
+                <label class="field-label" for="goal-target">How many?</label>
+                <input class="input" id="goal-target" type="number" inputmode="numeric" min="1" max="99999" placeholder="25">
+              </div>
+            </div>
+            <div class="form-row" id="goal-custom" hidden>
+              <div class="field">
+                <label class="field-label" for="goal-text">My goal</label>
+                <input class="input" id="goal-text" type="text" maxlength="60" placeholder="Run a mile without stopping" autocomplete="off">
+              </div>
+              <div class="field goal-form__number">
+                <label class="field-label" for="goal-unit">Counted in (optional)</label>
+                <input class="input" id="goal-unit" type="text" maxlength="20" placeholder="minutes" autocomplete="off">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="field">
+                <label class="field-label" for="goal-due">By this date</label>
+                <input class="input" id="goal-due" type="date">
+              </div>
+              <button class="button" id="goal-add" type="submit">Set my goal</button>
+            </div>
+            <p class="form-note" id="goal-note" aria-live="polite"></p>
+          </form>
+          <div class="goals-list" id="goals-list"></div>
+        </section>
+      </div>
+
+      <!-- ============ MONTHLY FITNESS TEST (training-plus.js) ============ -->
+      <section class="panel brain-panel" id="fit-panel" aria-labelledby="fit-title">
+        <div class="panel__head">
+          <p class="eyebrow">// once a month</p>
+          <span class="quest-tag">+150 XP</span>
+        </div>
+        <h2 class="panel__title" id="fit-title">📋 Monthly Fitness Test</h2>
+        <p class="panel__lead">5 quick tests, once a month. Your report card shows how much stronger you got since last time!</p>
+        <div class="brain-area" id="fit-area"></div>
+      </section>
+
+      <div class="duo duo--even">
+        <!-- ============ MUSCLE MAP (training-plus.js) ============ -->
+        <section class="panel brain-panel" id="muscle-panel" aria-labelledby="muscle-title">
+          <div class="panel__head">
+            <p class="eyebrow">// what you worked</p>
+          </div>
+          <h2 class="panel__title" id="muscle-title">🗺️ Muscle Map</h2>
+          <p class="panel__lead">Your workouts, extra workouts, lessons and games light up the muscles they work.</p>
+          <div class="brain-area" id="muscle-area"></div>
+        </section>
+
+        <!-- ============ SORE MUSCLE HELPER (training-plus.js) ============ -->
+        <section class="panel brain-panel" id="sore-panel" aria-labelledby="sore-title">
+          <div class="panel__head">
+            <p class="eyebrow">// feel better</p>
+          </div>
+          <h2 class="panel__title" id="sore-title">🩹 Sore Muscle Helper</h2>
+          <div class="brain-area" id="sore-area"></div>
+        </section>
+      </div>
     </div>
 
     <!-- ==================== TAB: KITCHEN ==================== -->
@@ -1089,6 +1186,10 @@
         <button class="icon-button" id="demo-close" type="button" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
       </div>
       <div class="demo-picture" id="demo-picture"></div>
+      <div class="lab-chips demo-view" role="group" aria-label="Demo controls">
+        <button class="lab-chip" type="button" data-demo-view="slow" aria-pressed="false">🐢 Slow motion</button>
+        <button class="lab-chip" type="button" data-demo-view="mirror" aria-pressed="false">🪞 Mirror</button>
+      </div>
       <p class="demo-how" id="demo-how"></p>
     </div>
   </div>

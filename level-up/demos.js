@@ -641,6 +641,13 @@ function easeInOut(t) {
 }
 
 let demoAnimating = false;
+let demoSlow = null; // slow motion for the big demos (training-plus.js sets it; null = not read yet)
+
+// The big demos: the "Show me" pop-up and the voice coach
+function isBigDemo(svg) {
+  const spot = svg.parentElement;
+  return Boolean(spot) && (spot.id === "demo-picture" || spot.id === "coach-demo");
+}
 
 // One loop animates every demo on the page
 function startDemoAnimation() {
@@ -658,7 +665,8 @@ function startDemoAnimation() {
       const move = 700 / (demo.speed || 1);
       const hold = demo.hold ?? 300;
       const step = move + hold;
-      const time = now % (step * demo.frames.length);
+      const clock = demoSlow && isBigDemo(svg) ? now / 2 : now; // half speed in slow motion
+      const time = clock % (step * demo.frames.length);
       const index = Math.floor(time / step);
       const into = time - index * step;
       const progress = (into - hold) / move;

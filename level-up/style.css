@@ -6682,6 +6682,453 @@ label.mission__text {
   font-weight: 700;
 }
 
+/* 9o. TRAINING EXTRAS (training-plus.js) -------------------------------------- */
+
+/* Demo controls in the "Show me" pop-up */
+.demo-view {
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+:root[data-demo-mirror] #demo-picture svg.demo,
+:root[data-demo-mirror] #coach-demo svg.demo {
+  transform: scaleX(-1);
+}
+
+/* Game Day Warm-Up */
+.gameday {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.gameday-when {
+  color: var(--marker);
+  font-weight: 600;
+}
+
+.gameday-moves {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 0;
+  padding-left: 1.4rem;
+}
+
+.gameday-moves li {
+  padding: 0.15rem 0;
+}
+
+.gameday-moves li span:first-child {
+  margin-right: 0.5rem;
+}
+
+.gameday-amount {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+}
+
+.gameday-tips ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-left: 1.2rem;
+}
+
+/* My Goals */
+.goal-form {
+  align-items: stretch;
+  margin-bottom: 1rem;
+}
+
+.goal-form .field {
+  min-width: 0;
+}
+
+.goal-form__number {
+  flex: 0 1 9rem;
+}
+
+.goals {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.goal {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+}
+
+.goal__title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.goal__when {
+  color: var(--dim);
+  font-size: 0.875rem;
+}
+
+.goal__update {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.6rem;
+}
+
+.goal__update .field-label {
+  width: 100%;
+}
+
+.goal__of {
+  color: var(--dim);
+}
+
+.goals-reached {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding-left: 0.2rem;
+  list-style: none;
+}
+
+/* Monthly Fitness Test */
+.fit-status {
+  margin-bottom: 0.9rem;
+  font-weight: 600;
+}
+
+.fit-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.fit-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+}
+
+.fit-card__name {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.fit-card__how {
+  color: var(--dim);
+  font-size: 0.9375rem;
+}
+
+.fit-card__tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.9rem;
+}
+
+.fit-card__tools .is-running {
+  color: var(--bug);
+  font-weight: 700;
+}
+
+.fit-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--dim);
+}
+
+.fit-scale .lab-chip {
+  font-size: 0.8125rem;
+}
+
+.fit-card__last {
+  margin-top: auto;
+  color: var(--accent);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+}
+
+.fit-report {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding: 1rem;
+  border: 2px solid var(--marker-border);
+  border-radius: var(--radius-small);
+  background: var(--marker-soft);
+}
+
+.fit-report__title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.fit-report__summary {
+  font-weight: 700;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.fit-table {
+  width: 100%;
+  min-width: 30rem;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.fit-table th,
+.fit-table td {
+  padding: 0.45rem 0.5rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.fit-table thead th {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.fit-now {
+  font-weight: 800;
+}
+
+.fit-change.is-up {
+  color: var(--teal);
+  font-weight: 700;
+}
+
+.fit-change.is-down {
+  color: var(--dim);
+}
+
+/* The body pictures */
+.body-map {
+  display: block;
+  width: 100%;
+  max-width: 20rem;
+  height: auto;
+}
+
+.body-head,
+.body-hand,
+.body-part.body-neutral {
+  fill: var(--line);
+}
+
+.body-part {
+  fill: var(--line);
+  stroke: var(--bg);
+  stroke-width: 1.5;
+}
+
+.body-label {
+  fill: var(--dim);
+  font-family: var(--font-code);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+}
+
+.body-part.muscle-1 { fill: rgba(127, 220, 200, 0.4); }
+.body-part.muscle-2 { fill: rgba(127, 220, 200, 0.72); }
+.body-part.muscle-3 { fill: var(--teal); }
+
+.body-part.is-tappable {
+  fill: var(--line-strong);
+  cursor: pointer;
+  transition: fill 0.15s ease;
+}
+
+.body-part.is-tappable:hover {
+  fill: var(--accent);
+}
+
+.body-part.is-tappable:focus-visible {
+  outline: none;
+  stroke: var(--marker);
+  stroke-width: 2.5;
+}
+
+.body-part.is-picked,
+.body-part.is-picked:hover {
+  fill: var(--bug);
+}
+
+/* Muscle Map */
+.muscle-map {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 1rem;
+  margin-top: 0.8rem;
+}
+
+@media (max-width: 560px) {
+  .muscle-map {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .muscle-map .body-map {
+    margin-inline: auto;
+  }
+}
+
+.muscle-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.muscle-heart {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+}
+
+.muscle-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.8rem;
+  color: var(--dim);
+  font-size: 0.8125rem;
+}
+
+.muscle-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.muscle-swatch {
+  display: inline-block;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 3px;
+  background: var(--line);
+}
+
+.muscle-swatch.muscle-1 { background: rgba(127, 220, 200, 0.4); }
+.muscle-swatch.muscle-2 { background: rgba(127, 220, 200, 0.72); }
+.muscle-swatch.muscle-3 { background: var(--teal); }
+
+.muscle-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-left: 1.1rem;
+  font-size: 0.9375rem;
+}
+
+/* Sore Muscle Helper */
+.sore-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  align-items: start;
+  gap: 1rem;
+}
+
+@media (max-width: 560px) {
+  .sore-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sore-picture .body-map {
+    margin-inline: auto;
+  }
+}
+
+.sore-help {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.sore-hint {
+  color: var(--dim);
+}
+
+.sore-title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.sore-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sore-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.9375rem;
+}
+
+.sore-item__dot {
+  flex: none;
+  width: 2.75rem;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.sore-warning {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.8rem 0.9rem;
+  border-left: 4px solid var(--bug);
+  border-radius: var(--radius-small);
+  background: var(--bug-soft);
+}
+
+.sore-warning__title {
+  font-weight: 800;
+}
+
+.sore-parts {
+  margin-top: 0.8rem;
+}
+
+.sore-parts .lab-chips {
+  margin-top: 0.5rem;
+}
+
+.sore-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+  font-size: 0.9375rem;
+}
+
 /* 10. SMALL SCREENS AND REDUCED MOTION --------------------------- */
 
 @media (max-width: 640px) {
