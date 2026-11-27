@@ -88,7 +88,18 @@ const PROGRESS_KEYS = [
   "kickoff.drinkRatings", "kickoff.drinkSkips", "kickoff.repeatAsked",
   "kickoff.seen", "kickoff.practice", "kickoff.habits", "kickoff.trainerLog",
   "kickoff.grocery", "kickoff.name",
+  // Added with Level Up's features (see bridge.js): the activity log, pet,
+  // shop, training lessons, and everything else they save
+  "kickoff.log", "kickoff.pet", "kickoff.shop", "kickoff.training",
+  ...SAVED_KEYS.map(storeKey),
 ];
+
+// Level Up's features (loaded from ../level-up/, see bridge.js) save things
+// with names like "levelUp.pet". Here those become "kickoff.pet", so Kickoff's
+// progress never mixes with Level Up's.
+function storeKey(key) {
+  return typeof key === "string" && key.startsWith("levelUp.") ? `kickoff.${key.slice("levelUp.".length)}` : key;
+}
 
 const memory = {};
 
@@ -100,6 +111,7 @@ let cloudAgain = false;  // something changed while saving
 let lastCloudText = "";  // what your account has, as text
 
 function load(key, fallback) {
+  key = storeKey(key);
   if (key in memory) return memory[key];
   try {
     const value = localStorage.getItem(key);
@@ -111,6 +123,7 @@ function load(key, fallback) {
 }
 
 function save(key, value) {
+  key = storeKey(key);
   memory[key] = String(value);
   try {
     localStorage.setItem(key, value);
@@ -163,6 +176,7 @@ function loadProgress() {
   habits = loadJSON("kickoff.habits", {});
   trainerLog = loadJSON("kickoff.trainerLog", []);
   groceryChecks = loadJSON("kickoff.grocery", {});
+  loadBridgeProgress(); // the quiz, games, pet and more (bridge.js)
 }
 
 loadProgress();
@@ -477,6 +491,7 @@ function render() {
   renderHabits();   // in habits.js
   renderCharts();   // in charts.js
   showPlayerName();
+  renderBridge();   // the Brain, Games, Training and Pet tabs (bridge.js)
 }
 
 function renderDay(plan) {

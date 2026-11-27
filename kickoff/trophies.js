@@ -100,7 +100,11 @@ function trophyStats() {
   xp += (pushups + curlups) * XP_RULES.trainerRep;
   if (testDone) xp += XP_RULES.testScores;
 
-  return { xp, workouts, bestStreak, comeback, perfectWeek, ratings, pushups, curlups, testDone, waterDays, sleepDays, saturdays, expertCount: expertDays.size };
+  // XP and facts from the newer tabs (quiz, games, pet...): see bridge.js
+  const extra = bridgeStats();
+  xp += extra.xp;
+
+  return { ...extra, xp, workouts, bestStreak, comeback, perfectWeek, ratings, pushups, curlups, testDone, waterDays, sleepDays, saturdays, expertCount: expertDays.size };
 }
 
 

@@ -18,7 +18,12 @@
       charts.js   -> the progress charts
       grocery.js  -> the week's grocery list
       ai-coach.js -> asking Claude questions (on the Claude version)
+      bridge.js   -> lets Kickoff use Level Up's newest features (below)
       app.js      -> what the buttons do, and building each day's plan
+
+    The Brain, Games, Training and Pet tabs come from my Level Up page:
+    their files load straight from the level-up folder ("../level-up/").
+    That way both pages get every new feature and every bug fix.
 
     Most of the page is empty here on purpose: app.js fills in the
     workout and recipes for whichever day you're looking at.
@@ -37,21 +42,45 @@
   <!-- The "?v=8" is a version number. Browsers keep old copies of files for a
        while; changing the number makes them download the newest version.
        Add 1 to it (on every line below) whenever you change those files. -->
-  <link rel="stylesheet" href="style.css?v=11">
+  <!-- Level Up's styles first (for the new tabs), then Kickoff's own look on top -->
+  <link rel="stylesheet" href="../level-up/style.css?v=23">
+  <link rel="stylesheet" href="style.css?v=12">
   <!-- These load in order. app.js goes last, because it starts the page
        and uses things from all the others. -->
-  <script src="plan.js?v=11" defer></script>
-  <script src="demos.js?v=11" defer></script>
-  <script src="trophies.js?v=11" defer></script>
-  <script src="coach.js?v=11" defer></script>
-  <script src="practice.js?v=11" defer></script>
-  <script src="habits.js?v=11" defer></script>
-  <script src="charts.js?v=11" defer></script>
-  <script src="grocery.js?v=11" defer></script>
-  <script src="ai-coach.js?v=11" defer></script>
-  <script src="app.js?v=11" defer></script>
+  <script src="plan.js?v=12" defer></script>
+  <script src="../level-up/hooks.js?v=23" defer></script>
+  <script src="../level-up/demos.js?v=23" defer></script>
+  <script src="trophies.js?v=12" defer></script>
+  <script src="../level-up/coach.js?v=23" defer></script>
+  <script src="practice.js?v=12" defer></script>
+  <script src="habits.js?v=12" defer></script>
+  <script src="charts.js?v=12" defer></script>
+  <script src="grocery.js?v=12" defer></script>
+  <script src="ai-coach.js?v=12" defer></script>
+  <!-- The new tabs, from Level Up -->
+  <script src="../level-up/quiz-questions.js?v=23" defer></script>
+  <script src="../level-up/quiz.js?v=23" defer></script>
+  <script src="../level-up/training-lessons.js?v=23" defer></script>
+  <script src="../level-up/training.js?v=23" defer></script>
+  <script src="../level-up/pet.js?v=23" defer></script>
+  <script src="../level-up/shop.js?v=23" defer></script>
+  <script src="../level-up/brain-data.js?v=23" defer></script>
+  <script src="../level-up/brain.js?v=23" defer></script>
+  <script src="../level-up/games.js?v=23" defer></script>
+  <script src="../level-up/training-plus.js?v=23" defer></script>
+  <script src="../level-up/pet-plus.js?v=23" defer></script>
+  <script src="../level-up/fun.js?v=23" defer></script>
+  <script src="bridge.js?v=12" defer></script>
+  <script src="app.js?v=12" defer></script>
 </head>
 <body>
+
+  <!-- 🥚 Psst! Hey, coder. You read the source code, just like a real web developer.
+       Here's a secret code for you: VIEWSOURCE
+       Type it in the Secret Code box on the Pet & Shop tab. -->
+
+  <!-- Snowflakes (or leaves...) during seasonal events (fun.js) -->
+  <div class="season-fx" id="season-fx" aria-hidden="true"></div>
 
   <!-- Faint soccer-field lines in the background, just for looks -->
   <svg class="pitch" viewBox="0 0 600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -67,12 +96,14 @@
     <path d="M240 740 A70 70 0 0 1 360 740"/>
   </svg>
 
-  <!-- ============ SCOREBOARD ============ -->
+  <!-- ============ SCOREBOARD AND TABS (they stick to the top together) ============ -->
+  <div class="top">
   <header class="hud">
     <a class="hud__home" href="../index.html">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
       <span class="hud__home-text">Home</span>
     </a>
+    <button class="hud__avatar" id="hud-avatar" type="button" data-go-tab="pet" aria-label="My avatar" title="My avatar"></button>
     <p class="hud__title">Kick<span class="marker">off</span> <span class="expert-badge">Pro</span></p>
 
     <dl class="hud__stats">
@@ -94,7 +125,23 @@
     </button>
   </header>
 
+  <!-- The tabs (bridge.js) -->
+  <nav class="tabs" aria-label="Sections">
+    <div class="tabs__inner">
+      <button class="tab" type="button" data-tab="today" aria-current="page"><span aria-hidden="true">⚽</span> Today</button>
+      <button class="tab" type="button" data-tab="quiz"><span aria-hidden="true">🧠</span> Brain</button>
+      <button class="tab" type="button" data-tab="arcade"><span aria-hidden="true">🎮</span> Games</button>
+      <button class="tab" type="button" data-tab="training"><span aria-hidden="true">🎓</span> Training</button>
+      <button class="tab" type="button" data-tab="pet"><span aria-hidden="true">🐾</span> Pet &amp; Shop</button>
+    </div>
+  </nav>
+  </div>
+
   <main class="wrap page" id="main">
+    <!-- ==================== TAB: TODAY ==================== -->
+    <div class="tab-page" data-page="today">
+    <!-- ============ SEASONAL EVENT (fun.js) ============ -->
+    <section class="panel event-panel" id="event-panel" aria-label="Special event" hidden></section>
 
     <!-- ============ WHICH DAY ============ -->
     <section class="panel day" aria-labelledby="day-name">
@@ -272,6 +319,7 @@
       <div class="trophies__player">
         <p class="eyebrow">// trophy case</p>
         <div class="player">
+          <span class="player__avatar" id="player-avatar"></span>
           <p class="player__level"><span>Level</span><strong id="player-level">1</strong></p>
           <div>
             <h2 class="panel__title" id="trophies-title"><span id="player-rank">Rookie</span></h2>
@@ -295,6 +343,427 @@
         <ul class="badges" id="badges"></ul>
       </div>
     </section>
+
+    </div>
+
+    <!-- ==================== THE NEW TABS (files from ../level-up/, see bridge.js) ==================== -->
+    <div class="tab-page" data-page="quiz" hidden>
+      <!-- ============ FACT OF THE DAY + JUMP BUTTONS (brain.js, facts in brain-data.js) ============ -->
+      <section class="panel brain-top" aria-label="Fact of the day">
+        <div class="fact" id="fact-area"></div>
+        <nav class="brain-jump" aria-label="Jump to a game on this tab">
+          <button class="lab-chip" type="button" data-brain-jump="quiz-panel">🧠 Quiz</button>
+          <button class="lab-chip" type="button" data-brain-jump="bee-panel">🐝 Spelling</button>
+          <button class="lab-chip" type="button" data-brain-jump="sprint-panel">✖️ Times tables</button>
+          <button class="lab-chip" type="button" data-brain-jump="focus-panel">⏳ Homework timer</button>
+          <button class="lab-chip" type="button" data-brain-jump="myq-panel">✏️ Make a quiz</button>
+        </nav>
+      </section>
+
+      <!-- ============ BRAIN + BODY QUIZ (quiz.js, questions in quiz-questions.js) ============ -->
+      <section class="panel quiz brain-panel" id="quiz-panel" aria-labelledby="quiz-title">
+        <div class="panel__head">
+          <p class="eyebrow">// school quiz · 5th grade</p>
+          <span class="quest-tag">+10 XP per right answer</span>
+        </div>
+        <h2 class="panel__title" id="quiz-title">🧠 Brain + Body Quiz</h2>
+        <p class="panel__lead">10 questions a round. Get one wrong and you owe some exercise: every question has its own penalty!</p>
+        <div class="quiz-area" id="quiz-area"></div>
+      </section>
+
+      <div class="duo duo--even">
+        <!-- ============ SPELLING BEE (brain.js, words in brain-data.js) ============ -->
+        <section class="panel brain-panel" id="bee-panel" aria-labelledby="bee-title">
+          <div class="panel__head">
+            <p class="eyebrow">// spelling bee</p>
+            <span class="quest-tag">+10 XP per word</span>
+          </div>
+          <h2 class="panel__title" id="bee-title">🐝 Spelling Bee</h2>
+          <p class="panel__lead">Listen to the word and type it. Spell it wrong and you owe some exercise!</p>
+          <div class="brain-area" id="bee-area"></div>
+        </section>
+
+        <!-- ============ TIMES-TABLE SPRINT (brain.js) ============ -->
+        <section class="panel brain-panel" id="sprint-panel" aria-labelledby="sprint-title">
+          <div class="panel__head">
+            <p class="eyebrow">// math sprint</p>
+            <span class="quest-tag">+2 XP per answer</span>
+          </div>
+          <h2 class="panel__title" id="sprint-title">✖️ Times-Table Sprint</h2>
+          <p class="panel__lead">How many can you get in 60 seconds? Beat your best score!</p>
+          <div class="brain-area" id="sprint-area"></div>
+        </section>
+      </div>
+
+      <div class="duo duo--even">
+        <!-- ============ KOREAN FLASHCARDS (brain.js, words in brain-data.js) ============ -->
+        <section class="panel brain-panel" id="korean-panel" aria-labelledby="korean-title" hidden>
+          <div class="panel__head">
+            <p class="eyebrow">// taekwondo words</p>
+            <span class="quest-tag">+5 XP per new word</span>
+          </div>
+          <h2 class="panel__title" id="korean-title">🇰🇷 Korean Flashcards</h2>
+          <p class="panel__lead">Learn the Korean words you hear at the dojang. Tap 🔊 to hear them.</p>
+          <div class="brain-area" id="korean-area"></div>
+        </section>
+
+        <!-- ============ HOMEWORK TIMER (brain.js) ============ -->
+        <section class="panel brain-panel" id="focus-panel" aria-labelledby="focus-title">
+          <div class="panel__head">
+            <p class="eyebrow">// homework helper</p>
+            <span class="quest-tag">+25 XP per round</span>
+          </div>
+          <h2 class="panel__title" id="focus-title">⏳ Homework Timer</h2>
+          <p class="panel__lead">Focus for a while, then take a 5-minute move break. Moving helps your brain remember!</p>
+          <div class="brain-area" id="focus-area"></div>
+        </section>
+      </div>
+
+      <!-- ============ MAKE YOUR OWN QUIZ (brain.js) ============ -->
+      <section class="panel brain-panel" id="myq-panel" aria-labelledby="myq-title">
+        <div class="panel__head">
+          <p class="eyebrow">// quiz maker</p>
+          <span class="quest-tag">+5 XP per question</span>
+        </div>
+        <h2 class="panel__title" id="myq-title">✏️ Make Your Own Quiz</h2>
+        <p class="panel__lead">Write your own questions, then play them in the quiz above (pick "⭐ My questions"). Quiz your brother, a friend or a grown-up!</p>
+        <div class="duo">
+          <form class="form myq-form" id="myq-form" novalidate>
+            <div class="field">
+              <label class="field-label" for="myq-q">Question</label>
+              <input class="input" id="myq-q" type="text" maxlength="140" placeholder="How many legs does a spider have?" autocomplete="off">
+            </div>
+            <div class="field">
+              <label class="field-label" for="myq-right">Right answer</label>
+              <input class="input myq-input--right" id="myq-right" type="text" maxlength="60" placeholder="8" autocomplete="off">
+            </div>
+            <div class="myq-wrongs">
+              <div class="field">
+                <label class="field-label" for="myq-wrong1">Wrong answer</label>
+                <input class="input" id="myq-wrong1" type="text" maxlength="60" placeholder="6" autocomplete="off">
+              </div>
+              <div class="field">
+                <label class="field-label" for="myq-wrong2">Wrong answer (optional)</label>
+                <input class="input" id="myq-wrong2" type="text" maxlength="60" placeholder="4" autocomplete="off">
+              </div>
+              <div class="field">
+                <label class="field-label" for="myq-wrong3">Wrong answer (optional)</label>
+                <input class="input" id="myq-wrong3" type="text" maxlength="60" placeholder="10" autocomplete="off">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label" for="myq-why">Fun fact to show after (optional)</label>
+              <input class="input" id="myq-why" type="text" maxlength="160" placeholder="Spiders aren't insects. Insects have 6 legs!" autocomplete="off">
+            </div>
+            <div class="field">
+              <label class="field-label" for="myq-fix">Penalty if someone gets it wrong</label>
+              <select class="select" id="myq-fix"></select>
+            </div>
+            <div class="form-row form-row--tight">
+              <button class="button" type="submit">Save question</button>
+              <button class="text-button" type="button" id="myq-cancel" hidden>Cancel</button>
+            </div>
+            <p class="form-note" id="myq-note" aria-live="polite"></p>
+          </form>
+          <div class="myq-saved" id="myq-list"></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="tab-page" data-page="arcade" hidden>
+      <nav class="brain-jump arcade-jump" aria-label="Jump to a game">
+        <button class="lab-chip" type="button" data-brain-jump="box-panel">🎁 Mystery Box</button>
+        <button class="lab-chip" type="button" data-brain-jump="shootout-panel">⚽ Shootout</button>
+        <button class="lab-chip" type="button" data-brain-jump="reflex-panel">🧤 Reflexes</button>
+        <button class="lab-chip" type="button" data-brain-jump="boards-panel">🪵 Board Break</button>
+        <button class="lab-chip" type="button" data-brain-jump="memory-panel">🃏 Memory</button>
+        <button class="lab-chip" type="button" data-brain-jump="duel-panel">🤝 Family Duel</button>
+      </nav>
+
+      <div class="duo duo--even">
+        <!-- ============ MYSTERY BOX (games.js) ============ -->
+        <section class="panel brain-panel" id="box-panel" aria-labelledby="box-title">
+          <div class="panel__head">
+            <p class="eyebrow">// one a day</p>
+            <span class="quest-tag">surprise!</span>
+          </div>
+          <h2 class="panel__title" id="box-title">🎁 Mystery Box</h2>
+          <div class="brain-area" id="box-area"></div>
+        </section>
+
+        <!-- ============ SISTER DUEL (games.js) ============ -->
+        <section class="panel brain-panel" id="duel-panel" aria-labelledby="duel-title">
+          <div class="panel__head">
+            <p class="eyebrow">// 2 players, 1 tablet</p>
+            <span class="quest-tag">+20 XP</span>
+          </div>
+          <h2 class="panel__title" id="duel-title">🤝 Family Duel</h2>
+          <div class="duel-names" id="duel-names">
+            <div class="field">
+              <label class="field-label" for="duel-name-0">Player 1</label>
+              <input class="input duel-name duel-name--p0" id="duel-name-0" data-duel-name="0" type="text" maxlength="16" placeholder="Player 1" autocomplete="off">
+            </div>
+            <div class="field">
+              <label class="field-label" for="duel-name-1">Player 2</label>
+              <input class="input duel-name duel-name--p1" id="duel-name-1" data-duel-name="1" type="text" maxlength="16" placeholder="Player 2" autocomplete="off">
+            </div>
+          </div>
+          <div class="brain-area" id="duel-area"></div>
+        </section>
+      </div>
+
+      <div class="duo duo--even">
+        <!-- ============ PENALTY SHOOTOUT (games.js) ============ -->
+        <section class="panel brain-panel" id="shootout-panel" aria-labelledby="shootout-title">
+          <div class="panel__head">
+            <p class="eyebrow">// soccer</p>
+            <span class="quest-tag">+5 XP per goal</span>
+          </div>
+          <h2 class="panel__title" id="shootout-title">⚽ Penalty Shootout</h2>
+          <div class="brain-area" id="shootout-area"></div>
+        </section>
+
+        <!-- ============ GOALIE REFLEXES (games.js) ============ -->
+        <section class="panel brain-panel" id="reflex-panel" aria-labelledby="reflex-title">
+          <div class="panel__head">
+            <p class="eyebrow">// soccer</p>
+            <span class="quest-tag">+15 XP</span>
+          </div>
+          <h2 class="panel__title" id="reflex-title">🧤 Goalie Reflexes</h2>
+          <div class="brain-area" id="reflex-area"></div>
+        </section>
+      </div>
+
+      <div class="duo duo--even">
+        <!-- ============ BOARD BREAK (games.js) ============ -->
+        <section class="panel brain-panel" id="boards-panel" aria-labelledby="boards-title">
+          <div class="panel__head">
+            <p class="eyebrow">// taekwondo</p>
+            <span class="quest-tag">+5 XP per board</span>
+          </div>
+          <h2 class="panel__title" id="boards-title">🪵 Board Break</h2>
+          <div class="brain-area" id="boards-area"></div>
+        </section>
+
+        <!-- ============ MEMORY MATCH (games.js) ============ -->
+        <section class="panel brain-panel" id="memory-panel" aria-labelledby="memory-title">
+          <div class="panel__head">
+            <p class="eyebrow">// brain + body</p>
+            <span class="quest-tag">+30 XP</span>
+          </div>
+          <h2 class="panel__title" id="memory-title">🃏 Memory Match</h2>
+          <div class="brain-area" id="memory-area"></div>
+        </section>
+      </div>
+    </div>
+
+    <div class="tab-page" data-page="training" hidden>
+      <nav class="brain-jump arcade-jump" aria-label="Jump to a part of the Training tab">
+        <button class="lab-chip" type="button" data-brain-jump="training">🎓 Lessons</button>
+        <button class="lab-chip" type="button" data-brain-jump="gameday-panel">🏟️ Game Day Warm-Up</button>
+        <button class="lab-chip" type="button" data-brain-jump="goals-panel">🎯 My Goals</button>
+        <button class="lab-chip" type="button" data-brain-jump="fit-panel">📋 Fitness Test</button>
+        <button class="lab-chip" type="button" data-brain-jump="muscle-panel">🗺️ Muscle Map</button>
+        <button class="lab-chip" type="button" data-brain-jump="sore-panel">🩹 Sore Muscles</button>
+      </nav>
+
+      <!-- ============ TRAINING CENTER (training.js, lessons in training-lessons.js) ============ -->
+      <section class="panel brain-panel" id="training" aria-labelledby="training-title">
+        <div class="panel__head">
+          <p class="eyebrow">// training center</p>
+          <div class="picker" id="training-sports" role="group" aria-label="Sport"></div>
+        </div>
+        <h2 class="panel__title" id="training-title">🎓 Training</h2>
+        <p class="panel__lead">Pick a skill to learn how it's done. Tap <strong>Teach me</strong> and the coach walks you through it out loud, then runs a practice drill!</p>
+        <p class="tip-of-day" id="tip-of-day"></p>
+        <p class="training-safety">Practice in an open space, warm up first, and ask your instructor or coach to check your form.</p>
+        <div class="page-tabs" id="training-pages" role="group" aria-label="Lesson pages"></div>
+        <div class="lesson-cards" id="lesson-cards"></div>
+        <div class="page-actions" id="page-actions"></div>
+        <div class="lesson" id="lesson"></div>
+      </section>
+
+      <div class="duo duo--even">
+        <!-- ============ GAME DAY WARM-UP (training-plus.js) ============ -->
+        <section class="panel brain-panel" id="gameday-panel" aria-labelledby="gameday-title">
+          <div class="panel__head">
+            <p class="eyebrow">// before the big moment</p>
+            <span class="quest-tag">+30 XP</span>
+          </div>
+          <h2 class="panel__title" id="gameday-title">🏟️ Game Day Warm-Up</h2>
+          <p class="panel__lead">A quick warm-up made for what you're about to do. Warm muscles are faster and less likely to get hurt!</p>
+          <div class="brain-area gameday" id="gameday-area"></div>
+        </section>
+
+        <!-- ============ MY GOALS (training-plus.js) ============ -->
+        <section class="panel brain-panel" id="goals-panel" aria-labelledby="goals-title">
+          <div class="panel__head">
+            <p class="eyebrow">// my goals</p>
+            <span class="quest-tag">+100 XP per goal</span>
+          </div>
+          <h2 class="panel__title" id="goals-title">🎯 My Goals</h2>
+          <form class="form goal-form" id="goal-form" novalidate>
+            <div class="form-row">
+              <div class="field">
+                <label class="field-label" for="goal-kind">I want to do...</label>
+                <select class="select" id="goal-kind"></select>
+              </div>
+              <div class="field goal-form__number">
+                <label class="field-label" for="goal-target">How many?</label>
+                <input class="input" id="goal-target" type="number" inputmode="numeric" min="1" max="99999" placeholder="25">
+              </div>
+            </div>
+            <div class="form-row" id="goal-custom" hidden>
+              <div class="field">
+                <label class="field-label" for="goal-text">My goal</label>
+                <input class="input" id="goal-text" type="text" maxlength="60" placeholder="Run a mile without stopping" autocomplete="off">
+              </div>
+              <div class="field goal-form__number">
+                <label class="field-label" for="goal-unit">Counted in (optional)</label>
+                <input class="input" id="goal-unit" type="text" maxlength="20" placeholder="minutes" autocomplete="off">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="field">
+                <label class="field-label" for="goal-due">By this date</label>
+                <input class="input" id="goal-due" type="date">
+              </div>
+              <button class="button" id="goal-add" type="submit">Set my goal</button>
+            </div>
+            <p class="form-note" id="goal-note" aria-live="polite"></p>
+          </form>
+          <div class="goals-list" id="goals-list"></div>
+        </section>
+      </div>
+
+      <!-- ============ MONTHLY FITNESS TEST (training-plus.js) ============ -->
+      <section class="panel brain-panel" id="fit-panel" aria-labelledby="fit-title">
+        <div class="panel__head">
+          <p class="eyebrow">// once a month</p>
+          <span class="quest-tag">+150 XP</span>
+        </div>
+        <h2 class="panel__title" id="fit-title">📋 Monthly Fitness Test</h2>
+        <p class="panel__lead">5 quick tests, once a month. Your report card shows how much stronger you got since last time!</p>
+        <div class="brain-area" id="fit-area"></div>
+      </section>
+
+      <div class="duo duo--even">
+        <!-- ============ MUSCLE MAP (training-plus.js) ============ -->
+        <section class="panel brain-panel" id="muscle-panel" aria-labelledby="muscle-title">
+          <div class="panel__head">
+            <p class="eyebrow">// what you worked</p>
+          </div>
+          <h2 class="panel__title" id="muscle-title">🗺️ Muscle Map</h2>
+          <p class="panel__lead">Your workouts, extra workouts, lessons and games light up the muscles they work.</p>
+          <div class="brain-area" id="muscle-area"></div>
+        </section>
+
+        <!-- ============ SORE MUSCLE HELPER (training-plus.js) ============ -->
+        <section class="panel brain-panel" id="sore-panel" aria-labelledby="sore-title">
+          <div class="panel__head">
+            <p class="eyebrow">// feel better</p>
+          </div>
+          <h2 class="panel__title" id="sore-title">🩹 Sore Muscle Helper</h2>
+          <div class="brain-area" id="sore-area"></div>
+        </section>
+      </div>
+    </div>
+
+    <div class="tab-page" data-page="pet" hidden>
+      <nav class="brain-jump arcade-jump" aria-label="Jump to a part of the Pet tab">
+        <button class="lab-chip" type="button" data-brain-jump="pet-panel">🐾 My pet</button>
+        <button class="lab-chip" type="button" data-brain-jump="room-panel">🏠 Pet room</button>
+        <button class="lab-chip" type="button" data-brain-jump="avatar-panel">🧑 My avatar</button>
+        <button class="lab-chip" type="button" data-brain-jump="shop-panel">🛍️ Shop</button>
+        <button class="lab-chip" type="button" data-brain-jump="secrets-panel">🥚 Secrets</button>
+        <button class="lab-chip" type="button" data-brain-jump="sticker-panel">📒 Stickers</button>
+      </nav>
+      <!-- ============ MY PET (pet.js) ============ -->
+      <section class="panel pet-panel brain-panel" id="pet-panel" aria-labelledby="pet-name-title">
+        <p class="eyebrow">// my pet</p>
+        <div class="pet-home">
+          <div class="pet-stage">
+            <div class="pet-room" id="pet-room" aria-hidden="true"></div>
+            <p class="pet-bubble" id="pet-bubble" aria-live="polite" hidden></p>
+            <div class="pet-picture" id="pet-picture"></div>
+            <button class="button" id="pet-high-five" type="button">🖐️ High five!</button>
+          </div>
+          <div class="pet-info">
+            <h2 class="panel__title" id="pet-name-title">Your pet</h2>
+            <p class="pet-mood" id="pet-mood"></p>
+            <div>
+              <p class="quest-progress__text" id="pet-grow"></p>
+              <div class="xpbar" aria-hidden="true"><div class="xpbar__fill" id="pet-grow-fill"></div></div>
+            </div>
+            <p class="panel__lead">Your pet grows when you finish workouts, and it's happiest when you work out, drink water and sleep 9+ hours. Get it hats and colors in the shop!</p>
+            <form class="inline-form" id="pet-name-form">
+              <label class="visually-hidden" for="pet-name">Your pet's name</label>
+              <input class="input" id="pet-name" type="text" maxlength="20" placeholder="Name your pet!" autocomplete="off">
+              <button class="button button--quiet" type="submit">Save name</button>
+            </form>
+            <div class="pet-extras" id="pet-extras"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ PET ROOM (pet-plus.js) ============ -->
+      <section class="panel brain-panel" id="room-panel" aria-labelledby="room-title">
+        <div class="panel__head">
+          <p class="eyebrow">// pet room</p>
+        </div>
+        <h2 class="panel__title" id="room-title">🏠 Pet Room</h2>
+        <p class="panel__lead">Decorate your pet's room! It shows up behind your pet. Uses the same coins as the shop.</p>
+        <div class="brain-area" id="room-area"></div>
+      </section>
+
+      <!-- ============ MY AVATAR (fun.js) ============ -->
+      <section class="panel brain-panel" id="avatar-panel" aria-labelledby="avatar-title">
+        <div class="panel__head">
+          <p class="eyebrow">// that's you!</p>
+        </div>
+        <h2 class="panel__title" id="avatar-title">🧑 My Avatar</h2>
+        <p class="panel__lead">Make a character that looks like you. It shows up at the top of the page and in your trophy case.</p>
+        <div class="brain-area" id="avatar-area"></div>
+      </section>
+
+      <!-- ============ COIN SHOP (shop.js) ============ -->
+      <section class="panel brain-panel" id="shop-panel" aria-labelledby="shop-title">
+        <div class="panel__head">
+          <p class="eyebrow">// coin shop</p>
+          <p class="coins"><span aria-hidden="true">🪙</span> <strong id="coin-count">0</strong> coins</p>
+        </div>
+        <h2 class="panel__title" id="shop-title">🛍️ Shop</h2>
+        <p class="panel__lead" id="coin-next"></p>
+        <div class="shop-groups" id="shop-groups"></div>
+      </section>
+
+      <!-- ============ SECRETS (fun.js) ============ -->
+      <section class="panel brain-panel" id="secrets-panel" aria-labelledby="secrets-title">
+        <div class="panel__head">
+          <p class="eyebrow">// top secret 🤫</p>
+          <span class="quest-tag">+50 XP each</span>
+        </div>
+        <h2 class="panel__title" id="secrets-title">🥚 Secret Easter Eggs</h2>
+        <p class="panel__lead">Secrets are hidden all over Kickoff. Each one unlocks a secret item for the shop!</p>
+        <form class="inline-form secret-form" id="secret-form">
+          <label class="visually-hidden" for="secret-code">Secret code</label>
+          <input class="input" id="secret-code" type="text" maxlength="20" placeholder="🔐 Type a secret code" autocomplete="off" autocapitalize="characters" spellcheck="false">
+          <button class="button" type="submit">Try it</button>
+        </form>
+        <p class="form-note" id="secret-note" aria-live="polite"></p>
+        <div id="secret-list"></div>
+      </section>
+
+      <!-- ============ STICKER ALBUM (fun.js) ============ -->
+      <section class="panel brain-panel" id="sticker-panel" aria-labelledby="sticker-title">
+        <div class="panel__head">
+          <p class="eyebrow">// sticker album</p>
+        </div>
+        <h2 class="panel__title" id="sticker-title">📒 Sticker Album</h2>
+        <p class="panel__lead">Try everything on the site to fill your album. Can you collect all 40?</p>
+        <div class="brain-area" id="sticker-area"></div>
+      </section>
+    </div>
 
     <footer class="note">
       <p>
@@ -342,6 +811,10 @@
         <button class="icon-button" id="demo-close" type="button" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
       </div>
       <div class="demo-picture" id="demo-picture"></div>
+      <div class="lab-chips demo-view" role="group" aria-label="Demo controls">
+        <button class="lab-chip" type="button" data-demo-view="slow" aria-pressed="false">🐢 Slow motion</button>
+        <button class="lab-chip" type="button" data-demo-view="mirror" aria-pressed="false">🪞 Mirror</button>
+      </div>
       <p class="demo-how" id="demo-how"></p>
     </div>
   </div>

@@ -198,5 +198,20 @@ Open `kickoff/index.html`. It's a copy of Level Up, made just for soccer:
 - `DIFFICULTY` at the top of `kickoff/plan.js` sets how hard it is
   (0.75 means it starts a bit easier). The "Too easy?" button works too.
 - Her progress is saved separately from Level Up's, even on the same device.
+- **Tabs** along the top, with four tabs that come straight from Level Up:
+  - **🧠 Brain:** the Brain + Body Quiz, Spelling Bee, Times-Table Sprint,
+    Make Your Own Quiz, the Homework Timer and the fact of the day
+  - **🎮 Games:** Penalty Shootout, Goalie Reflexes, Board Break, Memory
+    Match, the Mystery Box and a Family Duel
+  - **🎓 Training:** soccer (and taekwondo) lessons with the voice coach, Game
+    Day Warm-Up, the Monthly Fitness Test, My Goals, the Muscle Map and
+    the Sore Muscle Helper
+  - **🐾 Pet & Shop:** her own pet (with sport forms, tricks and a room), an
+    avatar, the coin shop, secret Easter eggs and the Sticker Album
+
+Those four tabs load their files from `level-up/` (look for `../level-up/` in
+`kickoff/index.html`), so both sites get every new feature and bug fix.
+`kickoff/bridge.js` adds the few things those files need. Kickoff saves
+everything with `kickoff.` names (see `storeKey` in `kickoff/app.js`).
 
 It's a fan-made page, not connected to the players or their teams.
