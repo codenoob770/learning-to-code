@@ -35,6 +35,7 @@ const PENALTY_MOVES = [
   { match: /mountain climber/, demo: "mountainClimbers", how: "In a high plank, drive one knee toward your chest, then switch fast. Count each knee." },
   { match: /burpee/, demo: "burpee", how: "Squat, put your hands down, jump your feet back to a plank, jump them back in, then jump up high!" },
   { match: /calf raise/, demo: "calfRaise", how: "Stand tall and rise up onto your toes, then lower down slowly." },
+  { match: /front kick/, demo: "frontKick", how: "Lift your knee up high, snap your foot forward, then pull it back fast. Kick with the ball of your foot." },
 ];
 
 // Works out a penalty from its text, like "8 lunges each leg" or "20-second plank"

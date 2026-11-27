@@ -7,6 +7,9 @@
    - colors for the stick figures in the demos
 
    Coins are worked out from your XP, so they sync by themselves.
+   (Bonus coins from prizes, like the Mystery Box, plug in with
+   addCoins in hooks.js.) "mystery: true" items can't be bought:
+   they only come from the Mystery Box in the Arcade.
    The shop only saves what you spent, what you own and what
    you're wearing. Expert mode's red always wins over a theme.
 
@@ -32,6 +35,9 @@ const SHOP = [
   { group: "hat", id: "party", name: "Party hat", icon: "🥳", price: 100 },
   { group: "hat", id: "wizard", name: "Wizard hat", icon: "🧙", price: 150 },
   { group: "hat", id: "crown", name: "Crown", icon: "👑", price: 400 },
+  { group: "hat", id: "tophat", name: "Top hat", icon: "🎩", price: 0, mystery: true },
+  { group: "hat", id: "halo", name: "Golden halo", icon: "😇", price: 0, mystery: true },
+  { group: "hat", id: "unicorn", name: "Unicorn horn", icon: "🦄", price: 0, mystery: true },
 
   { group: "petColor", id: "#7fdcc8", name: "Mint", price: 0, free: true, swatch: "#7fdcc8" },
   { group: "petColor", id: "#ff9f5a", name: "Orange", price: 50, swatch: "#ff9f5a" },
@@ -66,7 +72,8 @@ function owns(item) {
 }
 
 function coins() {
-  return Math.max(0, Math.floor(trophyStats().xp / XP_PER_COIN) - (shopData.spent || 0));
+  const bonus = MORE_COINS.reduce((sum, count) => sum + count(), 0);
+  return Math.max(0, Math.floor(trophyStats().xp / XP_PER_COIN) + bonus - (shopData.spent || 0));
 }
 
 // Your pet's hat and color (for pet.js)
@@ -96,6 +103,7 @@ function renderShop() {
       const owned = owns(item);
       const worn = wearing(item.group) === item.id;
       let button = `<button class="button" type="button" data-shop-buy="${item.group}:${item.id}" ${wallet < item.price ? "disabled" : ""}>🪙 ${item.price}</button>`;
+      if (item.mystery && !owned) button = `<span class="shop-item__mystery">🎁 Mystery Box only</span>`;
       if (owned) button = `<button class="button button--quiet" type="button" data-shop-wear="${item.group}:${item.id}">Wear</button>`;
       if (worn) button = `<span class="shop-item__worn">✓ Wearing</span>`;
       const look = item.swatch ? `<span class="shop-item__swatch" style="background: ${item.swatch}"></span>` : `<span class="shop-item__icon">${item.icon}</span>`;
@@ -123,7 +131,7 @@ document.querySelector("#shop-groups").addEventListener("click", (event) => {
   const [group, ...rest] = (buy ? key.shopBuy : key.shopWear).split(":");
   const id = rest.join(":");
   const item = SHOP.find((i) => i.group === group && i.id === id);
-  if (!item) return;
+  if (!item || (buy && item.mystery)) return;
 
   if (buy) {
     if (coins() < item.price) {

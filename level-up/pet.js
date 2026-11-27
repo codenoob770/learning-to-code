@@ -129,6 +129,9 @@ function petHatSVG(hat) {
     goggles: `<path d="M44 84 Q100 70 156 84" class="pet__strap"/><circle cx="80" cy="78" r="13" fill="#4fd1ff" stroke="#1c2233" stroke-width="4"/><circle cx="120" cy="78" r="13" fill="#4fd1ff" stroke="#1c2233" stroke-width="4"/>`,
     party: `<path d="M78 56 L100 6 L122 56 Z" fill="#a98bff"/><path d="M86 38 L114 38 M92 24 L108 24" stroke="#ffd34d" stroke-width="5"/><circle cx="100" cy="6" r="7" fill="#ff8fc8"/>`,
     wizard: `<path d="M62 58 Q100 50 138 58 L106 -6 Q96 -10 98 4 Z" fill="#4b3aa8"/><path d="M52 58 Q100 46 148 58 Q100 68 52 58 Z" fill="#3a2c86"/><text x="96" y="38" class="pet__star">★</text>`,
+    tophat: `<rect x="72" y="4" width="56" height="46" rx="4" fill="#1c2233"/><rect x="72" y="36" width="56" height="8" fill="#e2443b"/><ellipse cx="100" cy="52" rx="42" ry="7" fill="#1c2233"/>`,
+    halo: `<ellipse cx="100" cy="24" rx="36" ry="10" fill="none" stroke="#ffd34d" stroke-width="7"/><ellipse cx="100" cy="24" rx="36" ry="10" fill="none" stroke="#fff6c2" stroke-width="2"/>`,
+    unicorn: `<path d="M89 58 L100 0 L111 58 Z" fill="#ffd34d"/><path d="M91 46 L109 40 M94 31 L107 26 M97 17 L104 14" stroke="#e8a31a" stroke-width="3"/><path d="M70 60 Q76 40 88 54 Q96 38 102 56" fill="#ff8fc8"/>`,
     crown: `<path d="M64 58 L64 22 L82 40 L100 14 L118 40 L136 22 L136 58 Z" fill="#ffd34d" stroke="#c99a1a" stroke-width="3" stroke-linejoin="round"/><circle cx="100" cy="44" r="5" fill="#e2443b"/><circle cx="78" cy="48" r="4" fill="#4fd1ff"/><circle cx="122" cy="48" r="4" fill="#4fd1ff"/>`,
   };
   return hats[hat] || "";

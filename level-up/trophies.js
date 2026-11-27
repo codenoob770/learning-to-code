@@ -254,7 +254,7 @@ function workOutTrophyStats() {
     missionsDone, missionSweeps, monthlies, bossesBeaten, quizRight,
     fullDeck, bestKicks, spins, smoothies, recipesMade, snackPerfect,
     belts: beltData.history.length, swimLessons, strokeMastered, goals, hatTrick, builtWorkouts, checkIns, familyWon,
-    bought: shopData.owned.length, spent: shopData.spent || 0, petStage: petStage(),
+    bought: shopData.owned.filter((key) => !SHOP.some((item) => item.mystery && `${item.group}:${item.id}` === key)).length, spent: shopData.spent || 0, petStage: petStage(),
     lessons: trainingLearned.size, tkdAll: sportLessonsAll("tkd"), soccerAll: sportLessonsAll("soccer"),
     extras: logOf("extra").length, quizPerfect, penaltyReps, expertCount: expertDays.size };
 }

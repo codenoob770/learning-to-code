@@ -14,6 +14,8 @@
                                  addXP("bee", (e) => e.r * 10, 5)
      addBadge(badge)             one more badge for the trophy case
      addXPRule(what, xp)         a line in the "How to earn XP" list
+     addCoins(count)             bonus coins for the shop: count()
+                                 gives back how many (like prizes)
      addQuizSubject(get)         one more subject in the quiz picker.
                                  get() gives back the subject, or null
                                  to hide it (like when it's empty)
@@ -26,7 +28,8 @@ const SAVED_KEYS = []; // extra progress keys that sync (app.js adds them to PRO
 const LOADERS = [];    // functions that read saved progress (app.js calls them in loadProgress)
 const MORE_XP = {};    // activity log type -> { xp: function, perDay: number }
 const MORE_XP_RULES = [];
-const MORE_QUIZ_SUBJECTS = []; // functions that give back a quiz subject (or null)
+const MORE_QUIZ_SUBJECTS = [];
+const MORE_COINS = [];         // functions that give back bonus coins // functions that give back a quiz subject (or null)
 
 function addPagePart(tab, draw) {
   PAGE_PARTS.push({ tab, draw });
@@ -49,6 +52,10 @@ function addBadge(badge) {
 
 function addXPRule(what, xp) {
   MORE_XP_RULES.push([what, xp]);
+}
+
+function addCoins(count) {
+  MORE_COINS.push(count);
 }
 
 function addQuizSubject(get) {

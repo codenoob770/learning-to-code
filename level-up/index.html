@@ -27,6 +27,8 @@
       brain.js    -> Spelling Bee, Times-Table Sprint, Korean Flashcards,
                      Make Your Own Quiz, Homework Timer and Fact of the Day
                      (words and facts in brain-data.js)
+      games.js    -> Penalty Shootout, Goalie Reflexes, Board Break,
+                     Memory Match, Mystery Box and Sister Duel
       arcade.js   -> card deck workout, Kick Caller and spin the wheel
       kitchen.js  -> Smoothie Lab, Recipe Book and Snack Swap
       sports.js   -> belt tracker, swim school, soccer journal and workout builder
@@ -53,38 +55,39 @@
   <!-- The "?v=8" is a version number. Browsers keep old copies of files for a
        while; changing the number makes them download the newest version.
        Add 1 to it (on every line below) whenever you change those files. -->
-  <link rel="stylesheet" href="style.css?v=19">
+  <link rel="stylesheet" href="style.css?v=20">
   <!-- These load in order. app.js goes last, because it starts the page
        and uses things from all the others. -->
-  <script src="plan.js?v=19" defer></script>
-  <script src="hooks.js?v=19" defer></script>
-  <script src="demos.js?v=19" defer></script>
-  <script src="trophies.js?v=19" defer></script>
-  <script src="coach.js?v=19" defer></script>
-  <script src="practice.js?v=19" defer></script>
-  <script src="habits.js?v=19" defer></script>
-  <script src="charts.js?v=19" defer></script>
-  <script src="grocery.js?v=19" defer></script>
-  <script src="ai-coach.js?v=19" defer></script>
-  <script src="quest.js?v=19" defer></script>
-  <script src="missions.js?v=19" defer></script>
-  <script src="boss.js?v=19" defer></script>
-  <script src="quiz-questions.js?v=19" defer></script>
-  <script src="quiz.js?v=19" defer></script>
-  <script src="arcade.js?v=19" defer></script>
-  <script src="kitchen.js?v=19" defer></script>
-  <script src="sports.js?v=19" defer></script>
-  <script src="stats.js?v=19" defer></script>
-  <script src="family.js?v=19" defer></script>
-  <script src="pet.js?v=19" defer></script>
-  <script src="shop.js?v=19" defer></script>
-  <script src="training-lessons.js?v=19" defer></script>
-  <script src="training.js?v=19" defer></script>
-  <script src="extra.js?v=19" defer></script>
-  <script src="brain-data.js?v=19" defer></script>
-  <script src="brain.js?v=19" defer></script>
-  <script src="tabs.js?v=19" defer></script>
-  <script src="app.js?v=19" defer></script>
+  <script src="plan.js?v=20" defer></script>
+  <script src="hooks.js?v=20" defer></script>
+  <script src="demos.js?v=20" defer></script>
+  <script src="trophies.js?v=20" defer></script>
+  <script src="coach.js?v=20" defer></script>
+  <script src="practice.js?v=20" defer></script>
+  <script src="habits.js?v=20" defer></script>
+  <script src="charts.js?v=20" defer></script>
+  <script src="grocery.js?v=20" defer></script>
+  <script src="ai-coach.js?v=20" defer></script>
+  <script src="quest.js?v=20" defer></script>
+  <script src="missions.js?v=20" defer></script>
+  <script src="boss.js?v=20" defer></script>
+  <script src="quiz-questions.js?v=20" defer></script>
+  <script src="quiz.js?v=20" defer></script>
+  <script src="arcade.js?v=20" defer></script>
+  <script src="kitchen.js?v=20" defer></script>
+  <script src="sports.js?v=20" defer></script>
+  <script src="stats.js?v=20" defer></script>
+  <script src="family.js?v=20" defer></script>
+  <script src="pet.js?v=20" defer></script>
+  <script src="shop.js?v=20" defer></script>
+  <script src="training-lessons.js?v=20" defer></script>
+  <script src="training.js?v=20" defer></script>
+  <script src="extra.js?v=20" defer></script>
+  <script src="brain-data.js?v=20" defer></script>
+  <script src="brain.js?v=20" defer></script>
+  <script src="games.js?v=20" defer></script>
+  <script src="tabs.js?v=20" defer></script>
+  <script src="app.js?v=20" defer></script>
 </head>
 <body>
 
@@ -367,9 +370,96 @@
 
     <!-- ==================== TAB: ARCADE ==================== -->
     <div class="tab-page" data-page="arcade" hidden>
+      <nav class="brain-jump arcade-jump" aria-label="Jump to a game">
+        <button class="lab-chip" type="button" data-brain-jump="box-panel">🎁 Mystery Box</button>
+        <button class="lab-chip" type="button" data-brain-jump="shootout-panel">⚽ Shootout</button>
+        <button class="lab-chip" type="button" data-brain-jump="reflex-panel">🧤 Reflexes</button>
+        <button class="lab-chip" type="button" data-brain-jump="boards-panel">🪵 Board Break</button>
+        <button class="lab-chip" type="button" data-brain-jump="memory-panel">🃏 Memory</button>
+        <button class="lab-chip" type="button" data-brain-jump="duel-panel">🤝 Sister Duel</button>
+        <button class="lab-chip" type="button" data-brain-jump="deck-panel">🂡 Card Deck</button>
+        <button class="lab-chip" type="button" data-brain-jump="kicks-panel">🥋 Kick Caller</button>
+      </nav>
+
+      <div class="duo duo--even">
+        <!-- ============ MYSTERY BOX (games.js) ============ -->
+        <section class="panel brain-panel" id="box-panel" aria-labelledby="box-title">
+          <div class="panel__head">
+            <p class="eyebrow">// one a day</p>
+            <span class="quest-tag">surprise!</span>
+          </div>
+          <h2 class="panel__title" id="box-title">🎁 Mystery Box</h2>
+          <div class="brain-area" id="box-area"></div>
+        </section>
+
+        <!-- ============ SISTER DUEL (games.js) ============ -->
+        <section class="panel brain-panel" id="duel-panel" aria-labelledby="duel-title">
+          <div class="panel__head">
+            <p class="eyebrow">// 2 players, 1 iPad</p>
+            <span class="quest-tag">+20 XP</span>
+          </div>
+          <h2 class="panel__title" id="duel-title">🤝 Sister Duel</h2>
+          <div class="duel-names" id="duel-names">
+            <div class="field">
+              <label class="field-label" for="duel-name-0">Player 1</label>
+              <input class="input duel-name duel-name--p0" id="duel-name-0" data-duel-name="0" type="text" maxlength="16" placeholder="Player 1" autocomplete="off">
+            </div>
+            <div class="field">
+              <label class="field-label" for="duel-name-1">Player 2</label>
+              <input class="input duel-name duel-name--p1" id="duel-name-1" data-duel-name="1" type="text" maxlength="16" placeholder="Player 2" autocomplete="off">
+            </div>
+          </div>
+          <div class="brain-area" id="duel-area"></div>
+        </section>
+      </div>
+
+      <div class="duo duo--even">
+        <!-- ============ PENALTY SHOOTOUT (games.js) ============ -->
+        <section class="panel brain-panel" id="shootout-panel" aria-labelledby="shootout-title">
+          <div class="panel__head">
+            <p class="eyebrow">// soccer</p>
+            <span class="quest-tag">+5 XP per goal</span>
+          </div>
+          <h2 class="panel__title" id="shootout-title">⚽ Penalty Shootout</h2>
+          <div class="brain-area" id="shootout-area"></div>
+        </section>
+
+        <!-- ============ GOALIE REFLEXES (games.js) ============ -->
+        <section class="panel brain-panel" id="reflex-panel" aria-labelledby="reflex-title">
+          <div class="panel__head">
+            <p class="eyebrow">// soccer</p>
+            <span class="quest-tag">+15 XP</span>
+          </div>
+          <h2 class="panel__title" id="reflex-title">🧤 Goalie Reflexes</h2>
+          <div class="brain-area" id="reflex-area"></div>
+        </section>
+      </div>
+
+      <div class="duo duo--even">
+        <!-- ============ BOARD BREAK (games.js) ============ -->
+        <section class="panel brain-panel" id="boards-panel" aria-labelledby="boards-title">
+          <div class="panel__head">
+            <p class="eyebrow">// taekwondo</p>
+            <span class="quest-tag">+5 XP per board</span>
+          </div>
+          <h2 class="panel__title" id="boards-title">🪵 Board Break</h2>
+          <div class="brain-area" id="boards-area"></div>
+        </section>
+
+        <!-- ============ MEMORY MATCH (games.js) ============ -->
+        <section class="panel brain-panel" id="memory-panel" aria-labelledby="memory-title">
+          <div class="panel__head">
+            <p class="eyebrow">// brain + body</p>
+            <span class="quest-tag">+30 XP</span>
+          </div>
+          <h2 class="panel__title" id="memory-title">🃏 Memory Match</h2>
+          <div class="brain-area" id="memory-area"></div>
+        </section>
+      </div>
+
       <div class="duo duo--even">
         <!-- ============ CARD DECK WORKOUT (arcade.js) ============ -->
-        <section class="panel" aria-labelledby="deck-title">
+        <section class="panel brain-panel" id="deck-panel" aria-labelledby="deck-title">
           <div class="panel__head">
             <p class="eyebrow">// arcade</p>
             <span class="quest-tag">+40 to +160 XP</span>
@@ -379,7 +469,7 @@
         </section>
 
         <!-- ============ KICK CALLER (arcade.js) ============ -->
-        <section class="panel" aria-labelledby="kicks-title">
+        <section class="panel brain-panel" id="kicks-panel" aria-labelledby="kicks-title">
           <div class="panel__head">
             <p class="eyebrow">// arcade</p>
             <span class="quest-tag">+1 XP per move</span>

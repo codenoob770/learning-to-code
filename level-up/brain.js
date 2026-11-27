@@ -61,13 +61,13 @@ function sayKoreanTerm(term) {
 
 // The penalty box (it looks just like the one in the quiz).
 // "prefix" says which game's buttons these are, like data-bee="did".
-function brainPenaltyHTML(fix, prefix, doneLabel = "I did it ✓") {
+function brainPenaltyHTML(fix, prefix, doneLabel = "I did it ✓", label = "Penalty time!") {
   const penalty = penaltyInfo(fix);
   return `
     <div class="penalty">
       ${penalty.demo ? `<button class="penalty__demo" type="button" data-${prefix}="demo" aria-label="Show me how to do it"><span data-penalty-demo="${penalty.demo}"></span></button>` : ""}
       <div class="penalty__body">
-        <p class="penalty__label">Penalty time!</p>
+        <p class="penalty__label">${label}</p>
         <p class="penalty__move">${escapeHTML(penalty.text)}</p>
         <div class="penalty__buttons">
           ${penalty.demo ? `<button class="text-button" type="button" data-${prefix}="demo">Show me how</button>` : ""}
