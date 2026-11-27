@@ -8,6 +8,7 @@
       index.html -> the frame of the page (this file)
       style.css  -> how it looks (the same style as Bug Bash)
       plan.js     -> the workouts and recipes, written as data
+      hooks.js    -> how each feature file plugs itself into the page
       demos.js    -> the animated stick figures that show each move
       trophies.js -> XP, levels, badges and Bug Bash power-ups
       coach.js    -> the guided workout mode with the voice coach
@@ -23,6 +24,9 @@
       extra.js    -> the Extra tab: bonus workouts for any time
       training.js -> the Training tab (lessons in training-lessons.js)
       quiz.js     -> the Brain + Body Quiz (questions in quiz-questions.js)
+      brain.js    -> Spelling Bee, Times-Table Sprint, Korean Flashcards,
+                     Make Your Own Quiz, Homework Timer and Fact of the Day
+                     (words and facts in brain-data.js)
       arcade.js   -> card deck workout, Kick Caller and spin the wheel
       kitchen.js  -> Smoothie Lab, Recipe Book and Snack Swap
       sports.js   -> belt tracker, swim school, soccer journal and workout builder
@@ -49,35 +53,38 @@
   <!-- The "?v=8" is a version number. Browsers keep old copies of files for a
        while; changing the number makes them download the newest version.
        Add 1 to it (on every line below) whenever you change those files. -->
-  <link rel="stylesheet" href="style.css?v=18">
+  <link rel="stylesheet" href="style.css?v=19">
   <!-- These load in order. app.js goes last, because it starts the page
        and uses things from all the others. -->
-  <script src="plan.js?v=18" defer></script>
-  <script src="demos.js?v=18" defer></script>
-  <script src="trophies.js?v=18" defer></script>
-  <script src="coach.js?v=18" defer></script>
-  <script src="practice.js?v=18" defer></script>
-  <script src="habits.js?v=18" defer></script>
-  <script src="charts.js?v=18" defer></script>
-  <script src="grocery.js?v=18" defer></script>
-  <script src="ai-coach.js?v=18" defer></script>
-  <script src="quest.js?v=18" defer></script>
-  <script src="missions.js?v=18" defer></script>
-  <script src="boss.js?v=18" defer></script>
-  <script src="quiz-questions.js?v=18" defer></script>
-  <script src="quiz.js?v=18" defer></script>
-  <script src="arcade.js?v=18" defer></script>
-  <script src="kitchen.js?v=18" defer></script>
-  <script src="sports.js?v=18" defer></script>
-  <script src="stats.js?v=18" defer></script>
-  <script src="family.js?v=18" defer></script>
-  <script src="pet.js?v=18" defer></script>
-  <script src="shop.js?v=18" defer></script>
-  <script src="training-lessons.js?v=18" defer></script>
-  <script src="training.js?v=18" defer></script>
-  <script src="extra.js?v=18" defer></script>
-  <script src="tabs.js?v=18" defer></script>
-  <script src="app.js?v=18" defer></script>
+  <script src="plan.js?v=19" defer></script>
+  <script src="hooks.js?v=19" defer></script>
+  <script src="demos.js?v=19" defer></script>
+  <script src="trophies.js?v=19" defer></script>
+  <script src="coach.js?v=19" defer></script>
+  <script src="practice.js?v=19" defer></script>
+  <script src="habits.js?v=19" defer></script>
+  <script src="charts.js?v=19" defer></script>
+  <script src="grocery.js?v=19" defer></script>
+  <script src="ai-coach.js?v=19" defer></script>
+  <script src="quest.js?v=19" defer></script>
+  <script src="missions.js?v=19" defer></script>
+  <script src="boss.js?v=19" defer></script>
+  <script src="quiz-questions.js?v=19" defer></script>
+  <script src="quiz.js?v=19" defer></script>
+  <script src="arcade.js?v=19" defer></script>
+  <script src="kitchen.js?v=19" defer></script>
+  <script src="sports.js?v=19" defer></script>
+  <script src="stats.js?v=19" defer></script>
+  <script src="family.js?v=19" defer></script>
+  <script src="pet.js?v=19" defer></script>
+  <script src="shop.js?v=19" defer></script>
+  <script src="training-lessons.js?v=19" defer></script>
+  <script src="training.js?v=19" defer></script>
+  <script src="extra.js?v=19" defer></script>
+  <script src="brain-data.js?v=19" defer></script>
+  <script src="brain.js?v=19" defer></script>
+  <script src="tabs.js?v=19" defer></script>
+  <script src="app.js?v=19" defer></script>
 </head>
 <body>
 
@@ -409,8 +416,21 @@
 
     <!-- ==================== TAB: QUIZ ==================== -->
     <div class="tab-page" data-page="quiz" hidden>
+      <!-- ============ FACT OF THE DAY + JUMP BUTTONS (brain.js, facts in brain-data.js) ============ -->
+      <section class="panel brain-top" aria-label="Fact of the day">
+        <div class="fact" id="fact-area"></div>
+        <nav class="brain-jump" aria-label="Jump to a game on this tab">
+          <button class="lab-chip" type="button" data-brain-jump="quiz-panel">🧠 Quiz</button>
+          <button class="lab-chip" type="button" data-brain-jump="bee-panel">🐝 Spelling</button>
+          <button class="lab-chip" type="button" data-brain-jump="sprint-panel">✖️ Times tables</button>
+          <button class="lab-chip" type="button" data-brain-jump="korean-panel">🇰🇷 Korean</button>
+          <button class="lab-chip" type="button" data-brain-jump="focus-panel">⏳ Homework timer</button>
+          <button class="lab-chip" type="button" data-brain-jump="myq-panel">✏️ Make a quiz</button>
+        </nav>
+      </section>
+
       <!-- ============ BRAIN + BODY QUIZ (quiz.js, questions in quiz-questions.js) ============ -->
-      <section class="panel quiz" aria-labelledby="quiz-title">
+      <section class="panel quiz brain-panel" id="quiz-panel" aria-labelledby="quiz-title">
         <div class="panel__head">
           <p class="eyebrow">// school quiz · 5th grade</p>
           <span class="quest-tag">+10 XP per right answer</span>
@@ -418,6 +438,104 @@
         <h2 class="panel__title" id="quiz-title">🧠 Brain + Body Quiz</h2>
         <p class="panel__lead">10 questions a round. Get one wrong and you owe some exercise: every question has its own penalty!</p>
         <div class="quiz-area" id="quiz-area"></div>
+      </section>
+
+      <div class="duo duo--even">
+        <!-- ============ SPELLING BEE (brain.js, words in brain-data.js) ============ -->
+        <section class="panel brain-panel" id="bee-panel" aria-labelledby="bee-title">
+          <div class="panel__head">
+            <p class="eyebrow">// spelling bee</p>
+            <span class="quest-tag">+10 XP per word</span>
+          </div>
+          <h2 class="panel__title" id="bee-title">🐝 Spelling Bee</h2>
+          <p class="panel__lead">Listen to the word and type it. Spell it wrong and you owe some exercise!</p>
+          <div class="brain-area" id="bee-area"></div>
+        </section>
+
+        <!-- ============ TIMES-TABLE SPRINT (brain.js) ============ -->
+        <section class="panel brain-panel" id="sprint-panel" aria-labelledby="sprint-title">
+          <div class="panel__head">
+            <p class="eyebrow">// math sprint</p>
+            <span class="quest-tag">+2 XP per answer</span>
+          </div>
+          <h2 class="panel__title" id="sprint-title">✖️ Times-Table Sprint</h2>
+          <p class="panel__lead">How many can you get in 60 seconds? Beat your best score!</p>
+          <div class="brain-area" id="sprint-area"></div>
+        </section>
+      </div>
+
+      <div class="duo duo--even">
+        <!-- ============ KOREAN FLASHCARDS (brain.js, words in brain-data.js) ============ -->
+        <section class="panel brain-panel" id="korean-panel" aria-labelledby="korean-title">
+          <div class="panel__head">
+            <p class="eyebrow">// taekwondo words</p>
+            <span class="quest-tag">+5 XP per new word</span>
+          </div>
+          <h2 class="panel__title" id="korean-title">🇰🇷 Korean Flashcards</h2>
+          <p class="panel__lead">Learn the Korean words you hear at the dojang. Tap 🔊 to hear them.</p>
+          <div class="brain-area" id="korean-area"></div>
+        </section>
+
+        <!-- ============ HOMEWORK TIMER (brain.js) ============ -->
+        <section class="panel brain-panel" id="focus-panel" aria-labelledby="focus-title">
+          <div class="panel__head">
+            <p class="eyebrow">// homework helper</p>
+            <span class="quest-tag">+25 XP per round</span>
+          </div>
+          <h2 class="panel__title" id="focus-title">⏳ Homework Timer</h2>
+          <p class="panel__lead">Focus for a while, then take a 5-minute move break. Moving helps your brain remember!</p>
+          <div class="brain-area" id="focus-area"></div>
+        </section>
+      </div>
+
+      <!-- ============ MAKE YOUR OWN QUIZ (brain.js) ============ -->
+      <section class="panel brain-panel" id="myq-panel" aria-labelledby="myq-title">
+        <div class="panel__head">
+          <p class="eyebrow">// quiz maker</p>
+          <span class="quest-tag">+5 XP per question</span>
+        </div>
+        <h2 class="panel__title" id="myq-title">✏️ Make Your Own Quiz</h2>
+        <p class="panel__lead">Write your own questions, then play them in the quiz above (pick "⭐ My questions"). Quiz your sister, a friend or a grown-up!</p>
+        <div class="duo">
+          <form class="form myq-form" id="myq-form" novalidate>
+            <div class="field">
+              <label class="field-label" for="myq-q">Question</label>
+              <input class="input" id="myq-q" type="text" maxlength="140" placeholder="How many legs does a spider have?" autocomplete="off">
+            </div>
+            <div class="field">
+              <label class="field-label" for="myq-right">Right answer</label>
+              <input class="input myq-input--right" id="myq-right" type="text" maxlength="60" placeholder="8" autocomplete="off">
+            </div>
+            <div class="myq-wrongs">
+              <div class="field">
+                <label class="field-label" for="myq-wrong1">Wrong answer</label>
+                <input class="input" id="myq-wrong1" type="text" maxlength="60" placeholder="6" autocomplete="off">
+              </div>
+              <div class="field">
+                <label class="field-label" for="myq-wrong2">Wrong answer (optional)</label>
+                <input class="input" id="myq-wrong2" type="text" maxlength="60" placeholder="4" autocomplete="off">
+              </div>
+              <div class="field">
+                <label class="field-label" for="myq-wrong3">Wrong answer (optional)</label>
+                <input class="input" id="myq-wrong3" type="text" maxlength="60" placeholder="10" autocomplete="off">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label" for="myq-why">Fun fact to show after (optional)</label>
+              <input class="input" id="myq-why" type="text" maxlength="160" placeholder="Spiders aren't insects. Insects have 6 legs!" autocomplete="off">
+            </div>
+            <div class="field">
+              <label class="field-label" for="myq-fix">Penalty if someone gets it wrong</label>
+              <select class="select" id="myq-fix"></select>
+            </div>
+            <div class="form-row form-row--tight">
+              <button class="button" type="submit">Save question</button>
+              <button class="text-button" type="button" id="myq-cancel" hidden>Cancel</button>
+            </div>
+            <p class="form-note" id="myq-note" aria-live="polite"></p>
+          </form>
+          <div class="myq-saved" id="myq-list"></div>
+        </div>
       </section>
     </div>
 

@@ -66,20 +66,27 @@ function quizShuffle(list) {
   return copy;
 }
 
+// The subjects in quiz-questions.js, plus any that plug in (like "My questions" from brain.js)
+function quizSubjectList() {
+  return [...QUIZ_SUBJECTS, ...MORE_QUIZ_SUBJECTS.map((get) => get()).filter(Boolean)];
+}
+
 function quizSubject(id) {
   if (id === "mix") return { id: "mix", name: "Mix it up", icon: "🎲" };
-  return QUIZ_SUBJECTS.find((subject) => subject.id === id);
+  return quizSubjectList().find((subject) => subject.id === id);
 }
 
 function startQuiz(subjectId) {
   const subject = quizSubject(subjectId);
+  if (!subject) return; // (like "My questions" after you deleted them all)
   const pool = subjectId === "mix"
     ? QUIZ_SUBJECTS.filter((s) => s.school).flatMap((s) => s.questions)
     : subject.questions;
 
   const questions = quizShuffle(pool).slice(0, QUIZ_LENGTH).map((question) => {
-    // The right answer is always first in quiz-questions.js, so mix the answers up
-    const order = quizShuffle([0, 1, 2, 3]);
+    // The right answer is always first in quiz-questions.js, so mix the answers up.
+    // (Most questions have 4 answers, but your own questions can have 2 or 3.)
+    const order = quizShuffle(question.a.map((_, i) => i));
     return { ...question, choices: order.map((i) => question.a[i]), right: order.indexOf(0) };
   });
 
@@ -135,12 +142,12 @@ function quizBest(subjectId) {
 }
 
 function quizPickerHTML() {
-  const subjects = [...QUIZ_SUBJECTS, { id: "mix", name: "Mix it up", icon: "🎲", mix: true }];
+  const subjects = [...quizSubjectList(), { id: "mix", name: "Mix it up", icon: "🎲", mix: true }];
   const buttons = subjects.map((subject) => {
     const best = quizBest(subject.id);
     const count = subject.mix
       ? "All 4 school subjects"
-      : `${subject.questions.length} questions${subject.school ? "" : " · bonus"}`;
+      : subject.info || `${subject.questions.length} questions${subject.school ? "" : " · bonus"}`;
     return `
       <button class="quiz-subject ${subject.mix ? "quiz-subject--mix" : ""}" type="button" data-subject="${subject.id}">
         <span class="quiz-subject__icon" aria-hidden="true">${subject.icon}</span>
@@ -280,6 +287,7 @@ function quizEndHTML() {
 function answerQuiz(choice) {
   if (!quiz || quiz.picked !== null || quiz.index >= quiz.questions.length) return;
   const question = quiz.questions[quiz.index];
+  if (!(choice >= 0 && choice < question.choices.length)) return; // like pressing "4" when there are only 2 answers
   quiz.picked = choice;
   quiz.penaltyDone = false;
   if (choice === question.right) {

@@ -5595,6 +5595,592 @@ label.mission__text {
   font-size: 0.9375rem;
 }
 
+/* 9m. BRAIN GAMES (brain.js) ---------------------------------------------- */
+
+/* So a jump button doesn't hide the panel's title under the scoreboard */
+.brain-panel {
+  scroll-margin-top: 8.5rem;
+}
+
+.brain-top {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.fact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.8rem 1rem;
+  border-left: 4px solid var(--marker);
+  border-radius: var(--radius-small);
+  background: var(--marker-soft);
+}
+
+.fact__label {
+  color: var(--marker);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.fact__text {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.fact__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+}
+
+.brain-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.brain-area {
+  min-height: 6rem;
+}
+
+.brain-start {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+
+.brain-start__text {
+  max-width: 34rem;
+}
+
+.brain-start__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+
+.tiles--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 100%;
+}
+
+.form-note {
+  min-height: 1.4em;
+  color: var(--teal);
+  font-size: 0.9375rem;
+}
+
+.empty-note {
+  color: var(--dim);
+}
+
+/* Spelling Bee */
+.bee-listen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+
+.bee-clue {
+  font-size: 1.0625rem;
+}
+
+/* Small text buttons inside a column keep their own size */
+.quiz-play > .text-button,
+.quiz-result > .text-button {
+  align-self: flex-start;
+}
+
+.bee-clue__label {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+}
+
+.bee-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.bee-form__row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.bee-input {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.bee-spelled {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-block: 0.2rem;
+}
+
+.bee-spelled span {
+  display: grid;
+  place-items: center;
+  min-width: 2rem;
+  height: 2.4rem;
+  padding-inline: 0.3rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--bg);
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.bee-typed {
+  font-family: var(--font-code);
+  text-decoration: line-through;
+  text-decoration-color: var(--bug);
+}
+
+/* Times-Table Sprint */
+.sprint-play {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.sprint-top {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sprint-time {
+  min-width: 3ch;
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.sprint-time.is-low {
+  color: var(--bug);
+}
+
+.sprint-score {
+  display: flex;
+  flex: 1;
+  gap: 1rem;
+  font-family: var(--font-code);
+  font-weight: 700;
+}
+
+.sprint-score__right {
+  color: var(--teal);
+}
+
+.sprint-score__wrong {
+  color: var(--bug);
+}
+
+.sprint-bar,
+.flash-bar,
+.flash-progress {
+  height: 0.5rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.sprint-bar span,
+.flash-bar span,
+.flash-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--teal);
+}
+
+.sprint-bar span {
+  width: 100%;
+  background: var(--marker);
+}
+
+.sprint-question {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0 0.3em;
+  min-height: 5.5rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 1.6rem + 2vw, 2.8rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.sprint-question.is-right {
+  animation: sprint-right 0.35s ease;
+}
+
+.sprint-question.is-wrong {
+  animation: sprint-wrong 0.35s ease;
+}
+
+@keyframes sprint-right {
+  from { border-color: var(--teal); background: var(--teal-soft); }
+}
+
+@keyframes sprint-wrong {
+  0% { border-color: var(--bug); background: var(--bug-soft); transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+  100% { transform: translateX(0); }
+}
+
+.sprint-typed {
+  color: var(--marker);
+}
+
+.sprint-ready {
+  color: var(--accent);
+  font-size: 1.3em;
+}
+
+.sprint-pad {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.sprint-key {
+  min-height: 3.2rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-small);
+  background: var(--panel);
+  color: var(--fg);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.sprint-key:active {
+  background: var(--line);
+}
+
+.sprint-key--enter {
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+/* Korean Flashcards */
+.flash-known {
+  color: var(--dim);
+}
+
+.flash-progress {
+  width: 100%;
+}
+
+.flash-play {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.flash-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  min-height: 11rem;
+  padding: 1.25rem 1rem;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--fg);
+  text-align: center;
+  cursor: pointer;
+}
+
+.flash-card:hover {
+  border-color: var(--accent);
+}
+
+.flash-card.is-flipped {
+  border-color: var(--teal);
+  background: var(--teal-soft);
+  animation: flash-flip 0.25s ease;
+}
+
+@keyframes flash-flip {
+  from { transform: scaleX(0.2); }
+}
+
+.flash-card__side,
+.flash-card__tap {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.flash-card__big {
+  font-size: clamp(2.2rem, 1.8rem + 2vw, 3rem);
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.flash-card__big--english {
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 1.4rem + 1.5vw, 2.3rem);
+}
+
+.flash-card__small {
+  color: var(--accent);
+  font-family: var(--font-code);
+  font-size: 1.05rem;
+}
+
+.flash-card__was {
+  color: var(--dim);
+}
+
+.flash-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 0.75rem;
+}
+
+.flash-all {
+  width: 100%;
+}
+
+.flash-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flash-list__item {
+  display: grid;
+  grid-template-columns: auto minmax(4.5rem, auto) minmax(0, 1fr) minmax(0, 1.2fr) 1.2rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding-block: 0.3rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.flash-list__korean {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.flash-list__say {
+  color: var(--accent);
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+}
+
+.flash-list__english {
+  color: var(--dim);
+  font-size: 0.9375rem;
+}
+
+.flash-list__known {
+  color: var(--teal);
+  font-weight: 700;
+}
+
+@media (max-width: 520px) {
+  .flash-list__item {
+    grid-template-columns: auto minmax(0, 1fr) 1.2rem;
+  }
+
+  .flash-list__korean {
+    grid-column: 2;
+  }
+
+  .flash-list__say,
+  .flash-list__english {
+    grid-column: 2;
+  }
+
+  .flash-list__known {
+    grid-column: 3;
+    grid-row: 1;
+  }
+}
+
+/* Make Your Own Quiz */
+.myq-form {
+  align-items: stretch;
+}
+
+.myq-form .field {
+  min-width: 0;
+}
+
+.myq-input--right {
+  border-color: var(--teal);
+}
+
+.myq-wrongs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
+  gap: 0.6rem;
+}
+
+@media (max-width: 600px) {
+  .myq-wrongs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.myq-saved {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.myq-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.myq-count {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+}
+
+.myq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 28rem;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.myq-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--bg);
+}
+
+.myq-item.is-editing {
+  border-color: var(--marker);
+}
+
+.myq-item__q {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.myq-item__a {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.75rem;
+  font-size: 0.9375rem;
+  overflow-wrap: anywhere;
+}
+
+.myq-right {
+  color: var(--teal);
+}
+
+.myq-wrong {
+  color: var(--dim);
+}
+
+.myq-item__fix {
+  color: var(--marker);
+  font-size: 0.875rem;
+}
+
+.myq-item__buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Homework Timer */
+.focus {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: center;
+}
+
+.focus__phase {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.focus-ring {
+  --done: 0;
+  display: grid;
+  place-items: center;
+  width: 11rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: conic-gradient(var(--accent) calc(var(--done) * 360deg), var(--line) 0);
+}
+
+.focus.is-break .focus-ring {
+  background: conic-gradient(var(--teal) calc(var(--done) * 360deg), var(--line) 0);
+}
+
+.focus__time {
+  display: grid;
+  place-items: center;
+  width: calc(100% - 1.2rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--panel);
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.focus__message {
+  max-width: 26rem;
+}
+
 /* 10. SMALL SCREENS AND REDUCED MOTION --------------------------- */
 
 @media (max-width: 640px) {

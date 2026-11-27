@@ -100,11 +100,13 @@ function logXP() {
   let xp = 0;
   const counts = {};
   for (const entry of activityLog) {
-    const rule = LOG_XP[entry.t];
+    const plugged = MORE_XP[entry.t]; // features that plug in with addXP (hooks.js)
+    const rule = LOG_XP[entry.t] || (plugged && plugged.xp);
     if (!rule) continue;
     const dayAndType = `${entry.d} ${entry.t}`;
     counts[dayAndType] = (counts[dayAndType] || 0) + 1;
-    if (counts[dayAndType] > (LOG_DAILY_LIMIT[entry.t] ?? Infinity)) continue;
+    const limit = LOG_DAILY_LIMIT[entry.t] ?? (plugged ? plugged.perDay : Infinity);
+    if (counts[dayAndType] > limit) continue;
     xp += rule(entry);
   }
   return xp;
@@ -360,6 +362,7 @@ function renderTrophies() {
 
   const earned = BADGES.filter((badge) => badge.earned(stats));
   document.querySelector("#badge-count").textContent = `${earned.length} of ${BADGES.length} badges`;
+  renderXPRules();
   renderPowerUps();
 
   // Badges you have, then the ones still locked (folded up, since there are lots!)
@@ -383,7 +386,7 @@ function renderTrophies() {
 }
 
 // The "How to earn XP" list
-document.querySelector("#xp-rules").innerHTML = [
+const XP_RULE_LIST = [
   ["Finish a workout", `+${XP_RULES.workout}`],
   ["Finish a rest day", `+${XP_RULES.restDay}`],
   ["Do it in expert mode", `+${XP_RULES.expertBonus} more`],
@@ -419,7 +422,13 @@ document.querySelector("#xp-rules").innerHTML = [
   ["Right quiz answer (5 rounds a day)", `+${XP_RULES.quizRight}`],
   ["Perfect quiz round", `+${XP_RULES.quizPerfect} more`],
   ["Do a quiz penalty", `+${XP_RULES.penaltyDone}`],
-].map(([what, xp]) => `<li><span>${what}</span><span>${xp} XP</span></li>`).join("");
+];
+
+// The "How to earn XP" list, plus features that plug in with addXPRule (hooks.js)
+function renderXPRules() {
+  document.querySelector("#xp-rules").innerHTML = [...XP_RULE_LIST, ...MORE_XP_RULES]
+    .map(([what, xp]) => `<li><span>${what}</span><span>${xp} XP</span></li>`).join("");
+}
 
 
 /* 4b. BUG BASH POWER-UPS ------------------------------------------

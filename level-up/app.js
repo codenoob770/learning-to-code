@@ -93,6 +93,7 @@ const PROGRESS_KEYS = [
   "levelUp.swim", "levelUp.workouts", "levelUp.recipes",
   "levelUp.shop", "levelUp.pet", "levelUp.family", "levelUp.spins",
   "levelUp.training",
+  ...SAVED_KEYS, // features that plug in with addSavedData (hooks.js)
 ];
 
 const memory = {};
@@ -201,6 +202,7 @@ function loadProgress() {
   familyData = loadJSON("levelUp.family", { players: [] });
   spinData = loadJSON("levelUp.spins", {});
   trainingLearned = new Set(loadJSON("levelUp.training", []));
+  LOADERS.forEach((load) => load()); // features that plug in with addSavedData (hooks.js)
 }
 
 loadProgress();
@@ -576,6 +578,7 @@ function render() {
   if (currentTab === "training") renderTraining(); // in training.js
   if (currentTab === "stats") renderStatsTab();    // in stats.js
   if (currentTab === "extra") renderExtra();       // in extra.js
+  drawPageParts(currentTab); // features that plug in with addPagePart (hooks.js)
 }
 
 function renderDay(plan) {
@@ -1396,7 +1399,7 @@ async function keepScreenOn() {
 }
 
 function letScreenSleep() {
-  if (trainer.running || coachIsOpen()) return; // still needs the screen
+  if (trainer.running || coachIsOpen() || focusTimerRunning()) return; // still needs the screen
   if (wakeLock) wakeLock.release().catch(() => {});
   wakeLock = null;
 }

@@ -54,6 +54,7 @@ function showTab(name, scrollUp = true) {
   if (name === "kitchen") renderKitchen();
   if (name === "training") renderTraining();
   if (name === "extra") renderExtra();
+  drawPageParts(name); // features that plug in with addPagePart (hooks.js)
   document.dispatchEvent(new CustomEvent("tabshown", { detail: name }));
 }
 
