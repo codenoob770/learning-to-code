@@ -8114,6 +8114,464 @@ label.mission__text {
   font-size: inherit;
 }
 
+/* 9s. MORE KITCHEN (kitchen-plus.js) ----------------------------------- */
+
+/* Build-a-Plate */
+.plate-task {
+  margin-bottom: 0.8rem;
+}
+
+.plate-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.plate-svg {
+  display: block;
+  width: 100%;
+  max-width: 440px;
+  height: auto;
+  margin: 0 auto;
+}
+
+.plate-rim {
+  fill: #f4f1ea;
+  stroke: var(--line-strong);
+  stroke-width: 6;
+}
+
+.plate-lines {
+  stroke: #d6d0c4;
+  stroke-width: 2;
+  fill: none;
+}
+
+.plate-cup {
+  fill: rgba(163, 180, 255, 0.14);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.plate-label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.plate-food {
+  font-size: 24px;
+}
+
+.plate-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.plate-result {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+
+.plate-stars {
+  font-size: 1.6rem;
+  letter-spacing: 0.1em;
+  color: var(--marker);
+}
+
+.plate-checks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0.4rem 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9375rem;
+}
+
+.plate-checks .is-miss {
+  color: var(--marker);
+}
+
+.plate-tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 1rem;
+}
+
+.plate-chip {
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fg);
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+
+.plate-chip:hover {
+  border-color: var(--accent);
+}
+
+.plate-chip.is-on {
+  border-color: var(--teal);
+  background: var(--teal-soft);
+  font-weight: 700;
+}
+
+/* Eat the Rainbow */
+.rainbow-svg {
+  display: block;
+  width: 100%;
+  max-width: 260px;
+  height: auto;
+  margin: 0 auto;
+}
+
+.rainbow-arc {
+  fill: none;
+  stroke-width: 10;
+  stroke-linecap: round;
+  transition: opacity 0.3s ease;
+}
+
+.rainbow-count {
+  margin: 0.3rem 0 0.8rem;
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+
+.rainbow-colors {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+  gap: 0.5rem;
+}
+
+.rainbow-color {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.1rem 0.5rem;
+  align-items: center;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--line-strong);
+  border-left: 5px solid var(--swatch);
+  border-radius: var(--radius-small);
+  background: transparent;
+  color: var(--fg);
+  text-align: left;
+  cursor: pointer;
+}
+
+.rainbow-color:hover {
+  border-color: var(--swatch);
+}
+
+.rainbow-color.is-on {
+  border-color: var(--swatch);
+  background: color-mix(in srgb, var(--swatch) 18%, transparent);
+}
+
+.rainbow-color__icon {
+  grid-row: span 2;
+  font-size: 1.5rem;
+}
+
+.rainbow-color__name {
+  font-weight: 700;
+}
+
+.rainbow-color.is-on .rainbow-color__name::after {
+  content: " ✓";
+}
+
+.rainbow-color__foods {
+  color: var(--dim);
+  font-size: 0.8125rem;
+  line-height: 1.3;
+}
+
+.rainbow-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.3rem;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rainbow-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.35rem 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  font-size: 0.75rem;
+  color: var(--dim);
+}
+
+.rainbow-day strong {
+  color: var(--fg);
+  font-size: 1rem;
+}
+
+.rainbow-day.is-rainbow {
+  border-color: var(--teal);
+  background: var(--teal-soft);
+}
+
+/* Kitchen Skills */
+.skill-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: 0.5rem;
+  margin: 0.6rem 0 1rem;
+}
+
+.skill-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  padding: 0.7rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-small);
+  background: transparent;
+  color: var(--fg);
+  text-align: left;
+  cursor: pointer;
+}
+
+.skill-card:hover {
+  border-color: var(--accent);
+}
+
+.skill-card.is-open {
+  border-color: var(--accent);
+  background: rgba(163, 180, 255, 0.1);
+}
+
+.skill-card.is-learned .skill-card__meta {
+  color: var(--teal);
+  font-weight: 700;
+}
+
+.skill-card__icon {
+  font-size: 1.5rem;
+}
+
+.skill-card__name {
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.skill-card__meta {
+  color: var(--dim);
+  font-size: 0.8125rem;
+}
+
+.skill-detail {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+
+.skill-detail__title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+}
+
+.skill-warning {
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--marker-border);
+  border-radius: var(--radius-small);
+  background: var(--marker-soft);
+  color: var(--marker);
+  font-weight: 700;
+}
+
+.skill-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+  padding-left: 1.4rem;
+}
+
+.skill-tip {
+  color: var(--dim);
+}
+
+/* Sugar Detective */
+.sugar-food {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.sugar-food__icon {
+  font-size: 2.4rem;
+}
+
+.sugar-cubes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0.4rem 0;
+}
+
+.sugar-cube {
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 1px solid #d6d0c4;
+  border-radius: 3px;
+  background: #f4f1ea;
+  box-shadow: inset -2px -2px 0 rgba(0, 0, 0, 0.12);
+}
+
+.sugar-zero {
+  color: var(--teal);
+  font-weight: 700;
+}
+
+/* Kitchen Math */
+.kmath-question {
+  line-height: 1.35;
+}
+
+/* Food Passport */
+.stamps {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+  gap: 0.5rem;
+  margin: 0.6rem 0 1rem;
+}
+
+.stamp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.6rem 0.3rem;
+  border: 2px dashed var(--line-strong);
+  border-radius: var(--radius-small);
+  background: transparent;
+  color: var(--fg);
+  cursor: pointer;
+}
+
+.stamp:hover,
+.stamp.is-open {
+  border-color: var(--accent);
+}
+
+.stamp.is-stamped {
+  border-style: solid;
+  border-color: var(--teal);
+  background: var(--teal-soft);
+}
+
+.stamp.is-stamped .stamp__flag {
+  transform: rotate(-8deg);
+}
+
+.stamp__flag {
+  font-size: 1.8rem;
+}
+
+.stamp__food {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.stamp__mark {
+  color: var(--dim);
+  font-size: 0.875rem;
+}
+
+.stamp-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+
+.stamp-detail__title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+/* Game Day Fuel */
+.fuel-note {
+  margin-bottom: 0.7rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--marker-border);
+  border-radius: var(--radius-small);
+  background: var(--marker-soft);
+}
+
+.fuel-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0.8rem 0;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+
+.fuel-card__title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.fuel-card__label {
+  margin-top: 0.3rem;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.fuel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 0;
+  padding-left: 1.3rem;
+}
+
+.fuel-why {
+  margin-top: 0.4rem;
+  color: var(--dim);
+}
+
+@media (max-width: 720px) {
+  .plate-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* 10. SMALL SCREENS AND REDUCED MOTION --------------------------- */
 
 @media (max-width: 640px) {

@@ -37,6 +37,9 @@
                      backup and the home screen app icon
       arcade.js   -> card deck workout, Kick Caller and spin the wheel
       kitchen.js  -> Smoothie Lab, Recipe Book and Snack Swap
+      kitchen-plus.js -> Build-a-Plate, Eat the Rainbow, Kitchen Skills,
+                     Sugar Detective, Kitchen Math, Food Passport
+                     and Game Day Fuel
       sports.js   -> belt tracker, swim school, soccer journal and workout builder
       stats.js    -> energy check-in, calendar, records, year in review, stats card
       family.js   -> the weekly family challenge
@@ -70,43 +73,44 @@
   <!-- The "?v=8" is a version number. Browsers keep old copies of files for a
        while; changing the number makes them download the newest version.
        Add 1 to it (on every line below) whenever you change those files. -->
-  <link rel="stylesheet" href="style.css?v=24">
+  <link rel="stylesheet" href="style.css?v=25">
   <!-- These load in order. app.js goes last, because it starts the page
        and uses things from all the others. -->
-  <script src="plan.js?v=24" defer></script>
-  <script src="hooks.js?v=24" defer></script>
-  <script src="demos.js?v=24" defer></script>
-  <script src="trophies.js?v=24" defer></script>
-  <script src="coach.js?v=24" defer></script>
-  <script src="practice.js?v=24" defer></script>
-  <script src="habits.js?v=24" defer></script>
-  <script src="charts.js?v=24" defer></script>
-  <script src="grocery.js?v=24" defer></script>
-  <script src="ai-coach.js?v=24" defer></script>
-  <script src="quest.js?v=24" defer></script>
-  <script src="missions.js?v=24" defer></script>
-  <script src="boss.js?v=24" defer></script>
-  <script src="quiz-questions.js?v=24" defer></script>
-  <script src="quiz.js?v=24" defer></script>
-  <script src="arcade.js?v=24" defer></script>
-  <script src="kitchen.js?v=24" defer></script>
-  <script src="sports.js?v=24" defer></script>
-  <script src="stats.js?v=24" defer></script>
-  <script src="family.js?v=24" defer></script>
-  <script src="pet.js?v=24" defer></script>
-  <script src="shop.js?v=24" defer></script>
-  <script src="training-lessons.js?v=24" defer></script>
-  <script src="training.js?v=24" defer></script>
-  <script src="extra.js?v=24" defer></script>
-  <script src="brain-data.js?v=24" defer></script>
-  <script src="brain.js?v=24" defer></script>
-  <script src="games.js?v=24" defer></script>
-  <script src="training-plus.js?v=24" defer></script>
-  <script src="pet-plus.js?v=24" defer></script>
-  <script src="fun.js?v=24" defer></script>
-  <script src="tools.js?v=24" defer></script>
-  <script src="tabs.js?v=24" defer></script>
-  <script src="app.js?v=24" defer></script>
+  <script src="plan.js?v=25" defer></script>
+  <script src="hooks.js?v=25" defer></script>
+  <script src="demos.js?v=25" defer></script>
+  <script src="trophies.js?v=25" defer></script>
+  <script src="coach.js?v=25" defer></script>
+  <script src="practice.js?v=25" defer></script>
+  <script src="habits.js?v=25" defer></script>
+  <script src="charts.js?v=25" defer></script>
+  <script src="grocery.js?v=25" defer></script>
+  <script src="ai-coach.js?v=25" defer></script>
+  <script src="quest.js?v=25" defer></script>
+  <script src="missions.js?v=25" defer></script>
+  <script src="boss.js?v=25" defer></script>
+  <script src="quiz-questions.js?v=25" defer></script>
+  <script src="quiz.js?v=25" defer></script>
+  <script src="arcade.js?v=25" defer></script>
+  <script src="kitchen.js?v=25" defer></script>
+  <script src="kitchen-plus.js?v=25" defer></script>
+  <script src="sports.js?v=25" defer></script>
+  <script src="stats.js?v=25" defer></script>
+  <script src="family.js?v=25" defer></script>
+  <script src="pet.js?v=25" defer></script>
+  <script src="shop.js?v=25" defer></script>
+  <script src="training-lessons.js?v=25" defer></script>
+  <script src="training.js?v=25" defer></script>
+  <script src="extra.js?v=25" defer></script>
+  <script src="brain-data.js?v=25" defer></script>
+  <script src="brain.js?v=25" defer></script>
+  <script src="games.js?v=25" defer></script>
+  <script src="training-plus.js?v=25" defer></script>
+  <script src="pet-plus.js?v=25" defer></script>
+  <script src="fun.js?v=25" defer></script>
+  <script src="tools.js?v=25" defer></script>
+  <script src="tabs.js?v=25" defer></script>
+  <script src="app.js?v=25" defer></script>
 </head>
 <body>
 
@@ -958,8 +962,21 @@
 
     <!-- ==================== TAB: KITCHEN ==================== -->
     <div class="tab-page" data-page="kitchen" hidden>
+      <nav class="brain-jump arcade-jump" aria-label="Jump to a kitchen activity">
+        <button class="lab-chip" type="button" data-brain-jump="lab-panel">🧪 Smoothies</button>
+        <button class="lab-chip" type="button" data-brain-jump="plate-panel">🍽️ Build-a-Plate</button>
+        <button class="lab-chip" type="button" data-brain-jump="rainbow-panel">🌈 Rainbow</button>
+        <button class="lab-chip" type="button" data-brain-jump="fuel-panel">⚽ Game Day Fuel</button>
+        <button class="lab-chip" type="button" data-brain-jump="skills-panel">👨‍🍳 Skills</button>
+        <button class="lab-chip" type="button" data-brain-jump="sugar-panel">🔍 Sugar Detective</button>
+        <button class="lab-chip" type="button" data-brain-jump="kmath-panel">🧮 Kitchen Math</button>
+        <button class="lab-chip" type="button" data-brain-jump="snack-panel">🥕 Snack Swap</button>
+        <button class="lab-chip" type="button" data-brain-jump="book">📖 Recipes</button>
+        <button class="lab-chip" type="button" data-brain-jump="passport-panel">🌍 Passport</button>
+      </nav>
+
       <!-- ============ SMOOTHIE LAB (kitchen.js) ============ -->
-      <section class="panel" aria-labelledby="lab-title">
+      <section class="panel brain-panel" id="lab-panel" aria-labelledby="lab-title">
         <div class="panel__head">
           <p class="eyebrow">// kitchen</p>
           <span class="quest-tag">+10 XP per new smoothie</span>
@@ -972,9 +989,76 @@
         </div>
       </section>
 
+      <!-- ============ BUILD-A-PLATE (kitchen-plus.js) ============ -->
+      <section class="panel brain-panel" id="plate-panel" aria-labelledby="plate-title">
+        <div class="panel__head">
+          <p class="eyebrow">// kitchen game</p>
+          <span class="quest-tag">+15 XP for a 3-star plate</span>
+        </div>
+        <h2 class="panel__title" id="plate-title">🍽️ Build-a-Plate</h2>
+        <p class="panel__lead">Half fruits and veggies, then grains, protein and a little dairy. Can you build a 3-star plate?</p>
+        <div id="plate-area"></div>
+      </section>
+
+      <div class="duo">
+        <!-- ============ EAT THE RAINBOW (kitchen-plus.js) ============ -->
+        <section class="panel brain-panel" id="rainbow-panel" aria-labelledby="rainbow-title">
+          <div class="panel__head">
+            <p class="eyebrow">// every day</p>
+            <span class="quest-tag">+20 XP for a Rainbow Day</span>
+          </div>
+          <h2 class="panel__title" id="rainbow-title">🌈 Eat the Rainbow</h2>
+          <p class="panel__lead">Every color of fruit and veggie has different vitamins. Tap a color when you eat one today!</p>
+          <div id="rainbow-area"></div>
+        </section>
+
+        <!-- ============ GAME DAY FUEL (kitchen-plus.js) ============ -->
+        <section class="panel brain-panel" id="fuel-panel" aria-labelledby="fuel-title">
+          <div class="panel__head">
+            <p class="eyebrow">// eat like an athlete</p>
+          </div>
+          <h2 class="panel__title" id="fuel-title">⚽ Game Day Fuel</h2>
+          <p class="panel__lead">What to eat and drink before, during and after soccer, swim or taekwondo.</p>
+          <div id="fuel-area"></div>
+        </section>
+      </div>
+
+      <!-- ============ KITCHEN SKILLS (kitchen-plus.js) ============ -->
+      <section class="panel brain-panel" id="skills-panel" aria-labelledby="skills-title">
+        <div class="panel__head">
+          <p class="eyebrow">// cooking lessons</p>
+          <span class="quest-tag">+20 XP per skill</span>
+        </div>
+        <h2 class="panel__title" id="skills-title">👨‍🍳 Kitchen Skills</h2>
+        <p class="panel__lead">Learn real cooking skills, one at a time. The voice coach can teach you the steps!</p>
+        <div id="skills-area"></div>
+      </section>
+
+      <div class="duo">
+        <!-- ============ SUGAR DETECTIVE (kitchen-plus.js) ============ -->
+        <section class="panel brain-panel" id="sugar-panel" aria-labelledby="sugar-title">
+          <div class="panel__head">
+            <p class="eyebrow">// kitchen game</p>
+            <span class="quest-tag">+3 XP per right guess</span>
+          </div>
+          <h2 class="panel__title" id="sugar-title">🔍 Sugar Detective</h2>
+          <div class="arcade-area" id="sugar-area"></div>
+        </section>
+
+        <!-- ============ KITCHEN MATH (kitchen-plus.js) ============ -->
+        <section class="panel brain-panel" id="kmath-panel" aria-labelledby="kmath-title">
+          <div class="panel__head">
+            <p class="eyebrow">// brain + body</p>
+            <span class="quest-tag">+5 XP per right answer</span>
+          </div>
+          <h2 class="panel__title" id="kmath-title">🧮 Kitchen Math</h2>
+          <div class="arcade-area" id="kmath-area"></div>
+        </section>
+      </div>
+
       <div class="duo">
         <!-- ============ SNACK SWAP (kitchen.js) ============ -->
-        <section class="panel" aria-labelledby="snack-title">
+        <section class="panel brain-panel" id="snack-panel" aria-labelledby="snack-title">
           <div class="panel__head">
             <p class="eyebrow">// kitchen game</p>
             <span class="quest-tag">+3 XP per right pick</span>
@@ -984,7 +1068,7 @@
         </section>
 
         <!-- ============ RECIPE BOOK (kitchen.js) ============ -->
-        <section class="panel book" id="book" aria-labelledby="book-title">
+        <section class="panel book brain-panel" id="book" aria-labelledby="book-title">
           <p class="eyebrow">// recipe book</p>
           <h2 class="panel__title" id="book-title">📖 Recipe Book</h2>
           <label class="visually-hidden" for="book-search">Search recipes</label>
@@ -994,6 +1078,17 @@
           <div class="book-list" id="book-list"></div>
         </section>
       </div>
+
+      <!-- ============ FOOD PASSPORT (kitchen-plus.js) ============ -->
+      <section class="panel brain-panel" id="passport-panel" aria-labelledby="passport-title">
+        <div class="panel__head">
+          <p class="eyebrow">// around the world</p>
+          <span class="quest-tag">+15 XP per stamp</span>
+        </div>
+        <h2 class="panel__title" id="passport-title">🌍 Food Passport</h2>
+        <p class="panel__lead">Try a food from another country, then stamp your passport!</p>
+        <div id="passport-area"></div>
+      </section>
     </div>
 
     <!-- ==================== TAB: STATS ==================== -->

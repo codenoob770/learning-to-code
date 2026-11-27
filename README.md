@@ -107,8 +107,15 @@ like `level-up/#quiz` opens straight to one tab.
   this week, and a **Sore Muscle Helper**. The "Show me" pop-up has
   **slow motion** and **mirror** buttons.
 - **🍓 Kitchen:** Smoothie Lab (it invents a name and recipe), a Recipe
-  Book with search and favorites, Snack Swap and the grocery list.
-- **📊 Stats:** XP, levels and 80 badges, a 40-sticker **Sticker Album**,
+  Book with search and favorites, Snack Swap and the grocery list. Plus
+  **Build-a-Plate** (make a balanced plate for 3 stars), **Eat the Rainbow**
+  (tap each color of fruit and veggie you eat today), **Game Day Fuel**
+  (what to eat before, during and after a game, timed from My Calendar),
+  **Kitchen Skills** (10 cooking lessons the voice coach can teach),
+  **Sugar Detective** (how many teaspoons of sugar are in that?),
+  **Kitchen Math** (5th-grade recipe fractions, with exercise penalties)
+  and a **Food Passport** (try foods from 16 countries and get stamps).
+- **📊 Stats:** XP, levels and 86 badges, a 40-sticker **Sticker Album**,
   progress charts, a year-long workout calendar, personal records, energy
   patterns, a "year in review" and a stats card picture to save.
 - **🐾 Pet & Shop:** a pet that hatches after your first workout and
@@ -150,6 +157,7 @@ Each feature has its own file, so they're easy to find:
 | `training-lessons.js`, `training.js` | The Training lessons (add your own!) and the Training tab |
 | `arcade.js` | Card deck workout, Kick Caller and spin the wheel |
 | `kitchen.js` | Smoothie Lab, Recipe Book and Snack Swap |
+| `kitchen-plus.js` | Build-a-Plate, Eat the Rainbow, Kitchen Skills, Sugar Detective, Kitchen Math, Food Passport and Game Day Fuel |
 | `sports.js` | Belt tracker, Swim School, soccer journal and workout builder |
 | `stats.js` | Energy check-in, calendar, records, year in review and stats card |
 | `family.js` | The family challenge |
