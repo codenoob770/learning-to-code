@@ -684,3 +684,129 @@ button {
     transition: none !important;
   }
 }
+
+/* WORLD MAP (levels.js) ----------------------------------------- */
+
+.map-button {
+  border-color: rgba(127, 220, 200, 0.45);
+  background: rgba(127, 220, 200, 0.08);
+}
+
+.map-button:hover {
+  background: rgba(127, 220, 200, 0.14);
+}
+
+.map-button .daily-button__title strong {
+  margin-left: 0.35rem;
+  color: var(--teal);
+}
+
+.panel--map {
+  width: min(100%, 44rem);
+}
+
+.panel__title--small {
+  font-size: clamp(1.8rem, 1.5rem + 2vw, 2.6rem);
+}
+
+.map-worlds {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.map-world__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+}
+
+.map-world__lead {
+  margin: 0.1rem 0 0.55rem;
+  color: var(--dim);
+  font-size: 0.875rem;
+}
+
+.map-levels {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.map-level {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.12s ease, border-color 0.12s ease;
+}
+
+.map-level:hover:not(:disabled) {
+  border-color: var(--marker);
+  transform: translateY(-2px);
+}
+
+.map-level:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.map-level.is-done {
+  border-color: rgba(127, 220, 200, 0.5);
+}
+
+.map-level.is-boss {
+  border-color: rgba(169, 139, 255, 0.6);
+  background: rgba(169, 139, 255, 0.08);
+}
+
+.map-level__icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.map-level__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.map-level__name {
+  font-weight: 700;
+  font-size: 0.9375rem;
+}
+
+.map-level__stars {
+  color: var(--marker);
+  font-size: 0.8125rem;
+}
+
+.intro-bug {
+  width: 88px;
+  height: 88px;
+  margin: -0.25rem auto;
+}
+
+.intro-goal {
+  margin: 0;
+  color: var(--marker);
+  font-family: var(--font-code);
+  font-weight: 600;
+}
+
+.won-stars {
+  margin: 0;
+  font-size: 2.6rem;
+  letter-spacing: 0.15em;
+}

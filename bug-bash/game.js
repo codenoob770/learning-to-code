@@ -18,6 +18,9 @@
    7. Drawing every frame
    8. Scoreboard and screens
    9. Starting everything up, and the game loop
+
+   The World Map (levels, new kinds of bugs and the Mega Bug) is in
+   levels.js. This file plays the levels: look for "game.level".
    ============================================================= */
 
 
@@ -40,6 +43,7 @@ const RULES = {
   bossEvery: 3,           // a boss bug shows up every 3rd version (v1.2, v1.5, v1.8...)
   bossHits: 8,            // taps to squash the first boss (each boss after needs 3 more)
   bossPoints: 200,
+  megaPoints: 1000,       // the Mega Bug, the World Map's final boss
   powerUpEvery: 16,       // about how many seconds between power-ups
 };
 
@@ -62,7 +66,16 @@ const LOOKS = {
   golden:  { shell: "#ffe24d", dark: "#a8820a", legs: "#fff0a8", goo: "#ffe24d" },
   feature: { shell: "#7fdcc8", dark: "#2e8c78", legs: "#c4f1e7", goo: "#7fdcc8" },
   boss:    { shell: "#a98bff", dark: "#4b3aa8", legs: "#d6c9ff", goo: "#c59bff" },
+  // The World Map's bugs (levels.js)
+  splitter: { shell: "#5ee07a", dark: "#1f7a36", legs: "#b8f5c4", goo: "#5ee07a" },
+  mini:     { shell: "#8df0a3", dark: "#1f7a36", legs: "#c9f8d3", goo: "#8df0a3" },
+  ghost:    { shell: "#c9d6ff", dark: "#6d7bb3", legs: "#e3e9ff", goo: "#c9d6ff" },
+  armored:  { shell: "#9aa7bd", dark: "#4b5569", legs: "#c9d1df", goo: "#c9d1df" },
+  mega:     { shell: "#ff4d8d", dark: "#8a1c44", legs: "#ffb3cf", goo: "#ff4d8d" },
 };
+
+// Points for the World Map's bugs (everything else gets RULES.bugPoints)
+const KIND_POINTS = { splitter: 15, mini: 10, ghost: 20, armored: 20 };
 
 // Power-ups that float down during a game. Tap one to catch it!
 const POWER_UPS = {
@@ -165,6 +178,8 @@ const game = {
   shield: 0,       // shields ready to block a bug
   bosses: 0,       // boss bugs that showed up this game
   bossesSquashed: 0,
+  level: null,     // the World Map level you're playing (levels.js), or null
+  levelBoss: false, // did you squash this level's boss yet?
 };
 
 // Lists ("arrays") of everything on screen
@@ -292,11 +307,17 @@ function bugSize() {
 function makeBug(kind, x, y, angle) {
   let size = bugSize() * (kind === "golden" ? 0.85 : 1);
   if (kind === "boss") size = bugSize() * 2.3;
+  if (kind === "mega") size = bugSize() * 3.4;
+  if (kind === "mini") size = bugSize() * 0.62;
   if (ruleIs("tiny") && kind !== "boss") size *= 0.7;
   let speed = kind === "golden" ? 1.6 : 0.85 + rand() * 0.3;
   if (kind === "boss") speed = 0.42;
+  if (kind === "mega") speed = 0.16;
+  if (kind === "mini") speed = 1.35;
+  if (kind === "armored") speed *= 0.8;
+  const hp = kind === "armored" ? 2 : 1;      // armored bugs need 2 taps
   return {
-    kind,                                     // "bug", "golden", "feature" or "boss"
+    kind,                                     // "bug", "golden", "feature", "boss", or a World Map bug
     x,
     y,
     angle,                                    // which way it faces (in radians)
@@ -304,14 +325,16 @@ function makeBug(kind, x, y, angle) {
     speed,
     wobble: Math.random() * Math.PI * 2,      // where it is in its side-to-side wiggle
     legs: Math.random() * Math.PI * 2,        // where its legs are in their walk
-    hp: 1,                                    // taps left to squash it (bosses need lots)
-    maxHp: 1,
+    hp,                                       // taps left to squash it (bosses need lots)
+    maxHp: hp,
     hit: 0,                                   // a boss flashes for a moment when you hit it
+    alpha: 1,                                 // how see-through it is (ghost bugs fade in and out)
   };
 }
 
 // Pick a random kind of bug. Features only show up after the first few seconds.
 function randomKind() {
+  if (game.level) return levelKind(); // World Map levels pick their own bugs (levels.js)
   const roll = rand(); // a random number from 0 to 1
   const golden = ruleIs("golden") ? 0.24 : 0.08;
   const feature = ruleIs("features") ? 0.4 : 0.12;
@@ -457,32 +480,52 @@ function pointBoost() {
   return game.double > 0 ? 2 : 1;
 }
 
-// One tap on a boss bug
+// One tap on a boss bug (or the Mega Bug)
 function hitBoss(boss) {
+  const look = LOOKS[boss.kind];
   boss.hp -= 1;
   boss.hit = 0.15;
   game.clicks += 1;
   game.streak += 1;
-  addBurst(boss.x, boss.y, LOOKS.boss.goo);
+  addBurst(boss.x, boss.y, look.goo);
   sounds.squash();
   if (boss.hp > 0) {
-    addPopup(boss.x, boss.y - boss.size * 0.8, `${boss.hp}`, LOOKS.boss.shell);
+    addPopup(boss.x, boss.y - boss.size * 0.8, `${boss.hp}`, look.shell);
+    // Every 5 taps, the Mega Bug calls for help!
+    if (boss.kind === "mega" && boss.hp % 5 === 0) megaMinions(boss);
     updateScoreboard();
     return;
   }
   // Squashed it!
   bugs.splice(bugs.indexOf(boss), 1);
   addSplat(boss);
-  for (let i = 0; i < 3; i++) addBurst(boss.x + (Math.random() - 0.5) * boss.size, boss.y + (Math.random() - 0.5) * boss.size, LOOKS.boss.goo);
-  const points = RULES.bossPoints * pointBoost();
+  for (let i = 0; i < 3; i++) addBurst(boss.x + (Math.random() - 0.5) * boss.size, boss.y + (Math.random() - 0.5) * boss.size, look.goo);
+  const points = (boss.kind === "mega" ? RULES.megaPoints : RULES.bossPoints) * pointBoost();
   game.score += points;
   game.squashed += 1;
   game.bossesSquashed += 1;
+  game.levelBoss = true;
   game.shake = 0.25;
-  addPopup(boss.x, boss.y, `+${points}`, LOOKS.boss.shell);
-  showToast(`💥 BOSS SQUASHED! +${points}`, "good");
+  addPopup(boss.x, boss.y, `+${points}`, look.shell);
+  showToast(boss.kind === "mega" ? `👑 THE MEGA BUG IS SQUASHED! +${points}` : `💥 BOSS SQUASHED! +${points}`, "good");
   sounds.levelUp();
   updateScoreboard();
+}
+
+// The Mega Bug's helpers: two bugs and a splitter, right next to it
+function megaMinions(boss) {
+  for (const [kind, side] of [["bug", -1], ["bug", 1], ["splitter", 0]]) {
+    bugs.push(makeBug(kind, boss.x + side * boss.size, boss.y + boss.size * 0.5, Math.PI / 2 + side * 0.4));
+  }
+  showToast("👑 The Mega Bug called for help!", "bad");
+}
+
+// A splitter bug splits into two little fast bugs when you squash it!
+function splitBug(bug) {
+  for (const side of [-1, 1]) {
+    bugs.push(makeBug("mini", bug.x + side * bug.size * 0.4, bug.y, Math.PI / 2 + side * 0.7));
+  }
+  addPopup(bug.x, bug.y + bug.size, "split!", LOOKS.splitter.shell);
 }
 
 // Find the bug closest to a point, if one is close enough to hit.
@@ -506,13 +549,26 @@ function comboMultiplier() {
 }
 
 function squash(bug) {
-  if (bug.kind === "boss" && game.mode === "playing") {
+  if ((bug.kind === "boss" || bug.kind === "mega") && game.mode === "playing") {
     hitBoss(bug);
+    return;
+  }
+  // Armored bugs need 2 taps: the first one cracks the armor
+  if (bug.hp > 1 && game.mode === "playing") {
+    bug.hp -= 1;
+    bug.hit = 0.15;
+    game.clicks += 1;
+    game.streak += 1;
+    addPopup(bug.x, bug.y - bug.size * 0.6, "clank!", LOOKS.armored.legs);
+    addBurst(bug.x, bug.y, LOOKS.armored.goo);
+    sounds.miss();
+    updateScoreboard();
     return;
   }
   bugs.splice(bugs.indexOf(bug), 1); // take it out of the list
   addSplat(bug);
   addBurst(bug.x, bug.y, LOOKS[bug.kind].goo);
+  if (bug.kind === "splitter" && game.mode === "playing") splitBug(bug);
 
   // Outside a game, squashing is just for fun
   if (game.mode !== "playing") {
@@ -531,7 +587,7 @@ function squash(bug) {
   game.squashed += 1;
   game.streak += 1;
   const combo = comboMultiplier();
-  const points = (bug.kind === "golden" ? RULES.goldenPoints : RULES.bugPoints) * combo * pointBoost();
+  const points = (bug.kind === "golden" ? RULES.goldenPoints : KIND_POINTS[bug.kind] || RULES.bugPoints) * combo * pointBoost();
   game.score += points;
   addPopup(bug.x, bug.y, `+${points}`, bug.kind === "golden" ? LOOKS.golden.shell : COLORS.text);
 
@@ -586,6 +642,12 @@ function reachedProduction(bug) {
     return;
   }
 
+  if (bug.kind === "mega") {
+    addBurst(bug.x, y + 10, COLORS.danger);
+    breakTest("The MEGA BUG reached production!", game.tests);
+    return;
+  }
+
   if (bug.kind === "boss") {
     addPopup(bug.x, y, "−2 tests", COLORS.danger);
     addBurst(bug.x, y + 10, COLORS.danger);
@@ -630,9 +692,9 @@ function update(dt) {
 function updateGame(dt) {
   game.time += dt;
 
-  // Time for a new version?
+  // Time for a new version? (World Map levels stay at one speed)
   const version = Math.floor(game.time / RULES.secondsPerVersion);
-  if (version > game.version) {
+  if (version > game.version && !game.level) {
     game.version = version;
     showToast(`${versionName()} released! Bugs got faster.`, "good");
     sounds.levelUp();
@@ -658,13 +720,23 @@ function updateGame(dt) {
   game.freeze = Math.max(0, game.freeze - dt);
   game.double = Math.max(0, game.double - dt);
   if (hadEffects) updateEffects();
-  for (const bug of bugs) bug.hit = Math.max(0, bug.hit - dt);
+  for (const bug of bugs) {
+    bug.hit = Math.max(0, bug.hit - dt);
+    // Ghost bugs fade in and out. The Mega Bug does too, once it's hurt!
+    const megaGhost = bug.kind === "mega" && bug.hp <= bug.maxHp / 2;
+    if (bug.kind === "ghost" || megaGhost) {
+      bug.fade = (bug.fade ?? Math.random() * 6) + dt * 1.8;
+      const seen = Math.pow(0.5 + 0.5 * Math.sin(bug.fade), 2);
+      bug.alpha = megaGhost ? 0.25 + 0.75 * seen : 0.08 + 0.92 * seen;
+    }
+  }
 
   // Time for a new bug?
   game.spawnTimer -= dt;
   if (game.spawnTimer <= 0) {
     spawnBug();
-    game.spawnTimer = spawnInterval() * (0.7 + rand() * 0.6);
+    const slower = game.level ? game.level.spawn || 1 : 1; // some levels send bugs less often
+    game.spawnTimer = spawnInterval() * slower * (0.7 + rand() * 0.6);
   }
 
   // Move every bug. [...bugs] makes a copy, so we can safely remove
@@ -677,6 +749,8 @@ function updateGame(dt) {
       reachedProduction(bug);
     }
   }
+
+  if (game.level && game.mode === "playing") checkLevelGoal(); // levels.js
 }
 
 function updateWanderers(dt) {
@@ -779,7 +853,7 @@ function draw() {
   ripples.forEach(drawRipple);
   bugs.forEach((bug) => drawBug(ctx, bug));
   bugs.filter((bug) => bug.kind === "feature").forEach(drawFeatureTag);
-  bugs.filter((bug) => bug.kind === "boss").forEach(drawBossBar);
+  bugs.filter((bug) => bug.kind === "boss" || bug.kind === "mega").forEach(drawBossBar);
   drops.forEach(drawDrop);
   particles.forEach(drawParticle);
   popups.forEach(drawPopup);
@@ -869,6 +943,7 @@ function drawBug(c, bug) {
   const look = LOOKS[bug.kind];
 
   c.save();
+  if (bug.alpha !== undefined && bug.alpha < 1) c.globalAlpha = bug.alpha; // ghost bugs
   c.translate(bug.x, bug.y); // move the paintbrush to the bug...
   c.rotate(bug.angle);       // ...and turn it the way the bug faces
   // From here on, (0, 0) is the middle of the bug and its head points right.
@@ -912,7 +987,7 @@ function drawBug(c, bug) {
   c.fill();
 
   // Shell (golden bugs glow, and a boss flashes white when you hit it)
-  if (bug.kind === "golden" || bug.kind === "boss") {
+  if (bug.kind === "golden" || bug.kind === "boss" || bug.kind === "mega") {
     c.shadowColor = look.shell;
     c.shadowBlur = 18;
   }
@@ -943,22 +1018,75 @@ function drawBug(c, bug) {
   c.ellipse(s * 0.15, -s * 0.24, s * 0.16, s * 0.06, 0, 0, Math.PI * 2);
   c.fill();
 
+  drawBugExtras(c, bug, s, look);
   c.restore();
+}
+
+// Extra details for the World Map's bugs
+function drawBugExtras(c, bug, s, look) {
+  c.strokeStyle = look.dark;
+  c.lineWidth = Math.max(1.2, s * 0.07);
+  if (bug.kind === "splitter" || bug.kind === "mini") {
+    // A zig-zag crack across the shell: it's about to split!
+    c.beginPath();
+    c.moveTo(-s * 0.05, -s * 0.42);
+    c.lineTo(s * 0.08, -s * 0.18);
+    c.lineTo(-s * 0.08, 0.02 * s);
+    c.lineTo(s * 0.08, s * 0.2);
+    c.lineTo(-s * 0.05, s * 0.42);
+    c.stroke();
+  }
+  if (bug.kind === "armored") {
+    // Metal plates with rivets (and cracks, once you've hit it)
+    c.beginPath();
+    c.ellipse(0, 0, s * 0.42, s * 0.31, 0, 0, Math.PI * 2);
+    c.stroke();
+    c.fillStyle = "#e7ecf5";
+    for (const [x, y] of [[-0.3, 0], [0.3, 0], [0, 0.24], [0, -0.24]]) {
+      c.beginPath();
+      c.arc(x * s, y * s, s * 0.045, 0, Math.PI * 2);
+      c.fill();
+    }
+    if (bug.hp === 1) {
+      c.strokeStyle = "#1c2233";
+      c.beginPath();
+      c.moveTo(-s * 0.3, -s * 0.3);
+      c.lineTo(-s * 0.05, -s * 0.05);
+      c.lineTo(-s * 0.15, s * 0.1);
+      c.moveTo(s * 0.2, -s * 0.25);
+      c.lineTo(s * 0.05, s * 0.05);
+      c.stroke();
+    }
+  }
+  if (bug.kind === "mega") {
+    // A golden crown on its head
+    c.fillStyle = "#ffe24d";
+    c.beginPath();
+    c.moveTo(s * 0.5, -s * 0.2);
+    c.lineTo(s * 0.92, -s * 0.24);
+    c.lineTo(s * 0.8, -s * 0.12);
+    c.lineTo(s * 0.98, 0);
+    c.lineTo(s * 0.8, s * 0.12);
+    c.lineTo(s * 0.92, s * 0.24);
+    c.lineTo(s * 0.5, s * 0.2);
+    c.closePath();
+    c.fill();
+  }
 }
 
 // A boss bug's health bar, and the word BOSS
 function drawBossBar(boss) {
-  const barWidth = boss.size * 1.6;
-  const top = boss.y - boss.size - 18;
+  const barWidth = Math.min(boss.size * 1.6, width - 40);
+  const top = Math.max(16, boss.y - boss.size - 18);
   ctx.fillStyle = "rgba(0, 0, 0, 0.55)";
   ctx.fillRect(boss.x - barWidth / 2 - 2, top - 2, barWidth + 4, 10);
-  ctx.fillStyle = LOOKS.boss.shell;
+  ctx.fillStyle = LOOKS[boss.kind].shell;
   ctx.fillRect(boss.x - barWidth / 2, top, barWidth * (boss.hp / boss.maxHp), 6);
   ctx.font = '700 11px "JetBrains Mono", ui-monospace, monospace';
   ctx.textAlign = "center";
   ctx.textBaseline = "bottom";
   ctx.fillStyle = "#efeaff";
-  ctx.fillText(`BOSS ${boss.hp}`, boss.x, top - 4);
+  ctx.fillText(`${boss.kind === "mega" ? "👑 MEGA BUG" : "BOSS"} ${boss.hp}`, boss.x, top - 4);
 }
 
 // A power-up: a glowing bubble with an emoji inside
@@ -1062,7 +1190,11 @@ const screens = {
   title: document.querySelector("#screen-title"),
   paused: document.querySelector("#screen-paused"),
   over: document.querySelector("#screen-over"),
+  map: document.querySelector("#screen-map"),     // the World Map (levels.js)
+  intro: document.querySelector("#screen-intro"), // a level's "get ready" screen
+  won: document.querySelector("#screen-won"),     // you beat a level!
 };
+const versionLabel = document.querySelector(".stat--version dt");
 
 /* WORKOUT POWER-UPS (from my Level Up page)
    Level Up links here with "#powerups-3" or "#powerups-3-spray": that's
@@ -1151,7 +1283,8 @@ function updateScoreboard() {
   const combo = comboMultiplier();
   comboText.textContent = `×${combo}`;
   comboText.classList.toggle("is-hot", combo > 1);
-  versionText.textContent = versionName();
+  versionText.textContent = game.level ? levelProgress() : versionName(); // levels.js
+  versionLabel.textContent = game.level ? "Goal" : "Version";
 
   testDots.forEach((dot, i) => dot.classList.toggle("is-broken", i >= game.tests));
   testsText.textContent = `${game.tests} of ${game.totalTests} passing`;
@@ -1175,10 +1308,12 @@ function showToast(message, mood = "") {
   toastTimer = setTimeout(() => toast.classList.remove("is-visible"), 1800);
 }
 
-// daily = true starts today's daily challenge
-function startGame(daily = false) {
+// daily = true starts today's daily challenge. "level" is a World Map level (levels.js).
+function startGame(daily = false, level = null) {
   startAudio();
   game.daily = daily;
+  game.level = level;
+  game.levelBoss = false;
   game.rule = daily ? dailyRule() : null;
   game.rng = seededRandom(daily ? Number(todayKey().replace(/-/g, "")) : 1);
   game.mode = "playing";
@@ -1190,7 +1325,7 @@ function startGame(daily = false) {
   game.streak = 0;
   game.squashed = 0;
   game.clicks = 0;
-  game.version = ruleIs("speed") ? 3 : 0;
+  game.version = level ? level.version : ruleIs("speed") ? 3 : 0;
   game.time = game.version * RULES.secondsPerVersion;
   game.spawnTimer = 0.6;
   game.dropTimer = 10;
@@ -1205,6 +1340,11 @@ function startGame(daily = false) {
   showScreen(null);
   updateScoreboard();
   updateEffects();
+  if (level) {
+    showToast(`${level.icon} Level ${level.id}: ${level.name}`);
+    if (level.boss) setTimeout(spawnLevelBoss, 1500); // levels.js
+    return;
+  }
   showToast(daily ? `📅 ${game.rule.name}: ${game.rule.note}` : "Squash the bugs! Leave the features alone.");
 }
 
@@ -1235,7 +1375,7 @@ function endGame() {
   game.mode = "over";
   game.spawnTimer = 1;
 
-  const isNewBest = game.score > game.best;
+  const isNewBest = game.score > game.best && !game.level; // World Map levels don't count for your best
   if (isNewBest) {
     game.best = game.score;
     save("bugBashBest", game.best);
@@ -1267,6 +1407,11 @@ function endGame() {
   drops = [];
   updateEffects();
 
+  // On the World Map, it's "try again" instead of "game over"
+  document.querySelector("#over-heading").textContent = game.level ? `Level ${game.level.id} failed!` : "All tests broke!";
+  document.querySelector("#again-button").textContent = game.level ? "Try again" : "Play again";
+  document.querySelector("#over-map").hidden = !game.level;
+
   showScreen("over");
   document.querySelector("#again-button").focus();
 }
@@ -1282,7 +1427,7 @@ function updateDailyButton() {
 // Buttons
 document.querySelector("#start-button").addEventListener("click", () => startGame(false));
 document.querySelector("#daily-button").addEventListener("click", () => startGame(true));
-document.querySelector("#again-button").addEventListener("click", () => startGame(game.daily));
+document.querySelector("#again-button").addEventListener("click", () => startGame(game.daily, game.level));
 document.querySelector("#resume-button").addEventListener("click", resumeGame);
 
 pauseButton.addEventListener("click", () => {
@@ -1322,7 +1467,7 @@ function useSpray() {
   let count = 0;
   for (const bug of [...bugs]) {
     if (bug.kind === "feature") continue;
-    if (bug.kind === "boss") {
+    if (bug.kind === "boss" || bug.kind === "mega") {
       // Bosses are too tough: the spray takes off 4 hits
       for (let i = 0; i < 4 && bugs.includes(bug); i++) hitBoss(bug);
       continue;
@@ -1350,7 +1495,8 @@ document.addEventListener("keydown", (event) => {
   }
   const onAButton = event.target.closest && event.target.closest("button, a");
   if (event.key === "Enter" && !onAButton && (game.mode === "title" || game.mode === "over")) {
-    startGame(game.mode === "over" && game.daily);
+    const over = game.mode === "over";
+    startGame(over && game.daily, over ? game.level : null);
   }
 });
 

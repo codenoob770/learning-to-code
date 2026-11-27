@@ -10,7 +10,8 @@ every line can be opened, read and changed.
 | ------------- | -------------------------------------------------------------------- |
 | `index.html`  | The **content**: every heading, paragraph, link and list on the page |
 | `style.css`   | The **look**: colors, fonts, spacing and layout                      |
-| `script.js`   | The **behavior**: the theme button, the Run button, the playground   |
+| `script.js`   | The **behavior**: the theme button, the Run button, the roadmap      |
+| `playground.js` | The **Code Playground**: HTML + JavaScript, with coding challenges |
 | `favicon.svg` | The little icon in the browser tab                                   |
 | `bug-bash/`   | **Bug Bash**, a little game (see below)                              |
 | `level-up/`   | **Level Up**, my workouts, games, quiz and healthy food (see below)  |
@@ -18,6 +19,18 @@ every line can be opened, read and changed.
 
 Every file is full of comments that explain what each part does. Reading them
 from top to bottom is a good way to learn how the site works.
+
+## The Code Playground
+
+At the bottom of the main page. Type HTML in `index.html` and the preview
+updates as you type. Switch to `script.js` to write JavaScript, then press
+**Run** (or Ctrl + Enter). Whatever `console.log` prints shows up in the
+**console** under the preview, and so do errors (with the line number).
+
+There are 12 **coding challenges**, from "make a heading" to FizzBuzz. Press
+**Check my code** to see if you did it. Your code runs in a sandboxed
+`<iframe>`, so it can't break the rest of the site, and a loop guard stops
+infinite loops before they freeze the page.
 
 ## Bug Bash: the game
 
@@ -30,6 +43,12 @@ Every few versions a big purple **boss bug** shows up. Tap it lots! Catch
 **power-ups** as they float down: ❄️ freeze, ⭐ double points and 🛡️ shield.
 The **daily challenge** has a special rule each day, like Golden Day or
 Boss Rush, with its own best score.
+
+The **🗺️ World Map** has 10 levels in 3 worlds (`bug-bash/levels.js`). Each
+level has a goal, like "squash 20 bugs", and up to 3 stars. New bugs show
+up along the way: **splitters** split into two little bugs, **ghosts** fade
+in and out, and **armored** bugs need 2 taps. Level 10 is the final boss:
+the **👑 Mega Bug**, which calls for help and turns into a ghost when it's hurt!
 
 The game is drawn on a `<canvas>` by `bug-bash/game.js`. The easiest thing to
 change is the `RULES` list near the top of that file: give yourself more tests,

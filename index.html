@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=JetBrains+Mono:ital,wght@0,400;0,600;1,400&display=swap">
 
   <!-- My own styles -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2">
 
   <!-- Apply a saved light/dark choice before the page is drawn,
        so it never flashes the wrong colors. -->
@@ -41,7 +41,9 @@
   </script>
 
   <!-- My JavaScript. "defer" means: run it after all the HTML has loaded. -->
-  <script src="script.js" defer></script>
+  <script src="script.js?v=2" defer></script>
+  <!-- The Code Playground has its own file -->
+  <script src="playground.js?v=2" defer></script>
 </head>
 <body>
   <!-- Lets keyboard users jump past the menu. It only shows up when focused. -->
@@ -223,7 +225,8 @@
             <p>
               My first website: a single page made with plain HTML, CSS and
               JavaScript. It has a light and dark theme, a roadmap that counts
-              my progress and a playground for trying out HTML.
+              my progress and a Code Playground with coding challenges, where
+              I can try out HTML and JavaScript.
             </p>
             <ul class="tags" aria-label="Made with">
               <li>HTML</li>
@@ -238,6 +241,7 @@
 <span class="tree-dim">├──</span> <span class="tree-file">index.html</span>   <span class="tree-note">// the content</span>
 <span class="tree-dim">├──</span> <span class="tree-file">style.css</span>    <span class="tree-note">// the look</span>
 <span class="tree-dim">├──</span> <span class="tree-file">script.js</span>    <span class="tree-note">// the behavior</span>
+<span class="tree-dim">├──</span> <span class="tree-file">playground.js</span> <span class="tree-note">// the Code Playground</span>
 <span class="tree-dim">├──</span> <span class="tree-file">favicon.svg</span>  <span class="tree-note">// the tab icon</span>
 <span class="tree-dim">└──</span> <span class="tree-file">README.md</span>    <span class="tree-note">// notes and how-tos</span></pre>
         </article>
@@ -314,39 +318,62 @@
         <div class="section__head">
           <div class="section__title">
             <p class="eyebrow">// playground</p>
-            <h2 id="playground-title">Try writing some HTML</h2>
+            <h2 id="playground-title">Code Playground</h2>
             <p class="section__intro">
-              Type HTML in the editor and the preview updates as you type.
-              Nothing you type is saved or sent anywhere.
+              Write real HTML and JavaScript and see it work. HTML updates as you
+              type; press <strong>Run</strong> for JavaScript. Try a challenge, or just play!
+              Your code isn't saved or sent anywhere.
             </p>
+          </div>
+        </div>
+
+        <!-- Mini coding challenges (playground.js) -->
+        <div class="challenges">
+          <div class="challenges__head">
+            <p class="challenges__title">🏆 Coding challenges</p>
+            <p class="challenges__count" id="challenge-count"></p>
+          </div>
+          <div class="challenge-list" id="challenge-list"></div>
+          <div class="challenge" id="challenge-box" hidden>
+            <p class="challenge__title" id="challenge-title"></p>
+            <p class="challenge__task" id="challenge-task"></p>
+            <p class="challenge__hint" id="challenge-hint" hidden></p>
+            <div class="challenge__buttons">
+              <button class="button" id="challenge-check" type="button">Check my code</button>
+              <button class="button button--quiet" id="challenge-show-hint" type="button">Hint</button>
+              <button class="button button--quiet" id="challenge-exit" type="button">Free play</button>
+            </div>
+            <p class="challenge__result" id="challenge-result" aria-live="polite"></p>
           </div>
         </div>
 
         <div class="playground">
           <div class="playground__editor">
+            <div class="playground__tabs" role="group" aria-label="Which code">
+              <button class="code-tab" type="button" data-code-tab="html" aria-pressed="true">index.html</button>
+              <button class="code-tab" type="button" data-code-tab="js" aria-pressed="false">script.js</button>
+              <button class="editor__run playground__run" id="playground-run" type="button" title="Run (Ctrl + Enter)">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg>
+                <span>Run</span>
+              </button>
+            </div>
             <div class="playground__toolbar">
               <span class="playground__toolbar-label">Add:</span>
-              <button class="chip" type="button" data-snippet="heading">Heading</button>
-              <button class="chip" type="button" data-snippet="link">Link</button>
-              <button class="chip" type="button" data-snippet="button">Button</button>
+              <span class="playground__snippets" id="playground-snippets"></span>
               <button class="chip chip--reset" type="button" id="playground-reset">Reset</button>
             </div>
             <label class="visually-hidden" for="playground-input">Your HTML</label>
-            <!-- Inside a <textarea>, HTML tags are just text, so the example below shows up as code. -->
-            <textarea id="playground-input" spellcheck="false" autocapitalize="off" autocomplete="off">
-<h2>Hello from the playground!</h2>
-<p>Change this text and watch the preview update.</p>
-<p>Try making a word <strong>bold</strong> or <em>italic</em>.</p>
-<ul>
-  <li>HTML</li>
-  <li>CSS</li>
-  <li style="color: tomato">JavaScript</li>
-</ul></textarea>
+            <textarea id="playground-input" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea>
+            <label class="visually-hidden" for="playground-js">Your JavaScript</label>
+            <textarea id="playground-js" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" hidden></textarea>
           </div>
 
           <div class="playground__output">
             <p class="panel-label">Preview</p>
-            <div class="playground__preview" id="playground-preview"></div>
+            <!-- "sandbox" walls the preview off from the rest of my site -->
+            <iframe class="playground__frame" id="playground-frame" title="Preview of your code" sandbox="allow-scripts allow-modals"></iframe>
+            <p class="panel-label panel-label--console">Console</p>
+            <div class="playground__console" id="playground-console" aria-live="polite"></div>
           </div>
         </div>
       </div>

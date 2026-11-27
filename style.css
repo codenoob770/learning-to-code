@@ -1184,6 +1184,11 @@ a:hover {
   resize: vertical;
 }
 
+/* Only one editor shows at a time (the other has the "hidden" attribute) */
+.playground textarea[hidden] {
+  display: none;
+}
+
 .playground textarea:focus-visible {
   outline: 2px solid var(--syn-keyword);
   outline-offset: -2px;
@@ -1218,6 +1223,221 @@ a:hover {
   min-height: 12rem;
   padding: 1.25rem 1.5rem;
   overflow: auto;
+}
+
+/* The JavaScript and challenge parts of the playground (playground.js) */
+.playground__tabs {
+  display: flex;
+  align-items: stretch;
+  gap: 0.25rem;
+  padding: 0.4rem 0.6rem 0;
+  border-bottom: 1px solid var(--code-line);
+  background: var(--code-panel);
+}
+
+.code-tab {
+  padding: 0.45rem 0.85rem;
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-radius: 6px 6px 0 0;
+  background: transparent;
+  color: var(--code-dim);
+  font-family: var(--font-code);
+  font-size: var(--text-xs);
+  cursor: pointer;
+}
+
+.code-tab[aria-pressed="true"] {
+  border-color: var(--code-line);
+  background: var(--code-bg);
+  color: var(--syn-string);
+}
+
+.playground__run {
+  align-self: center;
+  margin-left: auto;
+  margin-bottom: 0.35rem;
+}
+
+/* Glows when your JavaScript changed and hasn't run yet */
+.playground__run.is-waiting {
+  border-color: var(--syn-func);
+  box-shadow: 0 0 0 2px rgba(127, 220, 200, 0.35);
+}
+
+.playground__snippets {
+  display: contents;
+}
+
+.playground__frame {
+  display: block;
+  flex: 1;
+  width: 100%;
+  min-height: 15rem;
+  border: 0;
+  background: #ffffff;
+}
+
+.panel-label--console {
+  min-height: 2.25rem;
+  border-top: 1px solid var(--line);
+}
+
+.playground__console {
+  height: 8.5rem;
+  overflow-y: auto;
+  padding: 0.4rem 0;
+  background: var(--code-bg);
+  color: var(--code-fg);
+  font-family: var(--font-code);
+  font-size: var(--text-xs);
+}
+
+.playground__console:empty::before {
+  content: "console.log() messages show up here";
+  display: block;
+  padding: 0.2rem 1rem;
+  color: var(--code-dim);
+}
+
+.console-line {
+  margin: 0;
+  padding: 0.15rem 1rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.console-line::before {
+  content: "› ";
+  color: var(--code-dim);
+}
+
+.console-line--error {
+  color: #ff8a80;
+  background: rgba(255, 107, 107, 0.08);
+}
+
+.challenges {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.challenges__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+}
+
+.challenges__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.challenges__count {
+  margin: 0;
+  color: var(--muted);
+  font-family: var(--font-code);
+  font-size: var(--text-xs);
+}
+
+.challenge-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.challenge-chip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.05rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-sm);
+  text-align: left;
+  cursor: pointer;
+}
+
+.challenge-chip:hover {
+  border-color: var(--accent);
+}
+
+.challenge-chip__type {
+  color: var(--muted);
+  font-family: var(--font-code);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.challenge-chip.is-done {
+  border-color: var(--ok);
+  background: var(--ok-soft);
+}
+
+.challenge-chip.is-current {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.challenge {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.9rem 1rem;
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--paper);
+}
+
+.challenge__title {
+  margin: 0;
+  font-weight: 700;
+}
+
+.challenge__task,
+.challenge__hint {
+  margin: 0;
+}
+
+.challenge__hint {
+  color: var(--muted);
+  font-family: var(--font-code);
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+
+.challenge__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.challenge__result {
+  margin: 0;
+  min-height: 1.5em;
+  font-weight: 700;
+}
+
+.challenge__result.is-pass {
+  color: var(--ok);
+}
+
+.challenge__result.is-fail {
+  color: var(--muted);
 }
 
 /* Phones zoom in on text boxes with small text, so use 16px there */

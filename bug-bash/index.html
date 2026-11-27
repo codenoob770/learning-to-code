@@ -8,6 +8,7 @@
       index.html -> what's on the screen (the scoreboard and the menus)
       style.css  -> how it all looks
       game.js    -> the game itself: bugs, squashing and scoring
+      levels.js  -> the World Map: 10 levels, new bugs and the Mega Bug
 
     The game is drawn on a <canvas>, which is like a blank picture that
     JavaScript can paint on. Look for <canvas id="game"> below.
@@ -24,8 +25,9 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=JetBrains+Mono:wght@400;600&display=swap">
 
   <!-- "?v=2" makes browsers download the newest version after an update -->
-  <link rel="stylesheet" href="style.css?v=3">
-  <script src="game.js?v=3" defer></script>
+  <link rel="stylesheet" href="style.css?v=4">
+  <script src="game.js?v=4" defer></script>
+  <script src="levels.js?v=4" defer></script>
 </head>
 <body>
 
@@ -117,6 +119,58 @@
           <span class="daily-button__title">📅 Daily challenge: <strong id="daily-name">Golden Day</strong></span>
           <span class="daily-button__note" id="daily-note"></span>
         </button>
+        <button class="daily-button map-button" id="map-button" type="button">
+          <span class="daily-button__title">🗺️ World Map <strong id="map-button-stars">⭐ 0/30</strong></span>
+          <span class="daily-button__note">10 levels, new kinds of bugs and a final boss: the MEGA BUG!</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- World Map (levels.js) -->
+    <section class="screen" id="screen-map" aria-labelledby="map-heading" hidden>
+      <div class="panel panel--map">
+        <p class="panel__eyebrow">// world map</p>
+        <h2 class="panel__title panel__title--small" id="map-heading">🗺️ World Map</h2>
+        <p class="panel__lead">Beat each level to unlock the next. Lose fewer tests for more stars! <strong id="map-stars"></strong></p>
+        <div class="map-worlds" id="map-worlds"></div>
+        <div class="panel__actions">
+          <button class="button button--quiet" id="map-back" type="button">Back</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- A level's "get ready" screen (levels.js) -->
+    <section class="screen" id="screen-intro" aria-labelledby="intro-heading" hidden>
+      <div class="panel panel--small">
+        <p class="panel__eyebrow" id="intro-eyebrow">// level 1</p>
+        <h2 class="panel__title panel__title--small" id="intro-heading">Level</h2>
+        <canvas class="intro-bug" id="intro-bug" aria-hidden="true" hidden></canvas>
+        <p class="panel__lead" id="intro-lead"></p>
+        <p class="intro-goal" id="intro-goal"></p>
+        <div class="panel__actions">
+          <button class="button" id="intro-start" type="button">Start!</button>
+          <button class="button button--quiet" id="intro-back" type="button">World map</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- You beat a level! (levels.js) -->
+    <section class="screen" id="screen-won" aria-labelledby="won-heading" hidden>
+      <div class="panel">
+        <p class="panel__eyebrow" id="won-eyebrow">// level complete</p>
+        <h2 class="panel__title panel__title--small" id="won-heading">Level complete!</h2>
+        <p class="won-stars" id="won-stars">⭐⭐⭐</p>
+        <p class="panel__lead" id="won-lead"></p>
+        <dl class="results">
+          <div><dt>Score</dt><dd id="won-score">0</dd></div>
+          <div><dt>Bugs squashed</dt><dd id="won-squashed">0</dd></div>
+          <div><dt>Tests left</dt><dd id="won-tests">3/3</dd></div>
+        </dl>
+        <div class="panel__actions">
+          <button class="button" id="won-next" type="button">Next level</button>
+          <button class="button button--quiet" id="won-map" type="button">World map</button>
+          <button class="button button--quiet" id="won-again" type="button">Play again</button>
+        </div>
       </div>
     </section>
 
@@ -151,6 +205,7 @@
 
         <div class="panel__actions">
           <button class="button" id="again-button" type="button">Play again</button>
+          <button class="button button--quiet" id="over-map" type="button" hidden>World map</button>
           <a class="button button--quiet" href="../index.html">Back to my website</a>
         </div>
       </div>
