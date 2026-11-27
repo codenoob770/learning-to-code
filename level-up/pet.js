@@ -7,6 +7,7 @@
    in the last 3 days. Skip a few days and it gets sleepy.
 
    Hats and colors for your pet come from the shop (shop.js).
+   Sport forms, tricks, treats and the pet room are in pet-plus.js.
 
    This file loads before app.js, so it only uses app.js's
    functions inside its own functions, never right away.
@@ -56,6 +57,7 @@ function petMood() {
     if (((habits[key] || {}).water || 0) >= 6) points += 1;
     if (((habits[key] || {}).sleep || 0) >= 9) points += 1;
   }
+  if (hadTreatToday()) points += 2; // a treat from the Mystery Box (pet-plus.js)
   if (points >= 4) return { id: "happy", face: "😄", text: "SO happy! We're on fire! 🔥" };
   if (points >= 2) return { id: "okay", face: "🙂", text: "Doing okay! A workout or some water would make me even happier." };
   return { id: "sleepy", face: "😴", text: "Sleepy... Let's do a workout and drink some water together!" };
@@ -114,6 +116,7 @@ function petSVG(stageIndex, mood, look) {
         <ellipse cx="100" cy="142" rx="34" ry="24" fill="#fff" opacity="0.22"/>
         <ellipse cx="66" cy="122" rx="8" ry="5" fill="#ff8fa3" opacity="0.6"/>
         <ellipse cx="134" cy="122" rx="8" ry="5" fill="#ff8fa3" opacity="0.6"/>
+        ${petFormSVG()}
         ${eyes}
         ${mouths[mood.id]}
         ${petHatSVG(look.hat)}
@@ -132,6 +135,8 @@ function petHatSVG(hat) {
     tophat: `<rect x="72" y="4" width="56" height="46" rx="4" fill="#1c2233"/><rect x="72" y="36" width="56" height="8" fill="#e2443b"/><ellipse cx="100" cy="52" rx="42" ry="7" fill="#1c2233"/>`,
     halo: `<ellipse cx="100" cy="24" rx="36" ry="10" fill="none" stroke="#ffd34d" stroke-width="7"/><ellipse cx="100" cy="24" rx="36" ry="10" fill="none" stroke="#fff6c2" stroke-width="2"/>`,
     unicorn: `<path d="M89 58 L100 0 L111 58 Z" fill="#ffd34d"/><path d="M91 46 L109 40 M94 31 L107 26 M97 17 L104 14" stroke="#e8a31a" stroke-width="3"/><path d="M70 60 Q76 40 88 54 Q96 38 102 56" fill="#ff8fc8"/>`,
+    ninja: `<path d="M44 80 Q100 64 156 80 L156 92 Q100 76 44 92 Z" fill="#1c1c1c"/><path d="M154 82 L182 72 L176 84 L184 98 Z" fill="#1c1c1c"/><circle cx="100" cy="78" r="6" fill="#e2443b"/>`,
+    propeller: `<path d="M62 62 Q100 20 138 62 Z" fill="#3f7fe0"/><path d="M62 62 Q78 30 100 26 L100 62 Z" fill="#e2443b"/><path d="M100 26 Q122 30 138 62 L100 62 Z" fill="#ffd34d"/><path d="M100 26 V12" stroke="#1c2233" stroke-width="3"/><ellipse class="pet__propeller" cx="100" cy="11" rx="24" ry="4" fill="#e2443b"/>`,
     crown: `<path d="M64 58 L64 22 L82 40 L100 14 L118 40 L136 22 L136 58 Z" fill="#ffd34d" stroke="#c99a1a" stroke-width="3" stroke-linejoin="round"/><circle cx="100" cy="44" r="5" fill="#e2443b"/><circle cx="78" cy="48" r="4" fill="#4fd1ff"/><circle cx="122" cy="48" r="4" fill="#4fd1ff"/>`,
   };
   return hats[hat] || "";

@@ -9,7 +9,8 @@
    Coins are worked out from your XP, so they sync by themselves.
    (Bonus coins from prizes, like the Mystery Box, plug in with
    addCoins in hooks.js.) "mystery: true" items can't be bought:
-   they only come from the Mystery Box in the Arcade.
+   they only come from the Mystery Box in the Arcade. "secret: true"
+   items are hidden until you find their Easter egg (fun.js)!
    The shop only saves what you spent, what you own and what
    you're wearing. Expert mode's red always wins over a theme.
 
@@ -27,6 +28,8 @@ const SHOP = [
   { group: "theme", id: "galaxy", name: "Galaxy", icon: "🌌", price: 200, swatch: "#c59bff" },
   { group: "theme", id: "candy", name: "Candy", icon: "🍭", price: 200, swatch: "#ff8fd0" },
   { group: "theme", id: "gold", name: "Gold", icon: "🏆", price: 600, swatch: "#ffcf40" },
+  { group: "theme", id: "rainbow", name: "Rainbow", icon: "🌈", price: 0, secret: true, swatch: "linear-gradient(90deg, #ff6b6b, #ffd34d, #7dff8a, #4fd1ff, #c59bff)" },
+  { group: "theme", id: "hacker", name: "Hacker", icon: "💻", price: 0, secret: true, swatch: "#39ff14" },
 
   { group: "hat", id: "none", name: "No hat", icon: "🙂", price: 0, free: true },
   { group: "hat", id: "cap", name: "Ball cap", icon: "🧢", price: 60 },
@@ -38,6 +41,8 @@ const SHOP = [
   { group: "hat", id: "tophat", name: "Top hat", icon: "🎩", price: 0, mystery: true },
   { group: "hat", id: "halo", name: "Golden halo", icon: "😇", price: 0, mystery: true },
   { group: "hat", id: "unicorn", name: "Unicorn horn", icon: "🦄", price: 0, mystery: true },
+  { group: "hat", id: "ninja", name: "Ninja headband", icon: "🥷", price: 0, secret: true },
+  { group: "hat", id: "propeller", name: "Propeller cap", icon: "🚁", price: 0, secret: true },
 
   { group: "petColor", id: "#7fdcc8", name: "Mint", price: 0, free: true, swatch: "#7fdcc8" },
   { group: "petColor", id: "#ff9f5a", name: "Orange", price: 50, swatch: "#ff9f5a" },
@@ -46,12 +51,14 @@ const SHOP = [
   { group: "petColor", id: "#6fb7ff", name: "Sky blue", price: 50, swatch: "#6fb7ff" },
   { group: "petColor", id: "#ffd34d", name: "Gold", price: 250, swatch: "#ffd34d" },
   { group: "petColor", id: "rainbow", name: "Rainbow", price: 400, swatch: "linear-gradient(135deg, #ff6b6b, #ffd34d, #7fdcc8, #a98bff)" },
+  { group: "petColor", id: "#39ff9f", name: "Glow in the dark", price: 0, secret: true, swatch: "#39ff9f" },
 
   { group: "figure", id: "white", name: "White", price: 0, free: true, swatch: "#e3e8f5" },
   { group: "figure", id: "gold", name: "Gold", price: 80, swatch: "#ffd34d" },
   { group: "figure", id: "neon", name: "Neon green", price: 80, swatch: "#7dff8a" },
   { group: "figure", id: "fire", name: "Fire", price: 80, swatch: "#ff7a3d" },
   { group: "figure", id: "ice", name: "Ice blue", price: 80, swatch: "#8fe3ff" },
+  { group: "figure", id: "pink", name: "Bubblegum", price: 0, secret: true, swatch: "#ff8fd0" },
 ];
 
 const SHOP_GROUPS = [
@@ -99,7 +106,7 @@ function renderShop() {
   document.querySelector("#coin-next").textContent = `Next coin in ${XP_PER_COIN - (xp % XP_PER_COIN)} XP · 10 XP = 1 coin`;
 
   document.querySelector("#shop-groups").innerHTML = SHOP_GROUPS.map((group) => {
-    const items = SHOP.filter((item) => item.group === group.id).map((item) => {
+    const items = SHOP.filter((item) => item.group === group.id && (!item.secret || owns(item))).map((item) => {
       const owned = owns(item);
       const worn = wearing(item.group) === item.id;
       let button = `<button class="button" type="button" data-shop-buy="${item.group}:${item.id}" ${wallet < item.price ? "disabled" : ""}>🪙 ${item.price}</button>`;
@@ -131,7 +138,7 @@ document.querySelector("#shop-groups").addEventListener("click", (event) => {
   const [group, ...rest] = (buy ? key.shopBuy : key.shopWear).split(":");
   const id = rest.join(":");
   const item = SHOP.find((i) => i.group === group && i.id === id);
-  if (!item || (buy && item.mystery)) return;
+  if (!item || (buy && (item.mystery || item.secret))) return;
 
   if (buy) {
     if (coins() < item.price) {

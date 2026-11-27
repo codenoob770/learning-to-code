@@ -31,6 +31,8 @@
                      Memory Match, Mystery Box and Sister Duel
       training-plus.js -> Game Day Warm-Up, Monthly Fitness Test, My Goals,
                      Muscle Map, Sore Muscle Helper and demo controls
+      pet-plus.js -> pet sport forms, tricks, treats and the pet room
+      fun.js      -> Sticker Album, My Avatar, seasonal events and secrets
       arcade.js   -> card deck workout, Kick Caller and spin the wheel
       kitchen.js  -> Smoothie Lab, Recipe Book and Snack Swap
       sports.js   -> belt tracker, swim school, soccer journal and workout builder
@@ -57,42 +59,51 @@
   <!-- The "?v=8" is a version number. Browsers keep old copies of files for a
        while; changing the number makes them download the newest version.
        Add 1 to it (on every line below) whenever you change those files. -->
-  <link rel="stylesheet" href="style.css?v=21">
+  <link rel="stylesheet" href="style.css?v=22">
   <!-- These load in order. app.js goes last, because it starts the page
        and uses things from all the others. -->
-  <script src="plan.js?v=21" defer></script>
-  <script src="hooks.js?v=21" defer></script>
-  <script src="demos.js?v=21" defer></script>
-  <script src="trophies.js?v=21" defer></script>
-  <script src="coach.js?v=21" defer></script>
-  <script src="practice.js?v=21" defer></script>
-  <script src="habits.js?v=21" defer></script>
-  <script src="charts.js?v=21" defer></script>
-  <script src="grocery.js?v=21" defer></script>
-  <script src="ai-coach.js?v=21" defer></script>
-  <script src="quest.js?v=21" defer></script>
-  <script src="missions.js?v=21" defer></script>
-  <script src="boss.js?v=21" defer></script>
-  <script src="quiz-questions.js?v=21" defer></script>
-  <script src="quiz.js?v=21" defer></script>
-  <script src="arcade.js?v=21" defer></script>
-  <script src="kitchen.js?v=21" defer></script>
-  <script src="sports.js?v=21" defer></script>
-  <script src="stats.js?v=21" defer></script>
-  <script src="family.js?v=21" defer></script>
-  <script src="pet.js?v=21" defer></script>
-  <script src="shop.js?v=21" defer></script>
-  <script src="training-lessons.js?v=21" defer></script>
-  <script src="training.js?v=21" defer></script>
-  <script src="extra.js?v=21" defer></script>
-  <script src="brain-data.js?v=21" defer></script>
-  <script src="brain.js?v=21" defer></script>
-  <script src="games.js?v=21" defer></script>
-  <script src="training-plus.js?v=21" defer></script>
-  <script src="tabs.js?v=21" defer></script>
-  <script src="app.js?v=21" defer></script>
+  <script src="plan.js?v=22" defer></script>
+  <script src="hooks.js?v=22" defer></script>
+  <script src="demos.js?v=22" defer></script>
+  <script src="trophies.js?v=22" defer></script>
+  <script src="coach.js?v=22" defer></script>
+  <script src="practice.js?v=22" defer></script>
+  <script src="habits.js?v=22" defer></script>
+  <script src="charts.js?v=22" defer></script>
+  <script src="grocery.js?v=22" defer></script>
+  <script src="ai-coach.js?v=22" defer></script>
+  <script src="quest.js?v=22" defer></script>
+  <script src="missions.js?v=22" defer></script>
+  <script src="boss.js?v=22" defer></script>
+  <script src="quiz-questions.js?v=22" defer></script>
+  <script src="quiz.js?v=22" defer></script>
+  <script src="arcade.js?v=22" defer></script>
+  <script src="kitchen.js?v=22" defer></script>
+  <script src="sports.js?v=22" defer></script>
+  <script src="stats.js?v=22" defer></script>
+  <script src="family.js?v=22" defer></script>
+  <script src="pet.js?v=22" defer></script>
+  <script src="shop.js?v=22" defer></script>
+  <script src="training-lessons.js?v=22" defer></script>
+  <script src="training.js?v=22" defer></script>
+  <script src="extra.js?v=22" defer></script>
+  <script src="brain-data.js?v=22" defer></script>
+  <script src="brain.js?v=22" defer></script>
+  <script src="games.js?v=22" defer></script>
+  <script src="training-plus.js?v=22" defer></script>
+  <script src="pet-plus.js?v=22" defer></script>
+  <script src="fun.js?v=22" defer></script>
+  <script src="tabs.js?v=22" defer></script>
+  <script src="app.js?v=22" defer></script>
 </head>
 <body>
+
+  <!-- 🥚 Psst! Hey, coder. You read the source code, just like a real web developer.
+       Here's a secret code for you: VIEWSOURCE
+       Type it in the Secret Code box on the Pet & Shop tab. -->
+
+  <!-- Snowflakes (or leaves...) during seasonal events (fun.js) -->
+  <div class="season-fx" id="season-fx" aria-hidden="true"></div>
 
   <!-- Faint code in the background, just for looks (like Bug Bash) -->
   <div class="backdrop" aria-hidden="true">
@@ -128,6 +139,7 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
         <span class="hud__home-text">My website</span>
       </a>
+      <button class="hud__avatar" id="hud-avatar" type="button" data-go-tab="pet" aria-label="My avatar" title="My avatar"></button>
       <p class="hud__title">Level <span class="marker">Up</span> <span class="expert-badge">Expert</span></p>
 
       <dl class="hud__stats">
@@ -173,6 +185,9 @@
 
     <!-- ==================== TAB: TODAY ==================== -->
     <div class="tab-page" data-page="today">
+      <!-- ============ SEASONAL EVENT (fun.js) ============ -->
+      <section class="panel event-panel" id="event-panel" aria-label="Special event" hidden></section>
+
       <!-- ============ WHICH DAY ============ -->
       <section class="panel day" aria-labelledby="day-name">
         <div class="day__top">
@@ -972,6 +987,7 @@
         <div class="trophies__player">
           <p class="eyebrow">// trophy case</p>
           <div class="player">
+            <span class="player__avatar" id="player-avatar"></span>
             <p class="player__level"><span>Level</span><strong id="player-level">1</strong></p>
             <div>
               <h2 class="panel__title" id="trophies-title"><span id="player-rank">Rookie</span></h2>
@@ -990,6 +1006,16 @@
           <ul class="badges" id="badges"></ul>
           <details class="extra badges-locked" id="badges-locked"></details>
         </div>
+      </section>
+
+      <!-- ============ STICKER ALBUM (fun.js) ============ -->
+      <section class="panel brain-panel" id="sticker-panel" aria-labelledby="sticker-title">
+        <div class="panel__head">
+          <p class="eyebrow">// sticker album</p>
+        </div>
+        <h2 class="panel__title" id="sticker-title">📒 Sticker Album</h2>
+        <p class="panel__lead">Try everything on the site to fill your album. Can you collect all 40?</p>
+        <div class="brain-area" id="sticker-area"></div>
       </section>
 
       <!-- ============ PROGRESS CHARTS (charts.js) ============ -->
@@ -1074,11 +1100,19 @@
 
     <!-- ==================== TAB: PET & SHOP ==================== -->
     <div class="tab-page" data-page="pet" hidden>
+      <nav class="brain-jump arcade-jump" aria-label="Jump to a part of the Pet tab">
+        <button class="lab-chip" type="button" data-brain-jump="pet-panel">🐾 My pet</button>
+        <button class="lab-chip" type="button" data-brain-jump="room-panel">🏠 Pet room</button>
+        <button class="lab-chip" type="button" data-brain-jump="avatar-panel">🧑 My avatar</button>
+        <button class="lab-chip" type="button" data-brain-jump="shop-panel">🛍️ Shop</button>
+        <button class="lab-chip" type="button" data-brain-jump="secrets-panel">🥚 Secrets</button>
+      </nav>
       <!-- ============ MY PET (pet.js) ============ -->
-      <section class="panel pet-panel" aria-labelledby="pet-name-title">
+      <section class="panel pet-panel brain-panel" id="pet-panel" aria-labelledby="pet-name-title">
         <p class="eyebrow">// my pet</p>
         <div class="pet-home">
           <div class="pet-stage">
+            <div class="pet-room" id="pet-room" aria-hidden="true"></div>
             <p class="pet-bubble" id="pet-bubble" aria-live="polite" hidden></p>
             <div class="pet-picture" id="pet-picture"></div>
             <button class="button" id="pet-high-five" type="button">🖐️ High five!</button>
@@ -1096,12 +1130,33 @@
               <input class="input" id="pet-name" type="text" maxlength="20" placeholder="Name your pet!" autocomplete="off">
               <button class="button button--quiet" type="submit">Save name</button>
             </form>
+            <div class="pet-extras" id="pet-extras"></div>
           </div>
         </div>
       </section>
 
+      <!-- ============ PET ROOM (pet-plus.js) ============ -->
+      <section class="panel brain-panel" id="room-panel" aria-labelledby="room-title">
+        <div class="panel__head">
+          <p class="eyebrow">// pet room</p>
+        </div>
+        <h2 class="panel__title" id="room-title">🏠 Pet Room</h2>
+        <p class="panel__lead">Decorate your pet's room! It shows up behind your pet. Uses the same coins as the shop.</p>
+        <div class="brain-area" id="room-area"></div>
+      </section>
+
+      <!-- ============ MY AVATAR (fun.js) ============ -->
+      <section class="panel brain-panel" id="avatar-panel" aria-labelledby="avatar-title">
+        <div class="panel__head">
+          <p class="eyebrow">// that's you!</p>
+        </div>
+        <h2 class="panel__title" id="avatar-title">🧑 My Avatar</h2>
+        <p class="panel__lead">Make a character that looks like you. It shows up at the top of the page and in your trophy case.</p>
+        <div class="brain-area" id="avatar-area"></div>
+      </section>
+
       <!-- ============ COIN SHOP (shop.js) ============ -->
-      <section class="panel" aria-labelledby="shop-title">
+      <section class="panel brain-panel" id="shop-panel" aria-labelledby="shop-title">
         <div class="panel__head">
           <p class="eyebrow">// coin shop</p>
           <p class="coins"><span aria-hidden="true">🪙</span> <strong id="coin-count">0</strong> coins</p>
@@ -1109,6 +1164,23 @@
         <h2 class="panel__title" id="shop-title">🛍️ Shop</h2>
         <p class="panel__lead" id="coin-next"></p>
         <div class="shop-groups" id="shop-groups"></div>
+      </section>
+
+      <!-- ============ SECRETS (fun.js) ============ -->
+      <section class="panel brain-panel" id="secrets-panel" aria-labelledby="secrets-title">
+        <div class="panel__head">
+          <p class="eyebrow">// top secret 🤫</p>
+          <span class="quest-tag">+50 XP each</span>
+        </div>
+        <h2 class="panel__title" id="secrets-title">🥚 Secret Easter Eggs</h2>
+        <p class="panel__lead">Secrets are hidden all over Level Up. Each one unlocks a secret item for the shop!</p>
+        <form class="inline-form secret-form" id="secret-form">
+          <label class="visually-hidden" for="secret-code">Secret code</label>
+          <input class="input" id="secret-code" type="text" maxlength="20" placeholder="🔐 Type a secret code" autocomplete="off" autocapitalize="characters" spellcheck="false">
+          <button class="button" type="submit">Try it</button>
+        </form>
+        <p class="form-note" id="secret-note" aria-live="polite"></p>
+        <div id="secret-list"></div>
       </section>
     </div>
 
