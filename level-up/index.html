@@ -44,6 +44,7 @@
                      and the Speed Lab (on the Sports tab)
       everyday.js -> Fitness Bingo, Chore Quest, Streak Shield (Quests tab)
                      and the Reading Log (Quiz tab)
+      stats-plus.js -> Badge Maker, Certificates and the Time Capsule
       sports.js   -> belt tracker, swim school, soccer journal and workout builder
       stats.js    -> energy check-in, calendar, records, year in review, stats card
       family.js   -> the weekly family challenge
@@ -77,46 +78,47 @@
   <!-- The "?v=8" is a version number. Browsers keep old copies of files for a
        while; changing the number makes them download the newest version.
        Add 1 to it (on every line below) whenever you change those files. -->
-  <link rel="stylesheet" href="style.css?v=28">
+  <link rel="stylesheet" href="style.css?v=29">
   <!-- These load in order. app.js goes last, because it starts the page
        and uses things from all the others. -->
-  <script src="plan.js?v=28" defer></script>
-  <script src="hooks.js?v=28" defer></script>
-  <script src="demos.js?v=28" defer></script>
-  <script src="trophies.js?v=28" defer></script>
-  <script src="coach.js?v=28" defer></script>
-  <script src="practice.js?v=28" defer></script>
-  <script src="habits.js?v=28" defer></script>
-  <script src="charts.js?v=28" defer></script>
-  <script src="grocery.js?v=28" defer></script>
-  <script src="ai-coach.js?v=28" defer></script>
-  <script src="quest.js?v=28" defer></script>
-  <script src="missions.js?v=28" defer></script>
-  <script src="boss.js?v=28" defer></script>
-  <script src="quiz-questions.js?v=28" defer></script>
-  <script src="quiz.js?v=28" defer></script>
-  <script src="arcade.js?v=28" defer></script>
-  <script src="kitchen.js?v=28" defer></script>
-  <script src="kitchen-plus.js?v=28" defer></script>
-  <script src="arcade-plus.js?v=28" defer></script>
-  <script src="sports.js?v=28" defer></script>
-  <script src="stats.js?v=28" defer></script>
-  <script src="family.js?v=28" defer></script>
-  <script src="pet.js?v=28" defer></script>
-  <script src="shop.js?v=28" defer></script>
-  <script src="training-lessons.js?v=28" defer></script>
-  <script src="training.js?v=28" defer></script>
-  <script src="extra.js?v=28" defer></script>
-  <script src="brain-data.js?v=28" defer></script>
-  <script src="brain.js?v=28" defer></script>
-  <script src="games.js?v=28" defer></script>
-  <script src="training-plus.js?v=28" defer></script>
-  <script src="pet-plus.js?v=28" defer></script>
-  <script src="fun.js?v=28" defer></script>
-  <script src="tools.js?v=28" defer></script>
-  <script src="everyday.js?v=28" defer></script>
-  <script src="tabs.js?v=28" defer></script>
-  <script src="app.js?v=28" defer></script>
+  <script src="plan.js?v=29" defer></script>
+  <script src="hooks.js?v=29" defer></script>
+  <script src="demos.js?v=29" defer></script>
+  <script src="trophies.js?v=29" defer></script>
+  <script src="coach.js?v=29" defer></script>
+  <script src="practice.js?v=29" defer></script>
+  <script src="habits.js?v=29" defer></script>
+  <script src="charts.js?v=29" defer></script>
+  <script src="grocery.js?v=29" defer></script>
+  <script src="ai-coach.js?v=29" defer></script>
+  <script src="quest.js?v=29" defer></script>
+  <script src="missions.js?v=29" defer></script>
+  <script src="boss.js?v=29" defer></script>
+  <script src="quiz-questions.js?v=29" defer></script>
+  <script src="quiz.js?v=29" defer></script>
+  <script src="arcade.js?v=29" defer></script>
+  <script src="kitchen.js?v=29" defer></script>
+  <script src="kitchen-plus.js?v=29" defer></script>
+  <script src="arcade-plus.js?v=29" defer></script>
+  <script src="sports.js?v=29" defer></script>
+  <script src="stats.js?v=29" defer></script>
+  <script src="family.js?v=29" defer></script>
+  <script src="pet.js?v=29" defer></script>
+  <script src="shop.js?v=29" defer></script>
+  <script src="training-lessons.js?v=29" defer></script>
+  <script src="training.js?v=29" defer></script>
+  <script src="extra.js?v=29" defer></script>
+  <script src="brain-data.js?v=29" defer></script>
+  <script src="brain.js?v=29" defer></script>
+  <script src="games.js?v=29" defer></script>
+  <script src="training-plus.js?v=29" defer></script>
+  <script src="pet-plus.js?v=29" defer></script>
+  <script src="fun.js?v=29" defer></script>
+  <script src="tools.js?v=29" defer></script>
+  <script src="everyday.js?v=29" defer></script>
+  <script src="stats-plus.js?v=29" defer></script>
+  <script src="tabs.js?v=29" defer></script>
+  <script src="app.js?v=29" defer></script>
 </head>
 <body>
 
@@ -1186,8 +1188,16 @@
 
     <!-- ==================== TAB: STATS ==================== -->
     <div class="tab-page" data-page="stats" hidden>
+      <nav class="brain-jump arcade-jump" aria-label="Jump to a part of the Stats tab">
+        <button class="lab-chip" type="button" data-brain-jump="trophies">🏆 Trophies</button>
+        <button class="lab-chip" type="button" data-brain-jump="maker-panel">✏️ Badge Maker</button>
+        <button class="lab-chip" type="button" data-brain-jump="cert-panel">📜 Certificates</button>
+        <button class="lab-chip" type="button" data-brain-jump="capsule-panel">📬 Time Capsule</button>
+        <button class="lab-chip" type="button" data-brain-jump="sticker-panel">📒 Stickers</button>
+      </nav>
+
       <!-- ============ TROPHY CASE (filled in by trophies.js) ============ -->
-      <section class="panel trophies" id="trophies" aria-labelledby="trophies-title">
+      <section class="panel trophies brain-panel" id="trophies" aria-labelledby="trophies-title">
         <div class="trophies__player">
           <p class="eyebrow">// trophy case</p>
           <div class="player">
@@ -1211,6 +1221,38 @@
           <details class="extra badges-locked" id="badges-locked"></details>
         </div>
       </section>
+
+      <!-- ============ BADGE MAKER (stats-plus.js) ============ -->
+      <section class="panel brain-panel" id="maker-panel" aria-labelledby="maker-title">
+        <div class="panel__head">
+          <p class="eyebrow">// design your own</p>
+        </div>
+        <h2 class="panel__title" id="maker-title">✏️ Badge Maker</h2>
+        <p class="panel__lead">Invent your own badges! They go in your trophy case and unlock when you reach the goal.</p>
+        <div id="maker-area"></div>
+      </section>
+
+      <div class="duo">
+        <!-- ============ CERTIFICATES (stats-plus.js) ============ -->
+        <section class="panel brain-panel" id="cert-panel" aria-labelledby="cert-title">
+          <div class="panel__head">
+            <p class="eyebrow">// for the fridge</p>
+          </div>
+          <h2 class="panel__title" id="cert-title">📜 Certificates</h2>
+          <p class="panel__lead">Tap one to see it, then print it out!</p>
+          <div class="cert-area" id="cert-area"></div>
+        </section>
+
+        <!-- ============ TIME CAPSULE (stats-plus.js) ============ -->
+        <section class="panel brain-panel" id="capsule-panel" aria-labelledby="capsule-title">
+          <div class="panel__head">
+            <p class="eyebrow">// a note to future you</p>
+            <span class="quest-tag">+50 XP when it opens</span>
+          </div>
+          <h2 class="panel__title" id="capsule-title">📬 Time Capsule</h2>
+          <div class="capsule-area" id="capsule-area"></div>
+        </section>
+      </div>
 
       <!-- ============ STICKER ALBUM (fun.js) ============ -->
       <section class="panel brain-panel" id="sticker-panel" aria-labelledby="sticker-title">

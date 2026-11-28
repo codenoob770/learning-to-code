@@ -374,8 +374,8 @@ function renderTrophies() {
   const badgeHTML = (badge, got) => `
     <li class="badge ${got ? "is-earned" : ""}">
       <span class="badge__icon" aria-hidden="true">${badge.icon}</span>
-      <span class="badge__name">${badge.name}</span>
-      <span class="badge__how">${got ? "Unlocked!" : badge.how}</span>
+      <span class="badge__name">${escapeHTML(badge.name)}</span>
+      <span class="badge__how">${got ? "Unlocked!" : escapeHTML(badge.how)}</span>
     </li>`;
   const locked = BADGES.filter((badge) => !earned.includes(badge));
   const lockedBox = document.querySelector("#badges-locked");
@@ -519,8 +519,8 @@ function showCelebration(level, newBadges, previousLevel) {
   document.querySelector("#celebrate-badges").innerHTML = newBadges.map((badge) => `
     <li class="badge is-earned">
       <span class="badge__icon" aria-hidden="true">${badge.icon}</span>
-      <span class="badge__name">${badge.name}</span>
-      <span class="badge__how">${badge.how}</span>
+      <span class="badge__name">${escapeHTML(badge.name)}</span>
+      <span class="badge__how">${escapeHTML(badge.how)}</span>
     </li>`).join("");
 
   celebrateBox.hidden = false;
