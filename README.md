@@ -50,6 +50,11 @@ up along the way: **splitters** split into two little bugs, **ghosts** fade
 in and out, and **armored** bugs need 2 taps. Level 10 is the final boss:
 the **👑 Mega Bug**, which calls for help and turns into a ghost when it's hurt!
 
+The **🛠️ Level Maker** (`bug-bash/maker.js`) lets you design your own level:
+pick the bugs, the speed, the goal (or a boss) and how many tests you get.
+Play it, save it, and share it with a code like `BB-1G08-84RG`. Anyone can
+type the code into their Bug Bash to play your level!
+
 The game is drawn on a `<canvas>` by `bug-bash/game.js`. The easiest thing to
 change is the `RULES` list near the top of that file: give yourself more tests,
 make golden bugs worth more, or make new versions come out faster. Save,
@@ -76,26 +81,33 @@ like `level-up/#quiz` opens straight to one tab.
   abs, strength, legs, speed, my sports, test prep, stretching, quick).
   Each one says what it works. They match your week's level, and in
   expert mode they get way harder. The voice coach can run any of them.
-- **🗺️ Quests:** the monthly challenge, and the **Quest Board**: Backflip
-  (the real flip only with a coach!), Splits, Handstand, 100 Push-ups,
-  Juggling and **Code Quest**, which teaches you to change this website.
+- **🗺️ Quests:** **Fitness Bingo** (a new 5×5 card every Monday; some
+  squares check themselves), **Chore Quest** (chores earn shop coins), the
+  **Streak Shield** (save your streak on a sick day), the monthly challenge,
+  and the **Quest Board**: Backflip (the real flip only with a coach!),
+  Splits, Handstand, 100 Push-ups, Juggling and **Code Quest**, which
+  teaches you to change this website.
 - **🎮 Arcade:** the **Mystery Box** (one surprise a day: coins, XP, a
   bonus challenge, pet treats or a rare hat), **Penalty Shootout** (aim,
   time the power, beat the goalie; workouts give bonus shots), **Goalie
   Reflexes** (your reaction time in milliseconds), **Board Break**, **Memory
   Match** (match the moves, then do them!), **Sister Duel** (pass-and-play
-  battles on one iPad), card deck workout, Kick Caller, a daily
-  spin-the-wheel challenge, and Bug Bash power-ups.
+  battles on one iPad), the **Kihap Meter** (the microphone measures how
+  loud your kihap is), **Beat Workout** (moves to a drum beat, 8 speeds),
+  the **Obstacle Course Maker** (with a stopwatch), card deck workout, Kick
+  Caller, a daily spin-the-wheel challenge, and Bug Bash power-ups.
 - **🧠 Quiz:** the Brain + Body Quiz: 5th-grade Math, Reading & Writing,
   Science and Social Studies, plus Sports and Food & Health. Get one
   wrong and you owe that question's exercise, like "10 squats"! Also: a
   **Spelling Bee** (the voice says the word), a 60-second **Times-Table
   Sprint**, **Korean Flashcards** for taekwondo words, **Make Your Own
-  Quiz**, a **Homework Timer** with move breaks and a **fact of the day**.
+  Quiz**, a **Homework Timer** with move breaks, a **fact of the day** and
+  a **Reading Log** (books, minutes and reading ranks).
 - **🥋 Sports:** taekwondo belt tracker in my school's belt order (with
   counting in Korean), Swim School (check off the skills from my swim
   lessons and log each lesson), soccer journal, a workout builder the
-  voice coach can run, and your practice days.
+  voice coach can run, the **Speed Lab** (time your sprints and see a
+  chart), and your practice days.
 - **🎓 Training:** 64 taekwondo and soccer lessons on 3 pages per sport
   that get harder (Basics, then Combos & spins or Skills & moves, then
   Black belt path or Pro moves). Each has steps, mistakes to watch out
@@ -115,16 +127,24 @@ like `level-up/#quiz` opens straight to one tab.
   **Sugar Detective** (how many teaspoons of sugar are in that?),
   **Kitchen Math** (5th-grade recipe fractions, with exercise penalties)
   and a **Food Passport** (try foods from 16 countries and get stamps).
-- **📊 Stats:** XP, levels and 86 badges, a 40-sticker **Sticker Album**,
-  progress charts, a year-long workout calendar, personal records, energy
-  patterns, a "year in review" and a stats card picture to save.
+- **📊 Stats:** XP, levels and 104 badges, the **Badge Maker** (invent your
+  own badges), **Certificates** to print (belts, swim strokes, levels,
+  streaks, books), a **Time Capsule** (a note to future you, with your stats
+  then vs. now), a 40-sticker **Sticker Album**, progress charts, a
+  year-long workout calendar, personal records, energy patterns, a "year
+  in review" and a stats card picture to save.
 - **🐾 Pet & Shop:** a pet that hatches after your first workout and
   grows as you train. It dresses like the sport you do most, learns
   **tricks** from your streaks, eats Mystery Box treats and has a **room**
   you can decorate. Make your own **avatar** (it shows at the top of the
   page). 10 XP = 1 coin: buy page themes, pet hats, pet colors and
-  stick-figure colors. And there are 6 **secret Easter eggs** to find... 🤫
-- **👪 Family:** a weekly family challenge. Add your family and race!
+  stick-figure colors. **Pet Playdates**: trade pet codes with Kickoff and
+  your pets play together! And there are 6 **secret Easter eggs** to find... 🤫
+- **👪 Family:** a weekly family challenge (add your family and race!),
+  **Family Sports Day** (silly events, scores and a medal ceremony),
+  **Challenge Codes** (dare your sister with a code that works on Kickoff
+  too), the **Secret Message Machine** (Caesar and keyword ciphers) and
+  **Cheer Messages** (your family hides a note for your next workout).
 - **🧰 Tools:** **My Calendar** (practices, games and tests, even ones that
   repeat every week), a **Packing Checklist**, a **Bedtime Routine**, a
   **Weekly Report Card**, **Backup** (save your progress to a file) and the
@@ -158,6 +178,11 @@ Each feature has its own file, so they're easy to find:
 | `arcade.js` | Card deck workout, Kick Caller and spin the wheel |
 | `kitchen.js` | Smoothie Lab, Recipe Book and Snack Swap |
 | `kitchen-plus.js` | Build-a-Plate, Eat the Rainbow, Kitchen Skills, Sugar Detective, Kitchen Math, Food Passport and Game Day Fuel |
+| `arcade-plus.js` | Kihap Meter, Beat Workout, Obstacle Course Maker and the Speed Lab |
+| `everyday.js` | Fitness Bingo, Chore Quest, Streak Shield and the Reading Log |
+| `stats-plus.js` | Badge Maker, Certificates and the Time Capsule |
+| `codes.js` | Challenge Codes, the Secret Message Machine and Pet Playdates (Kickoff loads it too) |
+| `family-plus.js` | Family Sports Day and Cheer Messages |
 | `sports.js` | Belt tracker, Swim School, soccer journal and workout builder |
 | `stats.js` | Energy check-in, calendar, records, year in review and stats card |
 | `family.js` | The family challenge |
@@ -241,12 +266,14 @@ Open `kickoff/index.html`. It's a copy of Level Up, made just for soccer:
   - **🧠 Brain:** the Brain + Body Quiz, Spelling Bee, Times-Table Sprint,
     Make Your Own Quiz, the Homework Timer and the fact of the day
   - **🎮 Games:** Penalty Shootout, Goalie Reflexes, Board Break, Memory
-    Match, the Mystery Box and a Family Duel
+    Match, the Mystery Box, a Family Duel, **Challenge Codes** and the
+    **Secret Message Machine** (codes work with Level Up!)
   - **🎓 Training:** soccer (and taekwondo) lessons with the voice coach, Game
     Day Warm-Up, the Monthly Fitness Test, My Goals, the Muscle Map and
     the Sore Muscle Helper
   - **🐾 Pet & Shop:** her own pet (with sport forms, tricks and a room), an
-    avatar, the coin shop, secret Easter eggs and the Sticker Album
+    avatar, the coin shop, **Pet Playdates**, secret Easter eggs and the
+    Sticker Album
 
 Those four tabs load their files from `level-up/` (look for `../level-up/` in
 `kickoff/index.html`), so both sites get every new feature and bug fix.
