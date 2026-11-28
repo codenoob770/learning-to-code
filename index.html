@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    Hi! This is the code for my website.
+
+    A website is usually made of three kinds of files:
+      index.html  -> the CONTENT  (words, headings, links, lists)
+      style.css   -> the LOOK     (colors, fonts, spacing, layout)
+      script.js   -> the BEHAVIOR (what happens when you click or type)
+
+    Anything between these arrows is a comment. Browsers ignore comments,
+    so they're a good place to leave notes for yourself.
+  -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>codenoob770 learns to code</title>
+  <meta name="description" content="I'm learning to code. Here's my roadmap, my projects and my learning log.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+
+  <!-- Fonts from Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=JetBrains+Mono:ital,wght@0,400;0,600;1,400&display=swap">
+
+  <!-- My own styles -->
+  <link rel="stylesheet" href="style.css?v=2">
+
+  <!-- Apply a saved light/dark choice before the page is drawn,
+       so it never flashes the wrong colors. -->
+  <script>
+    try {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light" || savedTheme === "dark") {
+        document.documentElement.dataset.theme = savedTheme;
+      }
+    } catch (error) {
+      // Some browsers block storage (for example private windows).
+      // Then the page just follows the device's light/dark setting.
+    }
+  </script>
+
+  <!-- My JavaScript. "defer" means: run it after all the HTML has loaded. -->
+  <script src="script.js?v=2" defer></script>
+  <!-- The Code Playground has its own file -->
+  <script src="playground.js?v=2" defer></script>
+</head>
+<body>
+  <!-- Lets keyboard users jump past the menu. It only shows up when focused. -->
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ============ HEADER: my name, the menu and the theme button ============ -->
+  <header class="site-header">
+    <div class="wrap site-header__inner">
+      <a class="brand" href="#top">
+        <span class="brand__path">~/</span>codenoob770<span class="brand__cursor" aria-hidden="true"></span>
+      </a>
+
+      <nav class="site-nav" aria-label="Page sections">
+        <a href="#about">About</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#projects">Projects</a>
+        <a href="#log">Log</a>
+        <a href="#playground">Playground</a>
+      </nav>
+
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch between light and dark theme" title="Switch theme">
+        <!-- Two icons. The CSS shows the moon in light mode and the sun in dark mode. -->
+        <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 1.5v2.2M12 20.3v2.2M4.6 4.6l1.5 1.5M17.9 17.9l1.5 1.5M1.5 12h2.2M20.3 12h2.2M4.6 19.4l1.5-1.5M17.9 6.1l1.5-1.5"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ============ HERO: the first thing people see ============ -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="wrap hero__inner">
+        <div class="hero__text">
+          <p class="now-learning"><span class="now-learning__dot" aria-hidden="true"></span>Currently learning HTML &amp; CSS</p>
+          <h1 id="hero-title"><span class="marker">Hello, world!</span> I'm learning to code.</h1>
+          <p class="hero__lead">
+            This site is my coding notebook. It keeps track of what I'm learning,
+            what I've made and what I want to try next.
+          </p>
+          <div class="hero__actions">
+            <a class="button" href="#roadmap">See my roadmap</a>
+            <a class="button button--quiet" href="https://github.com/codenoob770">My GitHub</a>
+          </div>
+        </div>
+
+        <!-- A pretend code editor. The colored <span>s are "syntax highlighting".
+             Each <span class="code-line"> is one line of code; CSS numbers them. -->
+        <figure class="editor" aria-label="A short JavaScript program and what it prints">
+          <div class="editor__bar">
+            <span class="editor__tab">hello.js</span>
+            <button class="editor__run" id="run-code" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg>
+              <span id="run-label">Run</span>
+            </button>
+          </div>
+          <div class="editor__code">
+            <span class="code-line"><span class="tok-comment">// The classic first program, with a twist</span></span>
+            <span class="code-line"><span class="tok-keyword">const</span> <span class="tok-var">name</span> = <span class="tok-string">"codenoob770"</span>;</span>
+            <span class="code-line"><span class="tok-keyword">const</span> <span class="tok-var">learning</span> = [<span class="tok-string">"HTML"</span>, <span class="tok-string">"CSS"</span>, <span class="tok-string">"JavaScript"</span>];</span>
+            <span class="code-line"> </span>
+            <span class="code-line">console.<span class="tok-func">log</span>(<span class="tok-string">`Hello, world! I'm </span><span class="tok-var">${name}</span><span class="tok-string">.`</span>);</span>
+            <span class="code-line"><span class="tok-keyword">for</span> (<span class="tok-keyword">const</span> <span class="tok-var">topic</span> <span class="tok-keyword">of</span> <span class="tok-var">learning</span>) {</span>
+            <span class="code-line">  console.<span class="tok-func">log</span>(<span class="tok-string">`Learning </span><span class="tok-var">${topic}</span><span class="tok-string">...`</span>);</span>
+            <span class="code-line">}</span>
+          </div>
+          <!-- What the program above prints. Press "Run" to watch it print again. -->
+          <div class="console" aria-live="polite">
+            <span class="console__label">Console</span>
+            <span class="console__line">Hello, world! I'm codenoob770.</span>
+            <span class="console__line">Learning HTML...</span>
+            <span class="console__line">Learning CSS...</span>
+            <span class="console__line">Learning JavaScript...</span>
+          </div>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ============ ABOUT ============ -->
+    <section class="section" id="about" aria-labelledby="about-title">
+      <div class="wrap about">
+        <div class="about__text">
+          <div class="section__title">
+            <p class="eyebrow">// about</p>
+            <h2 id="about-title">A little about me</h2>
+          </div>
+          <p class="about__lead">
+            Hi, I'm codenoob770. I'm a beginner, and I'm learning how websites
+            and programs are built, one small step at a time.
+          </p>
+          <p>
+            Everything on this page is plain HTML, CSS and JavaScript. There are
+            no frameworks and no build tools, so every line is something I can
+            open, read and change. When I learn something new, it ends up here.
+          </p>
+        </div>
+
+        <!-- A "description list": <dt> is the label, <dd> is the value. -->
+        <aside class="facts" aria-labelledby="facts-title">
+          <h3 class="facts__title" id="facts-title">Quick facts</h3>
+          <dl>
+            <div><dt>GitHub</dt><dd>codenoob770</dd></div>
+            <div><dt>First commit</dt><dd><time datetime="2026-08-26">August 26, 2026</time></dd></div>
+            <div><dt>Learning now</dt><dd>HTML and CSS</dd></div>
+            <div><dt>Up next</dt><dd>JavaScript</dd></div>
+          </dl>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============ ROADMAP ============
+         To update a step, change its status <span>:
+           data-status="done"  + text "Done"
+           data-status="now"   + text "Learning now"
+           data-status="next"  + text "Up next"
+         The progress bar counts the "done" steps by itself (see script.js). -->
+    <section class="section" id="roadmap" aria-labelledby="roadmap-title">
+      <div class="wrap">
+        <div class="section__head">
+          <div class="section__title">
+            <p class="eyebrow">// roadmap</p>
+            <h2 id="roadmap-title">What I'm learning, step by step</h2>
+          </div>
+          <div class="progress">
+            <p class="progress__text" id="progress-text">1 of 6 steps done</p>
+            <progress class="progress__bar" id="progress-bar" value="1" max="6" aria-labelledby="progress-text"></progress>
+          </div>
+        </div>
+
+        <ol class="steps">
+          <li class="step">
+            <h3>Make a GitHub account and repo</h3>
+            <p>A home online for my code, where every change gets saved.</p>
+            <span class="status" data-status="done">Done</span>
+          </li>
+          <li class="step">
+            <h3>HTML basics</h3>
+            <p>Headings, paragraphs, links, lists and images: the building blocks of every page.</p>
+            <span class="status" data-status="now">Learning now</span>
+          </li>
+          <li class="step">
+            <h3>CSS basics</h3>
+            <p>Colors, fonts and spacing, then page layouts with flexbox and grid.</p>
+            <span class="status" data-status="now">Learning now</span>
+          </li>
+          <li class="step">
+            <h3>JavaScript basics</h3>
+            <p>Variables, functions and loops, and making pages react to clicks.</p>
+            <span class="status" data-status="next">Up next</span>
+          </li>
+          <li class="step">
+            <h3>Responsive design</h3>
+            <p>Pages that look good on phones, tablets and laptops alike.</p>
+            <span class="status" data-status="next">Up next</span>
+          </li>
+          <li class="step">
+            <h3>Build something on my own</h3>
+            <p>Pick an idea from my list below and build it from a blank file.</p>
+            <span class="status" data-status="next">Up next</span>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ PROJECTS ============ -->
+    <section class="section" id="projects" aria-labelledby="projects-title">
+      <div class="wrap">
+        <div class="section__head">
+          <div class="section__title">
+            <p class="eyebrow">// projects</p>
+            <h2 id="projects-title">Things I've made</h2>
+          </div>
+        </div>
+
+        <article class="project">
+          <div class="project__body">
+            <p class="project__meta">Project 1 · Started November 2026</p>
+            <h3>This website</h3>
+            <p>
+              My first website: a single page made with plain HTML, CSS and
+              JavaScript. It has a light and dark theme, a roadmap that counts
+              my progress and a Code Playground with coding challenges, where
+              I can try out HTML and JavaScript.
+            </p>
+            <ul class="tags" aria-label="Made with">
+              <li>HTML</li>
+              <li>CSS</li>
+              <li>JavaScript</li>
+            </ul>
+            <a class="text-link" href="https://github.com/codenoob770/learning-to-code">See the source code &rarr;</a>
+          </div>
+
+          <!-- <pre> keeps spaces and line breaks exactly as typed. -->
+          <pre class="file-tree" aria-label="The files that make up this website"><span class="tree-dim">learning-to-code/</span>
+<span class="tree-dim">├──</span> <span class="tree-file">index.html</span>   <span class="tree-note">// the content</span>
+<span class="tree-dim">├──</span> <span class="tree-file">style.css</span>    <span class="tree-note">// the look</span>
+<span class="tree-dim">├──</span> <span class="tree-file">script.js</span>    <span class="tree-note">// the behavior</span>
+<span class="tree-dim">├──</span> <span class="tree-file">playground.js</span> <span class="tree-note">// the Code Playground</span>
+<span class="tree-dim">├──</span> <span class="tree-file">favicon.svg</span>  <span class="tree-note">// the tab icon</span>
+<span class="tree-dim">└──</span> <span class="tree-file">README.md</span>    <span class="tree-note">// notes and how-tos</span></pre>
+        </article>
+
+        <h3 class="subhead">Ideas I want to build next</h3>
+        <ul class="ideas">
+          <li class="idea">
+            <h4>To-do list</h4>
+            <p class="idea__what">Add tasks, tick them off and delete them.</p>
+            <p class="idea__skills">Practices: arrays, click events, localStorage</p>
+          </li>
+          <li class="idea">
+            <h4>Tip calculator</h4>
+            <p class="idea__what">Split a restaurant bill between friends.</p>
+            <p class="idea__skills">Practices: forms, math, rounding numbers</p>
+          </li>
+          <li class="idea">
+            <h4>Rock, paper, scissors</h4>
+            <p class="idea__what">Play a few rounds against the computer.</p>
+            <p class="idea__skills">Practices: random numbers, if / else</p>
+          </li>
+          <li class="idea">
+            <h4>Digital clock</h4>
+            <p class="idea__what">A clock on the page that ticks every second.</p>
+            <p class="idea__skills">Practices: dates, setInterval</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ LEARNING LOG ============
+         Newest entry goes at the top. To add one, copy a whole <li>...</li>
+         block, paste it above the others and change the words and date. -->
+    <section class="section" id="log" aria-labelledby="log-title">
+      <div class="wrap">
+        <div class="section__head">
+          <div class="section__title">
+            <p class="eyebrow">// learning log</p>
+            <h2 id="log-title">My learning log</h2>
+          </div>
+        </div>
+
+        <ol class="log">
+          <li class="log__entry">
+            <time class="log__date" datetime="2026-11-21">Nov 21, 2026</time>
+            <span class="log__dot" aria-hidden="true"></span>
+            <div class="log__body">
+              <h3>Started this website</h3>
+              <p>
+                Set up my first web page with plain HTML, CSS and JavaScript.
+                Next job: read through every file and work out how each part works.
+              </p>
+            </div>
+          </li>
+          <li class="log__entry">
+            <time class="log__date" datetime="2026-08-26">Aug 26, 2026</time>
+            <span class="log__dot" aria-hidden="true"></span>
+            <div class="log__body">
+              <h3>Created my learning-to-code repo</h3>
+              <p>
+                My very first commit on GitHub. The repo held a single README
+                file, and that was enough to get started.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ PLAYGROUND ============
+         The live preview is drawn by script.js every time you type. -->
+    <section class="section section--tinted" id="playground" aria-labelledby="playground-title">
+      <div class="wrap">
+        <div class="section__head">
+          <div class="section__title">
+            <p class="eyebrow">// playground</p>
+            <h2 id="playground-title">Code Playground</h2>
+            <p class="section__intro">
+              Write real HTML and JavaScript and see it work. HTML updates as you
+              type; press <strong>Run</strong> for JavaScript. Try a challenge, or just play!
+              Your code isn't saved or sent anywhere.
+            </p>
+          </div>
+        </div>
+
+        <!-- Mini coding challenges (playground.js) -->
+        <div class="challenges">
+          <div class="challenges__head">
+            <p class="challenges__title">🏆 Coding challenges</p>
+            <p class="challenges__count" id="challenge-count"></p>
+          </div>
+          <div class="challenge-list" id="challenge-list"></div>
+          <div class="challenge" id="challenge-box" hidden>
+            <p class="challenge__title" id="challenge-title"></p>
+            <p class="challenge__task" id="challenge-task"></p>
+            <p class="challenge__hint" id="challenge-hint" hidden></p>
+            <div class="challenge__buttons">
+              <button class="button" id="challenge-check" type="button">Check my code</button>
+              <button class="button button--quiet" id="challenge-show-hint" type="button">Hint</button>
+              <button class="button button--quiet" id="challenge-exit" type="button">Free play</button>
+            </div>
+            <p class="challenge__result" id="challenge-result" aria-live="polite"></p>
+          </div>
+        </div>
+
+        <div class="playground">
+          <div class="playground__editor">
+            <div class="playground__tabs" role="group" aria-label="Which code">
+              <button class="code-tab" type="button" data-code-tab="html" aria-pressed="true">index.html</button>
+              <button class="code-tab" type="button" data-code-tab="js" aria-pressed="false">script.js</button>
+              <button class="editor__run playground__run" id="playground-run" type="button" title="Run (Ctrl + Enter)">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg>
+                <span>Run</span>
+              </button>
+            </div>
+            <div class="playground__toolbar">
+              <span class="playground__toolbar-label">Add:</span>
+              <span class="playground__snippets" id="playground-snippets"></span>
+              <button class="chip chip--reset" type="button" id="playground-reset">Reset</button>
+            </div>
+            <label class="visually-hidden" for="playground-input">Your HTML</label>
+            <textarea id="playground-input" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea>
+            <label class="visually-hidden" for="playground-js">Your JavaScript</label>
+            <textarea id="playground-js" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" hidden></textarea>
+          </div>
+
+          <div class="playground__output">
+            <p class="panel-label">Preview</p>
+            <!-- "sandbox" walls the preview off from the rest of my site -->
+            <iframe class="playground__frame" id="playground-frame" title="Preview of your code" sandbox="allow-scripts allow-modals"></iframe>
+            <p class="panel-label panel-label--console">Console</p>
+            <div class="playground__console" id="playground-console" aria-live="polite"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="site-footer">
+    <div class="wrap site-footer__inner">
+      <p>&copy; <span id="year">2026</span> codenoob770. Made with plain HTML, CSS and JavaScript.</p>
+      <p class="site-footer__links">
+        <a href="https://github.com/codenoob770">GitHub</a>
+        <a href="#top">Back to top &uarr;</a>
+      </p>
+    </div>
+  </footer>
+</body>
+</html>
