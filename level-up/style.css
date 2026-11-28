@@ -8594,6 +8594,346 @@ label.mission__text {
   }
 }
 
+/* 9t. ARCADE PLUS (arcade-plus.js) ---------------------------------------- */
+
+/* Kihap Meter */
+.kihap-play {
+  align-items: center;
+  text-align: center;
+}
+
+.kihap-call {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--marker);
+}
+
+.kihap-meter {
+  position: relative;
+  width: 100%;
+  height: 1.4rem;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.kihap-meter__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  background: linear-gradient(90deg, var(--teal), var(--marker) 60%, var(--bug));
+}
+
+.kihap-meter__peak {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 4px;
+  background: var(--fg);
+}
+
+.kihap-score {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.kihap-score span {
+  color: var(--dim);
+  font-size: 1.2rem;
+}
+
+.kihap-rank {
+  font-weight: 700;
+  color: var(--marker);
+}
+
+.kihap-problem {
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--marker-border);
+  border-radius: var(--radius-small);
+  background: var(--marker-soft);
+  font-size: 0.9375rem;
+}
+
+/* Beat Workout */
+.beat-levels {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.beat-level {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem 0.2rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-small);
+  background: transparent;
+  color: var(--fg);
+  cursor: pointer;
+}
+
+.beat-level strong {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+}
+
+.beat-level span {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+}
+
+.beat-level:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.beat-level.is-locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.beat-play {
+  align-items: center;
+  text-align: center;
+}
+
+.beat-play .quiz-top {
+  align-self: stretch;
+  text-align: left;
+}
+
+.beat-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  min-height: 7rem;
+}
+
+.beat-demo .demo {
+  width: 7rem;
+  height: auto;
+}
+
+.beat-demo:empty {
+  display: none;
+}
+
+.beat-ball {
+  display: grid;
+  place-items: center;
+  width: 5.5rem;
+  height: 5.5rem;
+  border-radius: 50%;
+  background: var(--bug);
+  color: var(--bg);
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 800;
+}
+
+.beat-ball.is-pulse {
+  animation: beat-pulse 0.25s ease-out;
+}
+
+@keyframes beat-pulse {
+  from { transform: scale(1.25); box-shadow: 0 0 0 10px var(--bug-soft); }
+  to { transform: scale(1); box-shadow: 0 0 0 0 transparent; }
+}
+
+.beat-move {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.beat-how {
+  color: var(--dim);
+}
+
+.beat-dots {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.beat-dots span {
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 50%;
+  background: var(--line-strong);
+}
+
+.beat-dots span.is-on {
+  background: var(--marker);
+}
+
+.beat-next {
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+}
+
+.beat-progress {
+  align-self: stretch;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.beat-progress span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--teal);
+}
+
+/* Obstacle Course Maker */
+.course-pickers {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem 1.2rem;
+  margin: 0.6rem 0;
+}
+
+.course-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0.6rem 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.course-station {
+  display: grid;
+  grid-template-columns: 1.8rem 2rem 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+}
+
+.course-station__n {
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--line-strong);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.course-station__icon {
+  font-size: 1.4rem;
+}
+
+.course-station__text strong {
+  margin-right: 0.3rem;
+}
+
+.course-station__time {
+  color: var(--teal);
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+}
+
+#course-area .brain-start__buttons {
+  justify-content: center;
+}
+
+.course-station.is-now {
+  border-color: var(--marker);
+  background: var(--marker-soft);
+}
+
+.course-station.is-done {
+  opacity: 0.7;
+}
+
+.course-station.is-done .course-station__n {
+  background: var(--teal);
+  color: var(--bg);
+}
+
+.course-clock,
+.speed-clock {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 2rem + 5vw, 5rem);
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--marker);
+}
+
+.course-result {
+  margin-bottom: 0.6rem;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.course-result .text-button {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+/* Speed Lab */
+.speed-area {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.speed-setup {
+  color: var(--dim);
+}
+
+.speed-tiles {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.speed-area .game-button,
+.speed-area > .text-button {
+  align-self: center;
+}
+
+.speed-clock.is-go {
+  color: var(--teal);
+}
+
+.speed-stop {
+  align-self: center;
+  min-width: 14rem;
+  min-height: 5rem;
+  background: var(--bug);
+  font-size: 1.8rem;
+  touch-action: manipulation;
+}
+
+@media (max-width: 520px) {
+  .course-station {
+    grid-template-columns: 1.8rem 1fr auto;
+  }
+
+  .course-station__icon {
+    display: none;
+  }
+}
+
 /* 10. SMALL SCREENS AND REDUCED MOTION --------------------------- */
 
 @media (max-width: 640px) {

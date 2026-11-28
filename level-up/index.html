@@ -40,6 +40,8 @@
       kitchen-plus.js -> Build-a-Plate, Eat the Rainbow, Kitchen Skills,
                      Sugar Detective, Kitchen Math, Food Passport
                      and Game Day Fuel
+      arcade-plus.js -> Kihap Meter, Beat Workout, Obstacle Course Maker
+                     and the Speed Lab (on the Sports tab)
       sports.js   -> belt tracker, swim school, soccer journal and workout builder
       stats.js    -> energy check-in, calendar, records, year in review, stats card
       family.js   -> the weekly family challenge
@@ -73,44 +75,45 @@
   <!-- The "?v=8" is a version number. Browsers keep old copies of files for a
        while; changing the number makes them download the newest version.
        Add 1 to it (on every line below) whenever you change those files. -->
-  <link rel="stylesheet" href="style.css?v=26">
+  <link rel="stylesheet" href="style.css?v=27">
   <!-- These load in order. app.js goes last, because it starts the page
        and uses things from all the others. -->
-  <script src="plan.js?v=26" defer></script>
-  <script src="hooks.js?v=26" defer></script>
-  <script src="demos.js?v=26" defer></script>
-  <script src="trophies.js?v=26" defer></script>
-  <script src="coach.js?v=26" defer></script>
-  <script src="practice.js?v=26" defer></script>
-  <script src="habits.js?v=26" defer></script>
-  <script src="charts.js?v=26" defer></script>
-  <script src="grocery.js?v=26" defer></script>
-  <script src="ai-coach.js?v=26" defer></script>
-  <script src="quest.js?v=26" defer></script>
-  <script src="missions.js?v=26" defer></script>
-  <script src="boss.js?v=26" defer></script>
-  <script src="quiz-questions.js?v=26" defer></script>
-  <script src="quiz.js?v=26" defer></script>
-  <script src="arcade.js?v=26" defer></script>
-  <script src="kitchen.js?v=26" defer></script>
-  <script src="kitchen-plus.js?v=26" defer></script>
-  <script src="sports.js?v=26" defer></script>
-  <script src="stats.js?v=26" defer></script>
-  <script src="family.js?v=26" defer></script>
-  <script src="pet.js?v=26" defer></script>
-  <script src="shop.js?v=26" defer></script>
-  <script src="training-lessons.js?v=26" defer></script>
-  <script src="training.js?v=26" defer></script>
-  <script src="extra.js?v=26" defer></script>
-  <script src="brain-data.js?v=26" defer></script>
-  <script src="brain.js?v=26" defer></script>
-  <script src="games.js?v=26" defer></script>
-  <script src="training-plus.js?v=26" defer></script>
-  <script src="pet-plus.js?v=26" defer></script>
-  <script src="fun.js?v=26" defer></script>
-  <script src="tools.js?v=26" defer></script>
-  <script src="tabs.js?v=26" defer></script>
-  <script src="app.js?v=26" defer></script>
+  <script src="plan.js?v=27" defer></script>
+  <script src="hooks.js?v=27" defer></script>
+  <script src="demos.js?v=27" defer></script>
+  <script src="trophies.js?v=27" defer></script>
+  <script src="coach.js?v=27" defer></script>
+  <script src="practice.js?v=27" defer></script>
+  <script src="habits.js?v=27" defer></script>
+  <script src="charts.js?v=27" defer></script>
+  <script src="grocery.js?v=27" defer></script>
+  <script src="ai-coach.js?v=27" defer></script>
+  <script src="quest.js?v=27" defer></script>
+  <script src="missions.js?v=27" defer></script>
+  <script src="boss.js?v=27" defer></script>
+  <script src="quiz-questions.js?v=27" defer></script>
+  <script src="quiz.js?v=27" defer></script>
+  <script src="arcade.js?v=27" defer></script>
+  <script src="kitchen.js?v=27" defer></script>
+  <script src="kitchen-plus.js?v=27" defer></script>
+  <script src="arcade-plus.js?v=27" defer></script>
+  <script src="sports.js?v=27" defer></script>
+  <script src="stats.js?v=27" defer></script>
+  <script src="family.js?v=27" defer></script>
+  <script src="pet.js?v=27" defer></script>
+  <script src="shop.js?v=27" defer></script>
+  <script src="training-lessons.js?v=27" defer></script>
+  <script src="training.js?v=27" defer></script>
+  <script src="extra.js?v=27" defer></script>
+  <script src="brain-data.js?v=27" defer></script>
+  <script src="brain.js?v=27" defer></script>
+  <script src="games.js?v=27" defer></script>
+  <script src="training-plus.js?v=27" defer></script>
+  <script src="pet-plus.js?v=27" defer></script>
+  <script src="fun.js?v=27" defer></script>
+  <script src="tools.js?v=27" defer></script>
+  <script src="tabs.js?v=27" defer></script>
+  <script src="app.js?v=27" defer></script>
 </head>
 <body>
 
@@ -417,6 +420,9 @@
         <button class="lab-chip" type="button" data-brain-jump="duel-panel">🤝 Sister Duel</button>
         <button class="lab-chip" type="button" data-brain-jump="deck-panel">🂡 Card Deck</button>
         <button class="lab-chip" type="button" data-brain-jump="kicks-panel">🥋 Kick Caller</button>
+        <button class="lab-chip" type="button" data-brain-jump="kihap-panel">🗣️ Kihap Meter</button>
+        <button class="lab-chip" type="button" data-brain-jump="beat-panel">🥁 Beat Workout</button>
+        <button class="lab-chip" type="button" data-brain-jump="course-panel">🏁 Obstacle Course</button>
       </nav>
 
       <div class="duo duo--even">
@@ -450,6 +456,38 @@
           <div class="brain-area" id="duel-area"></div>
         </section>
       </div>
+
+      <div class="duo duo--even">
+        <!-- ============ KIHAP METER (arcade-plus.js) ============ -->
+        <section class="panel brain-panel" id="kihap-panel" aria-labelledby="kihap-title">
+          <div class="panel__head">
+            <p class="eyebrow">// uses the microphone</p>
+            <span class="quest-tag">+10 XP</span>
+          </div>
+          <h2 class="panel__title" id="kihap-title">🗣️ Kihap Meter</h2>
+          <div class="brain-area" id="kihap-area"></div>
+        </section>
+
+        <!-- ============ BEAT WORKOUT (arcade-plus.js) ============ -->
+        <section class="panel brain-panel" id="beat-panel" aria-labelledby="beat-title">
+          <div class="panel__head">
+            <p class="eyebrow">// move to the music</p>
+            <span class="quest-tag">+20 XP per song</span>
+          </div>
+          <h2 class="panel__title" id="beat-title">🥁 Beat Workout</h2>
+          <div class="brain-area" id="beat-area"></div>
+        </section>
+      </div>
+
+      <!-- ============ OBSTACLE COURSE MAKER (arcade-plus.js) ============ -->
+      <section class="panel brain-panel" id="course-panel" aria-labelledby="course-title">
+        <div class="panel__head">
+          <p class="eyebrow">// race the clock</p>
+          <span class="quest-tag">+10 XP, +3 per station</span>
+        </div>
+        <h2 class="panel__title" id="course-title">🏁 Obstacle Course Maker</h2>
+        <div class="brain-area" id="course-area"></div>
+      </section>
 
       <div class="duo duo--even">
         <!-- ============ PENALTY SHOOTOUT (games.js) ============ -->
@@ -836,6 +874,16 @@
             <ul class="builder-saved-list" id="builder-saved"></ul>
           </div>
         </div>
+      </section>
+
+      <!-- ============ SPEED LAB (arcade-plus.js) ============ -->
+      <section class="panel" id="speed-panel" aria-labelledby="speed-title">
+        <div class="panel__head">
+          <p class="eyebrow">// how fast are you?</p>
+          <span class="quest-tag">+10 XP per run</span>
+        </div>
+        <h2 class="panel__title" id="speed-title">💨 Speed Lab</h2>
+        <div class="speed-area" id="speed-area"></div>
       </section>
 
       <!-- ============ PRACTICE DAYS (practice.js) ============ -->
