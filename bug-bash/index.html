@@ -9,6 +9,7 @@
       style.css  -> how it all looks
       game.js    -> the game itself: bugs, squashing and scoring
       levels.js  -> the World Map: 10 levels, new bugs and the Mega Bug
+      maker.js   -> the Level Maker: design, play and share your own levels
 
     The game is drawn on a <canvas>, which is like a blank picture that
     JavaScript can paint on. Look for <canvas id="game"> below.
@@ -25,9 +26,10 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=JetBrains+Mono:wght@400;600&display=swap">
 
   <!-- "?v=2" makes browsers download the newest version after an update -->
-  <link rel="stylesheet" href="style.css?v=4">
-  <script src="game.js?v=4" defer></script>
-  <script src="levels.js?v=4" defer></script>
+  <link rel="stylesheet" href="style.css?v=5">
+  <script src="game.js?v=5" defer></script>
+  <script src="levels.js?v=5" defer></script>
+  <script src="maker.js?v=5" defer></script>
 </head>
 <body>
 
@@ -123,6 +125,10 @@
           <span class="daily-button__title">🗺️ World Map <strong id="map-button-stars">⭐ 0/30</strong></span>
           <span class="daily-button__note">10 levels, new kinds of bugs and a final boss: the MEGA BUG!</span>
         </button>
+        <button class="daily-button maker-button" id="maker-button" type="button">
+          <span class="daily-button__title">🛠️ Level Maker</span>
+          <span class="daily-button__note">Design your own level, then share it with a code!</span>
+        </button>
       </div>
     </section>
 
@@ -135,6 +141,19 @@
         <div class="map-worlds" id="map-worlds"></div>
         <div class="panel__actions">
           <button class="button button--quiet" id="map-back" type="button">Back</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Level Maker (maker.js) -->
+    <section class="screen" id="screen-maker" aria-labelledby="maker-heading" hidden>
+      <div class="panel panel--map">
+        <p class="panel__eyebrow">// level maker</p>
+        <h2 class="panel__title panel__title--small" id="maker-heading">🛠️ Level Maker</h2>
+        <p class="panel__lead">Pick the bugs, the speed and the goal. Then play your level, or share its code!</p>
+        <div class="maker" id="maker-body"></div>
+        <div class="panel__actions">
+          <button class="button button--quiet" id="maker-back" type="button">Back</button>
         </div>
       </div>
     </section>

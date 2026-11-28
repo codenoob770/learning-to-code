@@ -810,3 +810,203 @@ button {
   font-size: 2.6rem;
   letter-spacing: 0.15em;
 }
+
+/* THE LEVEL MAKER (maker.js) ------------------------------------- */
+.maker-button {
+  border-color: rgba(169, 139, 255, 0.45);
+  background: rgba(169, 139, 255, 0.08);
+}
+
+.maker-button:hover {
+  background: rgba(169, 139, 255, 0.14);
+}
+
+.maker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.maker-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.maker-label {
+  margin: 0.3rem 0 0;
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+}
+
+.maker-label span {
+  font-size: 0.75rem;
+}
+
+.maker-input {
+  flex: 1;
+  min-width: 8rem;
+  min-height: 2.5rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+}
+
+.maker-chip {
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.maker-chip:hover {
+  border-color: var(--accent);
+}
+
+.maker-chip[aria-pressed="true"] {
+  border-color: var(--marker);
+  background: rgba(255, 226, 77, 0.12);
+  font-weight: 700;
+}
+
+.maker-chip--icon {
+  min-width: 2.4rem;
+  padding: 0.3rem;
+  font-size: 1.2rem;
+}
+
+.maker-bugs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12.5rem, 1fr));
+  gap: 0.4rem;
+}
+
+.maker-bug {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  opacity: 0.6;
+}
+
+.maker-bug.is-on {
+  border-color: rgba(127, 220, 200, 0.5);
+  opacity: 1;
+}
+
+.maker-bug__icon {
+  width: 40px;
+  height: 40px;
+}
+
+.maker-bug__name {
+  flex: 1;
+  font-weight: 700;
+}
+
+.maker-stepper {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.maker-stepper button {
+  width: 2.1rem;
+  height: 2.1rem;
+  border: 0;
+  background: transparent;
+  color: var(--fg);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.maker-stepper button:hover {
+  background: var(--line);
+}
+
+.maker-stepper span {
+  min-width: 1.5rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-align: center;
+}
+
+.maker-message {
+  min-height: 1.2em;
+  margin: 0.2rem 0 0;
+  color: var(--teal);
+  font-size: 0.9375rem;
+}
+
+.maker-message.is-bad {
+  color: var(--danger);
+}
+
+.maker-saved {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.maker-saved li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+}
+
+.maker-saved__name {
+  flex: 1;
+  min-width: 8rem;
+  font-weight: 700;
+}
+
+.maker-saved__code {
+  color: var(--marker);
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+}
+
+.maker-hint {
+  margin: 0;
+  color: var(--dim);
+  font-size: 0.8125rem;
+}
+
+.maker-code {
+  margin-top: 0.4rem;
+  padding-top: 0.8rem;
+  border-top: 1px dashed var(--line);
+}
+
+.maker-code .maker-label {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.maker-code .maker-input {
+  font-family: var(--font-code);
+  text-transform: uppercase;
+}

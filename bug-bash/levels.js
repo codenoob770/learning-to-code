@@ -113,6 +113,11 @@ function winLevel() {
   game.spawnTimer = 1;
   drops = [];
   updateEffects();
+  if (level.custom) {
+    winMyLevel(level);
+    return;
+  }
+  document.querySelector("#won-map").textContent = "World map";
 
   const stars = starsFor();
   const progress = mapProgress();
@@ -142,6 +147,26 @@ function winLevel() {
   if (next) nextButton.textContent = `Next: ${next.icon} ${next.name}`;
   showScreen("won");
   (next ? nextButton : document.querySelector("#won-map")).focus();
+}
+
+
+// Winning a level from the Level Maker (maker.js): no map stars, and it goes back to the maker
+function winMyLevel(level) {
+  for (let i = 0; i < 8; i++) addBurst(Math.random() * width, Math.random() * height * 0.6, ["#ffe24d", "#7fdcc8", "#ff7a5c", "#a98bff"][i % 4]);
+  sounds.levelUp();
+  const stars = starsFor();
+  document.querySelector("#won-eyebrow").textContent = "// level maker";
+  document.querySelector("#won-heading").textContent = `You beat ${level.icon} ${level.name}!`;
+  document.querySelector("#won-stars").textContent = "⭐".repeat(stars) + "☆".repeat(3 - stars);
+  document.querySelector("#won-stars").setAttribute("aria-label", `${stars} of 3 stars`);
+  document.querySelector("#won-lead").textContent = stars === 3 ? "Perfect! Make it harder next time? 😈" : "Nice! Can you beat it without losing a test?";
+  document.querySelector("#won-score").textContent = game.score.toLocaleString();
+  document.querySelector("#won-squashed").textContent = game.squashed;
+  document.querySelector("#won-tests").textContent = `${game.tests}/${game.totalTests}`;
+  document.querySelector("#won-next").hidden = true;
+  document.querySelector("#won-map").textContent = "Level Maker";
+  showScreen("won");
+  document.querySelector("#won-again").focus();
 }
 
 
@@ -220,9 +245,9 @@ document.querySelector("#map-worlds").addEventListener("click", (event) => {
 document.querySelector("#intro-start").addEventListener("click", () => startGame(false, introLevel));
 document.querySelector("#intro-back").addEventListener("click", openMap);
 document.querySelector("#won-next").addEventListener("click", () => openIntro(LEVELS[game.level.id]));
-document.querySelector("#won-map").addEventListener("click", openMap);
+document.querySelector("#won-map").addEventListener("click", () => backToMakerOrMap()); // maker.js
 document.querySelector("#won-again").addEventListener("click", () => startGame(false, game.level));
-document.querySelector("#over-map").addEventListener("click", openMap);
+document.querySelector("#over-map").addEventListener("click", () => backToMakerOrMap()); // maker.js
 
 // The map button on the title screen shows your stars
 function updateMapButton() {

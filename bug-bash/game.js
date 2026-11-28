@@ -680,7 +680,7 @@ function breakTest(message, count = 1) {
 function update(dt) {
   if (game.mode === "paused") return; // freeze everything
 
-  updateEffects(dt);
+  updateFading(dt);
 
   if (game.mode === "playing") {
     updateGame(dt);
@@ -766,8 +766,11 @@ function updateWanderers(dt) {
   }
 }
 
-// Splats, flying bits, floating numbers and click ripples all fade away over time
-function updateEffects(dt) {
+// Splats, flying bits, floating numbers and click ripples all fade away over time.
+// (This used to be called updateEffects too, the same as the power-up text
+// below. When two functions have the same name, the second one wins, so this
+// one never ran: splats never faded and the screen shake never stopped!)
+function updateFading(dt) {
   for (const splat of splats) splat.life -= dt / 5;
   for (const bit of particles) {
     bit.x += bit.vx * dt;
@@ -1318,7 +1321,8 @@ function startGame(daily = false, level = null) {
   game.rng = seededRandom(daily ? Number(todayKey().replace(/-/g, "")) : 1);
   game.mode = "playing";
   game.score = 0;
-  game.totalTests = ruleIs("oneLife") ? 1 : TOTAL_TESTS;
+  // A Level Maker level (maker.js) picks its own number of tests
+  game.totalTests = ruleIs("oneLife") ? 1 : level && level.tests ? level.tests : TOTAL_TESTS;
   game.tests = game.totalTests;
   makeTestDots(game.totalTests);
   game.sprayUsed = false;
@@ -1341,7 +1345,7 @@ function startGame(daily = false, level = null) {
   updateScoreboard();
   updateEffects();
   if (level) {
-    showToast(`${level.icon} Level ${level.id}: ${level.name}`);
+    showToast(level.custom ? `${level.icon} ${level.name}` : `${level.icon} Level ${level.id}: ${level.name}`);
     if (level.boss) setTimeout(spawnLevelBoss, 1500); // levels.js
     return;
   }
@@ -1408,9 +1412,10 @@ function endGame() {
   updateEffects();
 
   // On the World Map, it's "try again" instead of "game over"
-  document.querySelector("#over-heading").textContent = game.level ? `Level ${game.level.id} failed!` : "All tests broke!";
+  document.querySelector("#over-heading").textContent = !game.level ? "All tests broke!" : game.level.custom ? `"${game.level.name}" failed!` : `Level ${game.level.id} failed!`;
   document.querySelector("#again-button").textContent = game.level ? "Try again" : "Play again";
   document.querySelector("#over-map").hidden = !game.level;
+  document.querySelector("#over-map").textContent = game.level && game.level.custom ? "Level Maker" : "World map";
 
   showScreen("over");
   document.querySelector("#again-button").focus();
@@ -1494,7 +1499,8 @@ document.addEventListener("keydown", (event) => {
     else if (game.mode === "paused") resumeGame();
   }
   const onAButton = event.target.closest && event.target.closest("button, a");
-  if (event.key === "Enter" && !onAButton && (game.mode === "title" || game.mode === "over")) {
+  const typing = event.target.closest && event.target.closest("input, select, textarea");
+  if (event.key === "Enter" && !onAButton && !typing && (game.mode === "title" || game.mode === "over") && screens.maker && screens.maker.hidden) {
     const over = game.mode === "over";
     startGame(over && game.daily, over ? game.level : null);
   }
