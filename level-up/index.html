@@ -42,6 +42,8 @@
                      and Game Day Fuel
       arcade-plus.js -> Kihap Meter, Beat Workout, Obstacle Course Maker
                      and the Speed Lab (on the Sports tab)
+      everyday.js -> Fitness Bingo, Chore Quest, Streak Shield (Quests tab)
+                     and the Reading Log (Quiz tab)
       sports.js   -> belt tracker, swim school, soccer journal and workout builder
       stats.js    -> energy check-in, calendar, records, year in review, stats card
       family.js   -> the weekly family challenge
@@ -75,45 +77,46 @@
   <!-- The "?v=8" is a version number. Browsers keep old copies of files for a
        while; changing the number makes them download the newest version.
        Add 1 to it (on every line below) whenever you change those files. -->
-  <link rel="stylesheet" href="style.css?v=27">
+  <link rel="stylesheet" href="style.css?v=28">
   <!-- These load in order. app.js goes last, because it starts the page
        and uses things from all the others. -->
-  <script src="plan.js?v=27" defer></script>
-  <script src="hooks.js?v=27" defer></script>
-  <script src="demos.js?v=27" defer></script>
-  <script src="trophies.js?v=27" defer></script>
-  <script src="coach.js?v=27" defer></script>
-  <script src="practice.js?v=27" defer></script>
-  <script src="habits.js?v=27" defer></script>
-  <script src="charts.js?v=27" defer></script>
-  <script src="grocery.js?v=27" defer></script>
-  <script src="ai-coach.js?v=27" defer></script>
-  <script src="quest.js?v=27" defer></script>
-  <script src="missions.js?v=27" defer></script>
-  <script src="boss.js?v=27" defer></script>
-  <script src="quiz-questions.js?v=27" defer></script>
-  <script src="quiz.js?v=27" defer></script>
-  <script src="arcade.js?v=27" defer></script>
-  <script src="kitchen.js?v=27" defer></script>
-  <script src="kitchen-plus.js?v=27" defer></script>
-  <script src="arcade-plus.js?v=27" defer></script>
-  <script src="sports.js?v=27" defer></script>
-  <script src="stats.js?v=27" defer></script>
-  <script src="family.js?v=27" defer></script>
-  <script src="pet.js?v=27" defer></script>
-  <script src="shop.js?v=27" defer></script>
-  <script src="training-lessons.js?v=27" defer></script>
-  <script src="training.js?v=27" defer></script>
-  <script src="extra.js?v=27" defer></script>
-  <script src="brain-data.js?v=27" defer></script>
-  <script src="brain.js?v=27" defer></script>
-  <script src="games.js?v=27" defer></script>
-  <script src="training-plus.js?v=27" defer></script>
-  <script src="pet-plus.js?v=27" defer></script>
-  <script src="fun.js?v=27" defer></script>
-  <script src="tools.js?v=27" defer></script>
-  <script src="tabs.js?v=27" defer></script>
-  <script src="app.js?v=27" defer></script>
+  <script src="plan.js?v=28" defer></script>
+  <script src="hooks.js?v=28" defer></script>
+  <script src="demos.js?v=28" defer></script>
+  <script src="trophies.js?v=28" defer></script>
+  <script src="coach.js?v=28" defer></script>
+  <script src="practice.js?v=28" defer></script>
+  <script src="habits.js?v=28" defer></script>
+  <script src="charts.js?v=28" defer></script>
+  <script src="grocery.js?v=28" defer></script>
+  <script src="ai-coach.js?v=28" defer></script>
+  <script src="quest.js?v=28" defer></script>
+  <script src="missions.js?v=28" defer></script>
+  <script src="boss.js?v=28" defer></script>
+  <script src="quiz-questions.js?v=28" defer></script>
+  <script src="quiz.js?v=28" defer></script>
+  <script src="arcade.js?v=28" defer></script>
+  <script src="kitchen.js?v=28" defer></script>
+  <script src="kitchen-plus.js?v=28" defer></script>
+  <script src="arcade-plus.js?v=28" defer></script>
+  <script src="sports.js?v=28" defer></script>
+  <script src="stats.js?v=28" defer></script>
+  <script src="family.js?v=28" defer></script>
+  <script src="pet.js?v=28" defer></script>
+  <script src="shop.js?v=28" defer></script>
+  <script src="training-lessons.js?v=28" defer></script>
+  <script src="training.js?v=28" defer></script>
+  <script src="extra.js?v=28" defer></script>
+  <script src="brain-data.js?v=28" defer></script>
+  <script src="brain.js?v=28" defer></script>
+  <script src="games.js?v=28" defer></script>
+  <script src="training-plus.js?v=28" defer></script>
+  <script src="pet-plus.js?v=28" defer></script>
+  <script src="fun.js?v=28" defer></script>
+  <script src="tools.js?v=28" defer></script>
+  <script src="everyday.js?v=28" defer></script>
+  <script src="tabs.js?v=28" defer></script>
+  <script src="app.js?v=28" defer></script>
 </head>
 <body>
 
@@ -386,6 +389,37 @@
       </section>
 
       <!-- ============ QUEST BOARD (quest.js, quests in plan.js) ============ -->
+      <!-- ============ FITNESS BINGO (everyday.js) ============ -->
+      <section class="panel" id="bingo-panel" aria-labelledby="bingo-title">
+        <div class="panel__head">
+          <p class="eyebrow">// new card every monday</p>
+          <span class="quest-tag">+25 XP per bingo</span>
+        </div>
+        <h2 class="panel__title" id="bingo-title">🎱 Fitness Bingo</h2>
+        <div class="bingo-area" id="bingo-area"></div>
+      </section>
+
+      <div class="duo">
+        <!-- ============ CHORE QUEST (everyday.js) ============ -->
+        <section class="panel" id="chores-panel" aria-labelledby="chores-title">
+          <div class="panel__head">
+            <p class="eyebrow">// helping out</p>
+            <span class="quest-tag">coins for the shop</span>
+          </div>
+          <h2 class="panel__title" id="chores-title">🧹 Chore Quest</h2>
+          <div class="chores-area" id="chores-area"></div>
+        </section>
+
+        <!-- ============ STREAK SHIELD (everyday.js) ============ -->
+        <section class="panel" id="shield-panel" aria-labelledby="shield-title">
+          <div class="panel__head">
+            <p class="eyebrow">// for sick days</p>
+          </div>
+          <h2 class="panel__title" id="shield-title">🛡️ Streak Shield</h2>
+          <div class="shield-area" id="shield-area"></div>
+        </section>
+      </div>
+
       <section class="panel quest" aria-labelledby="quest-title">
         <div class="panel__head">
           <p class="eyebrow">// quest board</p>
@@ -592,6 +626,7 @@
           <button class="lab-chip" type="button" data-brain-jump="korean-panel">🇰🇷 Korean</button>
           <button class="lab-chip" type="button" data-brain-jump="focus-panel">⏳ Homework timer</button>
           <button class="lab-chip" type="button" data-brain-jump="myq-panel">✏️ Make a quiz</button>
+          <button class="lab-chip" type="button" data-brain-jump="read-panel">📚 Reading log</button>
         </nav>
       </section>
 
@@ -702,6 +737,16 @@
           </form>
           <div class="myq-saved" id="myq-list"></div>
         </div>
+      </section>
+
+      <!-- ============ READING LOG (everyday.js) ============ -->
+      <section class="panel brain-panel" id="read-panel" aria-labelledby="read-title-heading">
+        <div class="panel__head">
+          <p class="eyebrow">// books</p>
+          <span class="quest-tag">+1 XP per 2 minutes</span>
+        </div>
+        <h2 class="panel__title" id="read-title-heading">📚 Reading Log</h2>
+        <div class="read-area" id="read-area"></div>
       </section>
     </div>
 

@@ -144,9 +144,14 @@ function workOutTrophyStats() {
     }
     if (expertDays.has(key)) xp += XP_RULES.expertBonus;
 
-    // How long was the streak on this day?
+    // How long was the streak on this day? (A Streak Shield day keeps it
+    // going without adding a day: see everyday.js)
     let streak = 1;
-    while (doneDays.has(toKey(addDays(date, -streak)))) streak += 1;
+    for (let back = 1; ; back++) {
+      const key = toKey(addDays(date, -back));
+      if (doneDays.has(key)) streak += 1;
+      else if (!(typeof isShielded === "function" && isShielded(key))) break;
+    }
     xp += XP_RULES.streakBonus * Math.min(streak - 1, 10);
     bestStreak = Math.max(bestStreak, streak);
 

@@ -949,11 +949,13 @@ function renderStats() {
   }
 
   // Streak: days in a row you've marked done, counting back from today
-  // (or from yesterday, if you haven't done today yet)
+  // (or from yesterday, if you haven't done today yet). A day with a
+  // Streak Shield on it (everyday.js) keeps it going, but doesn't add a day.
+  const shielded = (key) => typeof isShielded === "function" && isShielded(key);
   let day = doneDays.has(toKey(today)) ? today : addDays(today, -1);
   let streak = 0;
-  while (doneDays.has(toKey(day))) {
-    streak += 1;
+  while (doneDays.has(toKey(day)) || shielded(toKey(day))) {
+    if (doneDays.has(toKey(day))) streak += 1;
     day = addDays(day, -1);
   }
 
