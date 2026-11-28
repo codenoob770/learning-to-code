@@ -90,7 +90,7 @@ function drawKihap() {
   }
   let note = "";
   if (kihap.state === "nomic") note = `<p class="kihap-problem">😕 This page can't use the microphone here. Try your Level Up on github.io in Safari.</p>`;
-  if (kihap.state === "denied") note = `<p class="kihap-problem">🔇 The microphone isn't allowed. On an iPad: Settings → Safari → Microphone → Allow (ask a grown-up), then reload the page.</p>`;
+  if (kihap.state === "denied") note = `<p class="kihap-problem">🔇 The microphone isn't allowed here. Use your Level Up on github.io in Safari and tap Allow when it asks. (Said no before? Settings → Safari → Microphone → Allow, with a grown-up.)</p>`;
   if (kihap.state === "error") note = `<p class="kihap-problem">😕 The microphone didn't start${kihap.problem ? ` (${escapeHTML(kihap.problem)})` : ""}. Try again?</p>`;
   area.innerHTML = `
     <div class="brain-start">
