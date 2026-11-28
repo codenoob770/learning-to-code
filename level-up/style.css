@@ -9679,6 +9679,484 @@ label.mission__text {
   }
 }
 
+/* 9w. CODES AND FAMILY PLUS (codes.js, family-plus.js) ------------------------ */
+
+/* Challenge Codes */
+.codes-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.4rem;
+}
+
+.codes-make,
+.codes-enter,
+#playdate-form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.codes-make .form-row,
+.codes-enter .form-row,
+#playdate-form .form-row {
+  width: 100%;
+}
+
+.challenge-count {
+  flex: 0 0 5.5rem !important;
+}
+
+.code-show {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 2px dashed var(--marker-border);
+  border-radius: var(--radius);
+  background: var(--marker-soft);
+}
+
+.code-show__code {
+  font-family: var(--font-code);
+  font-size: clamp(1.8rem, 1.4rem + 1.5vw, 2.4rem);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--marker);
+}
+
+.code-show__what {
+  font-weight: 700;
+}
+
+.code-input {
+  font-family: var(--font-code);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.code-problem:empty {
+  display: none;
+}
+
+.challenge-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--bug-border);
+  border-radius: var(--radius);
+  background: var(--bug-soft);
+}
+
+.challenge-card__text {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.challenge-card__demo .demo {
+  width: 7rem;
+  height: auto;
+}
+
+.challenge-card__demo:empty {
+  display: none;
+}
+
+.code-history {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.875rem;
+}
+
+.code-history span {
+  margin-left: 0.3rem;
+  color: var(--dim);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+}
+
+/* Secret Message Machine */
+.cipher-area {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.cipher-area .form-row .field-label {
+  margin: 0;
+}
+
+.cipher-word {
+  flex: 0 1 10rem !important;
+  font-family: var(--font-code);
+  text-transform: uppercase;
+}
+
+.cipher-strip {
+  overflow-x: auto;
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+}
+
+.cipher-strip div {
+  display: grid;
+  grid-template-columns: repeat(26, minmax(1.05rem, 1fr));
+  text-align: center;
+}
+
+.cipher-strip div + div {
+  color: var(--marker);
+  font-weight: 600;
+}
+
+.cipher-strip div:first-child span {
+  border-bottom: 1px solid var(--line);
+}
+
+.cipher-in {
+  min-height: 4.5rem;
+  resize: vertical;
+}
+
+.cipher-out {
+  min-height: 2.6rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-small);
+  font-family: var(--font-code);
+  font-size: 1.05rem;
+  overflow-wrap: anywhere;
+  color: var(--teal);
+}
+
+/* Pet Playdate */
+.playdate-scene {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.playdate-pet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(40%, 11rem);
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.playdate-pet .pet {
+  width: 100%;
+  height: auto;
+  animation: playdate-hop 0.9s ease-in-out infinite;
+}
+
+.playdate-pet--friend .pet {
+  animation-delay: 0.45s;
+  transform: scaleX(-1);
+}
+
+@keyframes playdate-hop {
+  50% { translate: 0 -10px; }
+}
+
+.playdate-hearts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 1.4rem;
+}
+
+.playdate-line {
+  margin-top: 0.4rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-align: center;
+}
+
+/* Family Sports Day */
+.sportsday-area,
+.cheers-area {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.sportsday-area > .button {
+  align-self: flex-start;
+}
+
+.sports-events {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: 0.4rem;
+}
+
+.sports-event {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-small);
+  background: transparent;
+  color: var(--fg);
+  text-align: left;
+  cursor: pointer;
+}
+
+.sports-event span:last-child {
+  color: var(--dim);
+  font-size: 0.8125rem;
+}
+
+.sports-event:hover {
+  border-color: var(--accent);
+}
+
+.sports-event.is-on {
+  border-color: var(--teal);
+  background: var(--teal-soft);
+}
+
+.sports-who {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.sports-totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sports-totals li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+}
+
+.sports-totals li.is-leader {
+  border-color: var(--marker);
+  background: var(--marker-soft);
+}
+
+.sports-totals strong {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+}
+
+.sports-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: 0.6rem;
+}
+
+.sports-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.8rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-small);
+}
+
+.sports-card__title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.sports-card__how {
+  color: var(--dim);
+  font-size: 0.8125rem;
+}
+
+.sports-score {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 5rem auto 1.4rem;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9375rem;
+}
+
+.sports-score .input {
+  min-height: 2.2rem;
+  padding: 0.3rem 0.5rem;
+}
+
+.sports-score__unit {
+  color: var(--dim);
+  font-size: 0.75rem;
+}
+
+.ceremony {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  text-align: center;
+}
+
+.podium {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.podium__spot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  width: min(32%, 10rem);
+}
+
+.podium__medal {
+  font-size: 2.6rem;
+  animation: playdate-hop 1.2s ease-in-out infinite;
+}
+
+.podium__who {
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.podium__points {
+  color: var(--dim);
+  font-size: 0.8125rem;
+}
+
+.podium__block {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  border-radius: 6px 6px 0 0;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--bg);
+}
+
+.podium__spot--1 .podium__block { height: 7rem; background: #ffd34d; }
+.podium__spot--2 .podium__block { height: 5rem; background: #c9d1e6; }
+.podium__spot--3 .podium__block { height: 3.6rem; background: #e09a5a; }
+
+.ceremony__line {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+/* Cheer Messages */
+.cheer-waiting {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--marker-border);
+  border-radius: var(--radius-small);
+  background: var(--marker-soft);
+  font-weight: 700;
+}
+
+.cheer-form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.cheer-form .form-row,
+.cheer-text {
+  width: 100%;
+}
+
+.cheer-text {
+  resize: vertical;
+}
+
+.cheer-wall {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cheer-note {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.8rem;
+  border-radius: 4px;
+  background: #fff4a8;
+  color: #2b2a33;
+  transform: rotate(-1deg);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.cheer-note:nth-child(even) {
+  background: #ffd1e8;
+  transform: rotate(1.2deg);
+}
+
+.cheer-note span {
+  color: #55546a;
+  font-size: 0.75rem;
+}
+
+.cheer-card {
+  align-items: center;
+  text-align: center;
+}
+
+.cheer-card__icon {
+  font-size: 3.4rem;
+  animation: playdate-hop 1s ease-in-out infinite;
+}
+
+.cheer-card__text {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+@media (max-width: 720px) {
+  .codes-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .playdate-pet .pet,
+  .podium__medal,
+  .cheer-card__icon {
+    animation: none;
+  }
+}
+
 /* 10. SMALL SCREENS AND REDUCED MOTION --------------------------- */
 
 @media (max-width: 640px) {

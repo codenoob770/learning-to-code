@@ -43,35 +43,36 @@
        while; changing the number makes them download the newest version.
        Add 1 to it (on every line below) whenever you change those files. -->
   <!-- Level Up's styles first (for the new tabs), then Kickoff's own look on top -->
-  <link rel="stylesheet" href="../level-up/style.css?v=29">
-  <link rel="stylesheet" href="style.css?v=13">
+  <link rel="stylesheet" href="../level-up/style.css?v=30">
+  <link rel="stylesheet" href="style.css?v=14">
   <!-- These load in order. app.js goes last, because it starts the page
        and uses things from all the others. -->
-  <script src="plan.js?v=13" defer></script>
-  <script src="../level-up/hooks.js?v=29" defer></script>
-  <script src="../level-up/demos.js?v=29" defer></script>
-  <script src="trophies.js?v=13" defer></script>
-  <script src="../level-up/coach.js?v=29" defer></script>
-  <script src="practice.js?v=13" defer></script>
-  <script src="habits.js?v=13" defer></script>
-  <script src="charts.js?v=13" defer></script>
-  <script src="grocery.js?v=13" defer></script>
-  <script src="ai-coach.js?v=13" defer></script>
+  <script src="plan.js?v=14" defer></script>
+  <script src="../level-up/hooks.js?v=30" defer></script>
+  <script src="../level-up/demos.js?v=30" defer></script>
+  <script src="trophies.js?v=14" defer></script>
+  <script src="../level-up/coach.js?v=30" defer></script>
+  <script src="practice.js?v=14" defer></script>
+  <script src="habits.js?v=14" defer></script>
+  <script src="charts.js?v=14" defer></script>
+  <script src="grocery.js?v=14" defer></script>
+  <script src="ai-coach.js?v=14" defer></script>
   <!-- The new tabs, from Level Up -->
-  <script src="../level-up/quiz-questions.js?v=29" defer></script>
-  <script src="../level-up/quiz.js?v=29" defer></script>
-  <script src="../level-up/training-lessons.js?v=29" defer></script>
-  <script src="../level-up/training.js?v=29" defer></script>
-  <script src="../level-up/pet.js?v=29" defer></script>
-  <script src="../level-up/shop.js?v=29" defer></script>
-  <script src="../level-up/brain-data.js?v=29" defer></script>
-  <script src="../level-up/brain.js?v=29" defer></script>
-  <script src="../level-up/games.js?v=29" defer></script>
-  <script src="../level-up/training-plus.js?v=29" defer></script>
-  <script src="../level-up/pet-plus.js?v=29" defer></script>
-  <script src="../level-up/fun.js?v=29" defer></script>
-  <script src="bridge.js?v=13" defer></script>
-  <script src="app.js?v=13" defer></script>
+  <script src="../level-up/quiz-questions.js?v=30" defer></script>
+  <script src="../level-up/quiz.js?v=30" defer></script>
+  <script src="../level-up/training-lessons.js?v=30" defer></script>
+  <script src="../level-up/training.js?v=30" defer></script>
+  <script src="../level-up/pet.js?v=30" defer></script>
+  <script src="../level-up/shop.js?v=30" defer></script>
+  <script src="../level-up/brain-data.js?v=30" defer></script>
+  <script src="../level-up/brain.js?v=30" defer></script>
+  <script src="../level-up/games.js?v=30" defer></script>
+  <script src="../level-up/training-plus.js?v=30" defer></script>
+  <script src="../level-up/pet-plus.js?v=30" defer></script>
+  <script src="../level-up/fun.js?v=30" defer></script>
+  <script src="../level-up/codes.js?v=30" defer></script>
+  <script src="bridge.js?v=14" defer></script>
+  <script src="app.js?v=14" defer></script>
 </head>
 <body>
 
@@ -478,7 +479,30 @@
         <button class="lab-chip" type="button" data-brain-jump="boards-panel">🪵 Board Break</button>
         <button class="lab-chip" type="button" data-brain-jump="memory-panel">🃏 Memory</button>
         <button class="lab-chip" type="button" data-brain-jump="duel-panel">🤝 Family Duel</button>
+        <button class="lab-chip" type="button" data-brain-jump="codes-panel">⚔️ Challenge Codes</button>
+        <button class="lab-chip" type="button" data-brain-jump="cipher-panel">🔐 Secret messages</button>
       </nav>
+
+      <!-- ============ CHALLENGE CODES (codes.js) ============ -->
+      <section class="panel brain-panel" id="codes-panel" aria-labelledby="codes-title">
+        <div class="panel__head">
+          <p class="eyebrow">// kickoff ⇄ level up</p>
+          <span class="quest-tag">+20 XP</span>
+        </div>
+        <h2 class="panel__title" id="codes-title">⚔️ Challenge Codes</h2>
+        <p class="panel__lead">Make a challenge and get a secret code for it. Codes work between Kickoff and Level Up!</p>
+        <div id="codes-area"></div>
+      </section>
+
+      <!-- ============ SECRET MESSAGE MACHINE (codes.js) ============ -->
+      <section class="panel brain-panel" id="cipher-panel" aria-labelledby="cipher-title">
+        <div class="panel__head">
+        <p class="eyebrow">// like real spies</p>
+        </div>
+        <h2 class="panel__title" id="cipher-title">🔐 Secret Message Machine</h2>
+        <div class="cipher-area" id="cipher-area"></div>
+      </section>
+
 
       <div class="duo duo--even">
         <!-- ============ MYSTERY BOX (games.js) ============ -->
@@ -673,6 +697,7 @@
       <nav class="brain-jump arcade-jump" aria-label="Jump to a part of the Pet tab">
         <button class="lab-chip" type="button" data-brain-jump="pet-panel">🐾 My pet</button>
         <button class="lab-chip" type="button" data-brain-jump="room-panel">🏠 Pet room</button>
+        <button class="lab-chip" type="button" data-brain-jump="playdate-panel">🐾 Playdate</button>
         <button class="lab-chip" type="button" data-brain-jump="avatar-panel">🧑 My avatar</button>
         <button class="lab-chip" type="button" data-brain-jump="shop-panel">🛍️ Shop</button>
         <button class="lab-chip" type="button" data-brain-jump="secrets-panel">🥚 Secrets</button>
@@ -704,6 +729,16 @@
             <div class="pet-extras" id="pet-extras"></div>
           </div>
         </div>
+      </section>
+
+      <!-- ============ PET PLAYDATE (codes.js) ============ -->
+      <section class="panel brain-panel" id="playdate-panel" aria-labelledby="playdate-title">
+        <div class="panel__head">
+          <p class="eyebrow">// kickoff ⇄ level up</p>
+          <span class="quest-tag">+15 XP</span>
+        </div>
+        <h2 class="panel__title" id="playdate-title">🐾 Pet Playdate</h2>
+        <div id="playdate-area"></div>
       </section>
 
       <!-- ============ PET ROOM (pet-plus.js) ============ -->

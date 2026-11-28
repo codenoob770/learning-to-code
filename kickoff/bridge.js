@@ -174,7 +174,7 @@ document.addEventListener("click", (event) => {
 const TAB_PARTS = {
   today: ["today"],
   quiz: ["quiz"],
-  arcade: ["arcade"],
+  arcade: ["arcade", "family"], // Challenge Codes and secret messages (codes.js)
   training: ["training"],
   pet: ["pet", "stats"], // the Sticker Album is on the Pet tab here
 };
